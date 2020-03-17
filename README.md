@@ -17,7 +17,7 @@
 	Boost  
 	zlib  
   
-# Required sub-modules:
+# Required sub-modules:  
 QT:  
 	Qt5Core  
 	Qt5OpenGL  
