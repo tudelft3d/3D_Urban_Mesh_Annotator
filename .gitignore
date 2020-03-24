@@ -98,7 +98,7 @@ ipch/
 *.sln
 *.vcxproj
 *.filters
-*.cmake
+#*.cmake
 *.exe
 *.cpp_parameters
 *.dll
