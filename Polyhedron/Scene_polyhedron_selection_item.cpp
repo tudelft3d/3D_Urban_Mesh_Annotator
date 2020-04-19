@@ -1632,6 +1632,7 @@ void Scene_polyhedron_selection_item::extract_connected_componet(std::set<fg_fac
 bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment() {
 	std::set<seg_id> involvedSegments;
 	std::set<fg_face_descriptor> selected_facets_copy;
+	int orig_segmt_num = poly_item->segments.size();
 
 	Q_FOREACH(fg_face_descriptor fh, selected_facets) {
 		involvedSegments.insert(poly_item->face_segment_id[fh]);
@@ -1678,14 +1679,19 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment() {
 		}
 
 		if (time == 0) {
-			Q_FOREACH(fg_face_descriptor fh, poly_item->segments[*involvedSegments.begin()].faces_included) {
-				selected_facets_copy.insert(fh);
+			Q_FOREACH(fg_face_descriptor fh, poly_item->segments[*involvedSegments.begin()].faces_included) 
+			{
+				if (fh.is_valid())
+					selected_facets_copy.insert(fh);
 			}
 		}
 	}
 
 	poly_item->computeSegments();
 	poly_item->computeSegmentBoundary();
+
+	int new_segmt_num = poly_item->segments.size();
+	Q_EMIT printMessage("The number of segments increased from " + QString::number(orig_segmt_num) + " to " + QString::number(new_segmt_num) + ".");
 
 	return true;
 }
