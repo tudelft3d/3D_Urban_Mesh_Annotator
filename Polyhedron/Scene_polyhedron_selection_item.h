@@ -437,7 +437,7 @@ public:
 
 	//adds the content of temp_selection to the current selection
 	void add_to_selection();
-	
+
 	// select all of `active_handle_type`(vertex, facet or edge)
 	void select_all() {
 		switch (get_active_handle_type()) {
@@ -478,7 +478,7 @@ public:
 	}
 
 	/****************************************************************************/
-	
+
 	void select_boundary();
 	void select_all_NT();
 
@@ -727,10 +727,14 @@ public:
 		);
 
 		bool any_change = false;
-		for (typename Tr::Iterator it = tr.iterator_begin(); it != tr.iterator_end(); ++it) {
-			if (mark[tr.id(*it)]) {
+		for (typename Tr::Iterator it = tr.iterator_begin(); it != tr.iterator_end(); ++it)
+		{
+			if (mark[tr.id(*it)])
+			{
 				/******************Ziqian****************/
-				if (get_active_handle_type() == Active_handle::FACET && poly_item->face_segment_id[fg_face_descriptor(*it)] != edited_segment) {
+				if (get_active_handle_type() == Active_handle::FACET &&
+					poly_item->face_segment_id[fg_face_descriptor(*it)] != edited_segment)
+				{
 					Q_EMIT printMessage("can't select faces outside of the chosen segmemt.");
 					continue;
 				}
@@ -738,7 +742,11 @@ public:
 				any_change |= tr.container().insert(*it).second;
 			}
 		}
-		if (any_change) { invalidateOpenGLBuffers(); Q_EMIT itemChanged(); }
+		if (any_change)
+		{
+			invalidateOpenGLBuffers();
+			Q_EMIT itemChanged();
+		}
 	}
 
 	template <class Handle, class Tag>
@@ -879,7 +887,11 @@ public:
 	/***************************Ziqian****************************/
 	// set face_segment_id into the same, and record the information into map
 	bool put_selected_faces_into_one_segment();
-	void extract_connected_componet(std::set<fg_face_descriptor>& original_face_set, std::vector<fg_face_descriptor>& connected_componet);
+	void extract_connected_component
+	(
+		std::set<fg_face_descriptor>&,
+		std::vector<fg_face_descriptor>&
+	);
 	void segmentifySelection();
 
 	Active_handle::Type get_active_handle_type_public()

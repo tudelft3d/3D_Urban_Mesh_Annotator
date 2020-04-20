@@ -180,6 +180,7 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 			sm_item->texture_name = texture_name;
 
 			int ind = 0;
+			std::map<face_descriptor, bool> face_visited_check;
 			BOOST_FOREACH(face_descriptor fd, faces(*(sm_item->polyhedron())))
 			{
 				if (flabels.empty() == false)
@@ -201,13 +202,19 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 				if (fi_segment_id.empty() == false)
 					sm_item->face_segment_id[fd] = fi_segment_id[ind];
 
+				face_visited_check[fd] = false;
 				/********************************Ziqian****************************/
 				sm_item->face_shown[fd] = true;
 				/******************************************************************/
 
 				++ind;
 			}
-			
+
+			//update face segment id (check if isolated segments are merged as one)
+
+			int segment_size = sm_item->updateSegmentId(face_visited_check);
+			CGAL::Three::Three::information("The number of segment is " + QString::number(segment_size));
+
 			sm_item->computeSegmentBoundary();
 
 			sm_item->face_label_comment = face_label_comment;
@@ -260,15 +267,19 @@ bool Polyhedron_demo_ply_plugin::save(const CGAL::Three::Scene_item* item, QFile
 	if (extension != "ply" && extension != "PLY")
 		return false;
 
-	QStringList list;
-	list << tr("Binary");
-	list << tr("Ascii");
-	bool ok = false;
-	QString choice
-		= QInputDialog::getItem(NULL, tr("Save PLY file"), tr("Format"), list, 0, false, &ok);
+	//*****************Weixiao*********************//
+	//QStringList list;
+	//list << tr("Binary");
+	//list << tr("Ascii");
+	//bool ok = false;
+	//QString choice
+	//	= QInputDialog::getItem(NULL, tr("Save PLY file"), tr("Format"), list, 0, false, &ok);
 
-	if (!ok)
-		return false;
+	//if (!ok)
+	//	return false;
+
+	QString choice = tr("Ascii");
+	//*********************************************//
 
 	std::ofstream out(fileinfo.filePath().toUtf8().data(), std::ios::binary);
 	out.precision(std::numeric_limits<double>::digits10 + 2);

@@ -65,21 +65,21 @@ public:
 /*********************************************/
 
 class SCENE_SURFACE_MESH_ITEM_EXPORT Scene_surface_mesh_item
-    : public CGAL::Three::Scene_item_rendering_helper,
-    public CGAL::Three::Scene_item_with_properties,
-    public CGAL::Three::Scene_zoomable_item_interface,
-    public CGAL::Three::Scene_print_item_interface
+	: public CGAL::Three::Scene_item_rendering_helper,
+	public CGAL::Three::Scene_item_with_properties,
+	public CGAL::Three::Scene_zoomable_item_interface,
+	public CGAL::Three::Scene_print_item_interface
 {
 	Q_INTERFACES(CGAL::Three::Scene_print_item_interface)
-	Q_PLUGIN_METADATA(IID "com.geometryfactory.PolyhedronDemo.PrintInterface/1.0")
-	Q_OBJECT
-	Q_INTERFACES(CGAL::Three::Scene_zoomable_item_interface)
-	Q_PLUGIN_METADATA(IID "com.geometryfactory.PolyhedronDemo.ZoomInterface/1.0")
+		Q_PLUGIN_METADATA(IID "com.geometryfactory.PolyhedronDemo.PrintInterface/1.0")
+		Q_OBJECT
+		Q_INTERFACES(CGAL::Three::Scene_zoomable_item_interface)
+		Q_PLUGIN_METADATA(IID "com.geometryfactory.PolyhedronDemo.ZoomInterface/1.0")
 
 public:
 	typedef SMesh Face_graph;
-	typedef SMesh::Property_map<vertex_descriptor,int> Vertex_selection_map;
-	typedef SMesh::Property_map<face_descriptor,int> Face_selection_map;
+	typedef SMesh::Property_map<vertex_descriptor, int> Vertex_selection_map;
+	typedef SMesh::Property_map<face_descriptor, int> Face_selection_map;
 	Scene_surface_mesh_item();
 	// Takes ownership of the argument.
 	Scene_surface_mesh_item(SMesh*);
@@ -93,7 +93,7 @@ public:
 	void draw(CGAL::Three::Viewer_interface *) const Q_DECL_OVERRIDE;
 	void drawEdges(CGAL::Three::Viewer_interface *) const Q_DECL_OVERRIDE;
 	/******************************Ziqian*********************************/
-	void Scene_surface_mesh_item::drawEdgesShowingSegBoundary(CGAL::Three::Viewer_interface* viewer) const ;
+	void Scene_surface_mesh_item::drawEdgesShowingSegBoundary(CGAL::Three::Viewer_interface* viewer) const;
 	/*********************************************************************/
 	void drawPoints(CGAL::Three::Viewer_interface *) const Q_DECL_OVERRIDE;
 
@@ -174,7 +174,7 @@ public:
 	RenderingMode m_RMode;
 	//************************************************************//
 	//statistics
-	enum STATS 
+	enum STATS
 	{
 		NB_VERTICES = 0,
 		NB_CONNECTED_COMPOS,
@@ -207,7 +207,7 @@ public:
 		MEAN_ANGLE
 	};
 
-	bool has_stats()const Q_DECL_OVERRIDE{return true;}
+	bool has_stats()const Q_DECL_OVERRIDE { return true; }
 	QString computeStats(int type)Q_DECL_OVERRIDE;
 	CGAL::Three::Scene_item::Header_data header() const Q_DECL_OVERRIDE;
 	//zoomable interface
@@ -224,9 +224,11 @@ public:
 	void setAlpha(int alpha) Q_DECL_OVERRIDE;
 	QSlider* alphaSlider();
 	void computeElements() const Q_DECL_OVERRIDE;
-	/************************Ziqian************************/
+	/************************Ziqian && Weixiao ************************/
 	// Go through all the edges, and pick out all the boundary edge based on the infomations
 	// in face_segment_id
+	int updateSegmentId(std::map<face_descriptor, bool> &);
+
 	void computeSegmentBoundary();
 
 	void get_connected_faces(face_descriptor fd, std::vector<face_descriptor>& connected_faces);
@@ -255,19 +257,19 @@ public Q_SLOTS:
 	virtual void selection_changed(bool) Q_DECL_OVERRIDE;
 
 	void select(double orig_x,
-				double orig_y,
-				double orig_z,
-				double dir_x,
-				double dir_y,
-				double dir_z) Q_DECL_OVERRIDE;
+		double orig_y,
+		double orig_z,
+		double dir_x,
+		double dir_y,
+		double dir_z) Q_DECL_OVERRIDE;
 
 	bool intersect_face(double orig_x,
-						double orig_y,
-						double orig_z,
-						double dir_x,
-						double dir_y,
-						double dir_z,
-						const face_descriptor &f);
+		double orig_y,
+		double orig_z,
+		double dir_x,
+		double dir_y,
+		double dir_z,
+		const face_descriptor &f);
 	void resetColors();
 	void showVertices(bool);
 	void showEdges(bool);

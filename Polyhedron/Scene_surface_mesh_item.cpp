@@ -322,7 +322,7 @@ struct Scene_surface_mesh_item_priv {
 
 /*******************Ziqian**************************/
 void seg_boundary_edge_info::set_adjecent_segs(Segment* s1, Segment* s2) {
-	adjecent_segs = new Segment * [2];
+	adjecent_segs = new Segment *[2];
 	adjecent_segs[0] = s1;
 	adjecent_segs[1] = s2;
 }
@@ -892,6 +892,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 
 	QApplication::restoreOverrideCursor();
 }
+
 /*************************Ziqian***************************/
 void Scene_surface_mesh_item_priv::computeSegmentBoundary() {
 	//only used in the init process
@@ -959,10 +960,12 @@ void Scene_surface_mesh_item::computeSegments() {
 		p->second.id = p->first;
 	}
 }
-void Scene_surface_mesh_item::get_connected_faces(face_descriptor fd, std::vector<face_descriptor>& connected_faces) {
+void Scene_surface_mesh_item::get_connected_faces(face_descriptor fd, std::vector<face_descriptor>& connected_faces)
+{
 	connected_faces.clear();
 	halfedge_descriptor head = halfedge(fd, *d->smesh_);
-	for (halfedge_descriptor hd = head; ; ) {
+	for (halfedge_descriptor hd = head; ; )
+	{
 		halfedge_descriptor op = opposite(hd, *d->smesh_);
 		connected_faces.push_back(face(op, *d->smesh_));
 		hd = next(hd, *d->smesh_);
@@ -970,6 +973,7 @@ void Scene_surface_mesh_item::get_connected_faces(face_descriptor fd, std::vecto
 			break;
 	}
 }
+
 void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 	m_RMode = renderingMode();
 	d->chosen_segments.insert(seg);
@@ -981,7 +985,8 @@ void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 	Q_EMIT redraw();
 }
 void Scene_surface_mesh_item::unemphasize() {
-	setRenderingMode(m_RMode);
+	//setRenderingMode(m_RMode);
+	setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
 	d->chosen_segments.clear();
 	d->compute_elements(ALL);
 
@@ -992,6 +997,60 @@ void Scene_surface_mesh_item::unemphasize() {
 
 void Scene_surface_mesh_item::addChosenSegment(seg_id id) {
 	d->chosen_segments.insert(id);
+}
+
+/*************************Weixiao**************************/
+int Scene_surface_mesh_item::updateSegmentId(std::map<face_descriptor, bool> &face_visited_check)
+{
+	std::vector<std::vector<face_descriptor>> all_regions;
+	BOOST_FOREACH(face_descriptor fd, faces(*(polyhedron())))
+	{
+		if (face_visited_check[fd] || !fd.is_valid())
+			continue;
+
+		std::vector<face_descriptor> current_region, current_seeds;
+		face_visited_check[fd] = true;
+		current_seeds.emplace_back(fd);
+		current_region.emplace_back(fd);
+		int seed_id = face_segment_id[fd];
+		int new_id = 0;
+		for (int i = 0; i < current_seeds.size(); ++i)
+		{
+			face_descriptor f_cu = current_seeds[i];
+
+			// loop over all incident faces around the face
+			halfedge_descriptor head = halfedge(f_cu, *d->smesh_);
+			for (halfedge_descriptor hd = head; ; )
+			{
+				halfedge_descriptor op = opposite(hd, *d->smesh_);
+				face_descriptor f_neg = face(op, *d->smesh_);
+
+				if (seed_id == face_segment_id[f_neg])
+				{
+					if (!face_visited_check[f_neg]
+						&& f_neg.is_valid())
+					{
+						face_visited_check[f_neg] = true;
+						current_region.emplace_back(f_neg);
+						current_seeds.emplace_back(f_neg);
+					}
+				}
+
+				hd = next(hd, *d->smesh_);
+				if (hd == head)
+					break;
+			}
+		}
+
+		if (!current_region.empty())
+			all_regions.emplace_back(current_region);
+	}
+
+	for (int ri = 0; ri < all_regions.size(); ++ri)
+		for (int fi = 0; fi < all_regions[ri].size(); ++fi)
+			face_segment_id[all_regions[ri][fi]] = ri;
+
+	return all_regions.size();
 }
 /**********************************************************/
 void Scene_surface_mesh_item_priv::initialize_colors() const
