@@ -504,8 +504,10 @@ protected:
 	}
 
 	/************************Ziqian************************/
-	void process_segment_selection(fg_face_descriptor clicked) {
-		const std::set<fg_face_descriptor>& selection = get_segment(clicked);
+	template<class HandleType>
+	void process_segment_selection(HandleType clicked)
+	{
+		const std::set<HandleType>& selection = get_segment(clicked);
 		if (is_highlighting)
 		{
 			Q_EMIT selected_HL(selection);
@@ -583,7 +585,13 @@ protected:
 		get_segment(fg_face_descriptor f)
 	{
 		std::size_t seg_id = poly_item->face_segment_id[f];
-		return poly_item->segments[seg_id].faces_included;
+		std::set<fg_face_descriptor> temp_segment_faces;
+		BOOST_FOREACH(fg_face_descriptor fd, poly_item->segments[seg_id].faces_included)
+		{
+			if (fd.is_valid())
+				temp_segment_faces.insert(fd);
+		}
+		return temp_segment_faces;
 	}
 
 	void treat_first_draw() {

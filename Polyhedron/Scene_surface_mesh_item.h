@@ -49,7 +49,8 @@ public:
 	std::size_t id;
 	Segment(std::vector<face_descriptor> faces) {
 		BOOST_FOREACH(face_descriptor fd, faces) {
-			faces_included.insert(fd);
+			if (fd.is_valid())
+				faces_included.insert(fd);
 		}
 	}
 	Segment() {}
