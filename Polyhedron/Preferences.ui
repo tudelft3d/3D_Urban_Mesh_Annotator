@@ -59,8 +59,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>278</width>
-             <height>499</height>
+             <width>225</width>
+             <height>467</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -135,21 +135,11 @@
                <item>
                 <widget class="QComboBox" name="surface_meshComboBox">
                  <property name="currentIndex">
-                  <number>1</number>
+                  <number>0</number>
                  </property>
                  <item>
                   <property name="text">
-                   <string>Gouraud</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>flat+edges</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>flat</string>
+                   <string>points</string>
                   </property>
                  </item>
                  <item>
@@ -159,7 +149,32 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>points</string>
+                   <string>Gouraud</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>flat</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>flat+edges</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TextureMode</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TextureMode+flat+edges</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Emphasizing</string>
                   </property>
                  </item>
                 </widget>

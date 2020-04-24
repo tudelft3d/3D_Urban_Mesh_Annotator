@@ -609,6 +609,12 @@ bool Cluster_classification::can_show_probability() {
 	return false;
 }
 //************************************************************//
+ //***********************Weixiao*******************************//
+int Cluster_classification::get_total_number_facets() { return 0; };
+int Cluster_classification::get_unlabelled_number_facets() { return 0; };
+//************************************************************//
+
+
 int Cluster_classification::real_index_color() const
 {
   int out = m_index_color;

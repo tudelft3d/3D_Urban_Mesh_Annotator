@@ -51,7 +51,6 @@
 #define CGAL_CLASSIFICATION_SOWF_ID "Sum of Weighted Features"
 
 using namespace CGAL::Three;
-
 class Polyhedron_demo_classification_plugin :
 	public QObject,
 	public Polyhedron_demo_plugin_helper
@@ -263,9 +262,6 @@ public:
 		connect(switch_classifier, SIGNAL(triggered()), this,
 			SLOT(on_switch_classifier_clicked()));
 
-		connect(ui_widget.display, SIGNAL(currentIndexChanged(int)), this,
-			SLOT(on_display_button_clicked_with_probability(int)));
-
 		//connect(ui_widget.minDisplay, SIGNAL(released()), this,
 		//	SLOT(on_min_display_button_clicked()));
 		//connect(ui_widget.maxDisplay, SIGNAL(released()), this,
@@ -281,19 +277,24 @@ public:
 		connect(ui_widget.close, SIGNAL(clicked()), this,
 			SLOT(ask_for_closing()));
 
-		//***********************Ziqian*******************************//
+		//***********************Ziqian && Weixiao*******************************//
+		connect(ui_widget.display, SIGNAL(currentIndexChanged(int)), this,
+			SLOT(on_display_button_clicked_with_probability(int)));
 
-		connect(ui_widget.ProbThresholdSpinBox, SIGNAL(valueChanged(int)), ui_widget.ProbThreshold, SLOT(setValue(int)));
-		connect(ui_widget.ProbThreshold, SIGNAL(valueChanged(int)), ui_widget.ProbThresholdSpinBox, SLOT(setValue(int)));
+		connect(ui_widget.ProbSpin, SIGNAL(valueChanged(int)), ui_widget.ProbSlider, SLOT(setValue(int)));
+		connect(ui_widget.ProbSlider, SIGNAL(valueChanged(int)), ui_widget.ProbSpin, SLOT(setValue(int)));
 
-		connect(ui_widget.ProbThresholdSpinBox, SIGNAL(valueChanged(int)), this, SLOT(on_probability_threshold_changed(int)));
-		connect(ui_widget.ProbThreshold, SIGNAL(valueChanged(int)), this, SLOT(on_probability_threshold_changed(int)));
+		connect(ui_widget.ProbSpin, SIGNAL(valueChanged(int)), this, SLOT(on_probability_threshold_changed(int)));
+		//connect(ui_widget.ProbSlider, SIGNAL(valueChanged(int)), this, SLOT(on_probability_threshold_changed(int)));
 
-		//connect(ui_widget.ProbShow, SIGNAL(clicked()), this, SLOT(on_check_probability_button_pushed()));
-		//connect(ui_widget.ProbHide, SIGNAL(clicked()), this, SLOT(on_hide_probability_button_pushed()));
-		connect(ui_widget.ShowMode, SIGNAL(currentIndexChanged(int)), this, SLOT(on_probability_show_mode_changed(int)));
+		connect(ui_widget.ProbSwitcher, SIGNAL(currentIndexChanged(int)), this, SLOT(on_probability_switcher_changed(int)));
+		//********************************************************************//
 
-		
+		//*******************************Weixiao **************************************//
+
+		//connect(ui_widget.lineEdit, SIGNAL(triggered()), this, SLOT(show_total_lables(int))); //Total
+		//connect(ui_widget.lineEdit_2, SIGNAL(on_add_selection_to_training_set_clicked()), this, SLOT(get_unlabelled_number_facets())); //Finished
+		//connect(ui_widget.progressBar, SIGNAL(currentIndexChanged(int)), this, SLOT(show_progress_bar(int)));
 		//********************************************************************//
 
 
@@ -445,7 +446,6 @@ public Q_SLOTS:
 		if (classif != NULL)
 		{
 			enable_computation();
-
 			// Clear class labels
 			for (std::size_t i = 0; i < label_buttons.size(); ++i)
 			{
@@ -474,31 +474,24 @@ public Q_SLOTS:
 			int index = ui_widget.display->currentIndex();
 			ui_widget.display->clear();
 			ui_widget.display->addItem("Real colors");
-			//ui_widget.display->addItem("Classification");
-			ui_widget.display->addItem("Editing label");//ui_widget.display->addItem("Training sets");
+			ui_widget.display->addItem("Editing");
+			ui_widget.display->setCurrentIndex(1);
 			ui_widget_adv.selected_feature->clear();
 			classif->fill_display_combo_box(ui_widget.display, ui_widget_adv.selected_feature);
 
-			//***********************Ziqian*******************************//
-			//change the "change color" function into the new one(with probability showing).
-			int threshold = ui_widget.ProbThreshold->value();
-			bool below;
-			if (ui_widget.ShowMode->currentIndex() == 0) below = true;
-			else below = false;
-			if (index >= ui_widget.display->count())
+			//******************Weixiao**************************//
+			if (!classif->can_show_probability())
 			{
-				ui_widget.display->setCurrentIndex(1);
+				int total_facet_num = classif->get_total_number_facets();
+				ui_widget.lineEdit->setText(QString::number(total_facet_num));
+				int unlabelled_num = classif->get_unlabelled_number_facets();
+				ui_widget.lineEdit_2->setText(QString::number(unlabelled_num));
+				float labeling_progress = 1.0f - float(unlabelled_num) / float(total_facet_num);
+				labeling_progress = total_facet_num == unlabelled_num ? 0.0f : labeling_progress * 100.0f;
+				ui_widget.progressBar->setValue(labeling_progress);
+			}
+			//**************************************************************//
 
-				threshold_based_change_color(classif, 1, threshold, below);
-				//change_color(classif, 1);
-			}
-			else
-			{
-				ui_widget.display->setCurrentIndex(index);
-				threshold_based_change_color(classif, index, threshold, below);
-				//change_color(classif, index);
-			}
-			//************************************************************//
 			ui_widget_adv.selected_feature->setCurrentIndex(0);
 		}
 	}
@@ -571,6 +564,16 @@ public Q_SLOTS:
 		item_map.insert(std::make_pair(mesh_item, classif));
 		QApplication::restoreOverrideCursor();
 		update_plugin_from_item(classif);
+
+		/************Weixiao Update************/
+		if (!classif->can_show_probability())
+			print_message("Input data do not have probability or with invalid probability, \
+			so the probability slider will not work. The good news is the progress bar will work perfectly!!!");
+		else
+			print_message("Input data have probability and predict labels, so the labeling progress bar will not work. \
+			The good news is the probability slider will work perfectly!!!");
+		/**************************************/
+
 		return classif;
 	}
 
@@ -1664,6 +1667,15 @@ public Q_SLOTS:
 			/******************************************************************/
 
 			classif->add_selection_to_training_set(position);
+			//*****************************Weixiao**********************//
+			int total_facet_num = classif->get_total_number_facets();
+			ui_widget.lineEdit->setText(QString::number(total_facet_num));
+			int unlabelled_num = classif->get_unlabelled_number_facets();
+			ui_widget.lineEdit_2->setText(QString::number(unlabelled_num));
+			float labeling_progress = 1.0f - float(unlabelled_num) / float(total_facet_num);
+			labeling_progress = total_facet_num == unlabelled_num ? 0.0f : labeling_progress * 100.0f;
+			ui_widget.progressBar->setValue(labeling_progress);
+			//**********************************************************//
 		}
 		item_changed(classif->item());
 	}
@@ -1786,19 +1798,55 @@ public Q_SLOTS:
 		return true;
 	}
 
-	void disable_probability_showing_component() {
-		ui_widget.ProbThreshold->setEnabled(false);
-		ui_widget.ProbThresholdSpinBox->setEnabled(false);
-		ui_widget.ShowMode->setEnabled(false);
+	void disable_probability_enable_progressbar() 
+	{
+		//probability slider
+		ui_widget.ProbSlider->setEnabled(false);
+		ui_widget.ProbSpin->setEnabled(false);
+		ui_widget.ProbSwitcher->setEnabled(false);
 		ui_widget.label_2->setEnabled(false);
 		ui_widget.label->setEnabled(false);
+		//progress bar
+		ui_widget.label_3->setEnabled(true);
+		ui_widget.label_4->setEnabled(true);
+		ui_widget.label_5->setEnabled(true);
+		ui_widget.lineEdit->setEnabled(true);
+		ui_widget.lineEdit_2->setEnabled(true);
+		ui_widget.progressBar->setEnabled(true);
 	}
-	void Enable_probability_showing_component() {
-		ui_widget.ProbThreshold->setEnabled(true);
-		ui_widget.ProbThresholdSpinBox->setEnabled(true);
-		ui_widget.ShowMode->setEnabled(true);
+
+	void enable_probability_disable_progressbar() 
+	{
+		//probability slider
+		ui_widget.ProbSlider->setEnabled(true);
+		ui_widget.ProbSpin->setEnabled(true);
+		ui_widget.ProbSwitcher->setEnabled(true);
 		ui_widget.label_2->setEnabled(true);
 		ui_widget.label->setEnabled(true);
+		//progress bar
+		ui_widget.label_3->setEnabled(false);
+		ui_widget.label_4->setEnabled(false);
+		ui_widget.label_5->setEnabled(false);
+		ui_widget.lineEdit->setEnabled(false);
+		ui_widget.lineEdit_2->setEnabled(false);
+		ui_widget.progressBar->setEnabled(false);
+	}
+
+	void disable_probability_disable_progressbar()
+	{
+		//probability slider
+		ui_widget.ProbSlider->setEnabled(false);
+		ui_widget.ProbSpin->setEnabled(false);
+		ui_widget.ProbSwitcher->setEnabled(false);
+		ui_widget.label_2->setEnabled(false);
+		ui_widget.label->setEnabled(false);
+		//progress bar
+		ui_widget.label_3->setEnabled(false);
+		ui_widget.label_4->setEnabled(false);
+		ui_widget.label_5->setEnabled(false);
+		ui_widget.lineEdit->setEnabled(false);
+		ui_widget.lineEdit_2->setEnabled(false);
+		ui_widget.progressBar->setEnabled(false);
 	}
 
 	void on_display_button_clicked_with_probability(int index)
@@ -1806,20 +1854,22 @@ public Q_SLOTS:
 		Item_classification_base* classif = get_classification();
 		if (!classif) return;
 
-		if (index == 0 || classif->can_show_probability() == false) {
-			disable_probability_showing_component();
-			if (classif->can_show_probability() == false) {
-				print_message("file without probability data or with invalid probability data. Please choose another file.");
-			}
-		}
-		else {
-			Enable_probability_showing_component();
+		if (index == 0)
+			disable_probability_disable_progressbar();
+		else
+		{
+			if (!classif->can_show_probability())
+				disable_probability_enable_progressbar();
+			else
+				enable_probability_disable_progressbar();
 		}
 
-		int threshold = ui_widget.ProbThreshold->value();
+		int threshold = ui_widget.ProbSlider->value();
 		bool below;
-		if (ui_widget.ShowMode->currentIndex() == 0) below = true;
-		else below = false;
+		if (ui_widget.ProbSwitcher->currentIndex() == 0)
+			below = true;
+		else
+			below = false;
 
 		threshold_based_change_color(classif, index, threshold, below);
 	}
@@ -1830,7 +1880,7 @@ public Q_SLOTS:
 		if (!classif) return;
 		int threshold = value;
 		bool below;
-		if (ui_widget.ShowMode->currentIndex() == 0) below = true;
+		if (ui_widget.ProbSwitcher->currentIndex() == 0) below = true;
 		else below = false;
 
 		int index = ui_widget.display->currentIndex();
@@ -1839,10 +1889,10 @@ public Q_SLOTS:
 		//print_message("probability_state_changed!");
 	}
 
-	void on_probability_show_mode_changed(int value) {
+	void on_probability_switcher_changed(int value) {
 		Item_classification_base* classif = get_classification();
 		if (!classif) return;
-		int threshold = ui_widget.ProbThreshold->value();
+		int threshold = ui_widget.ProbSlider->value();
 		bool below;
 		if (value == 0) below = true;
 		else below = false;
@@ -1852,8 +1902,6 @@ public Q_SLOTS:
 		threshold_based_change_color(classif, index, threshold, below);
 		//print_message("probability_state_changed!");
 	}
-
-
 	//********************************************************************//
 private:
 	Messages_interface* messages;

@@ -72,7 +72,14 @@ public:
   virtual bool segment_form() { 
 	  return true; 
   }
+
+  //virtual void show_labeling_progress() = 0;
   //********************************************************************//
+ //***********************Weixiao*******************************//
+  virtual int get_total_number_facets() = 0;
+  virtual int get_unlabelled_number_facets() = 0;
+  //************************************************************//
+
   virtual CGAL::Three::Scene_item* generate_one_item (const char* name,
                                                       int label) const = 0;
   virtual void generate_one_item_per_label(std::vector<CGAL::Three::Scene_item*>& items,

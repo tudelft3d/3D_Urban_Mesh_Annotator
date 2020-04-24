@@ -497,6 +497,12 @@ bool Point_set_item_classification::can_show_probability() {
 	return false;
 }
 //************************************************************//
+
+ //***********************Weixiao*******************************//
+int Point_set_item_classification::get_total_number_facets() { return 0; };
+int Point_set_item_classification::get_unlabelled_number_facets() { return 0; };
+//************************************************************//
+
 int Point_set_item_classification::real_index_color() const
 {
   int out = m_index_color;

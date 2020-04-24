@@ -211,7 +211,13 @@ class Cluster_classification : public Item_classification_base
   void threshold_based_change_color(int index, int threshold, bool below, float* vmin = NULL, float* vmax = NULL);
   
   bool can_show_probability();
+ // void show_labeling_progress();
   //************************************************************//
+  //***********************Weixiao*******************************//
+  int get_total_number_facets();
+  int get_unlabelled_number_facets();
+  //************************************************************//
+
 
   CGAL::Three::Scene_item* generate_one_item (const char* name,
                                               int label) const

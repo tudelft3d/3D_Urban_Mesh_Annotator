@@ -63,7 +63,12 @@ public:
 	  return true;
   }
   /***********************************************************/
+  //***************************Weixiao**********************//
+  //void show_labeling_progress()
+  //{
 
+  //}
+  //*******************************************************//
   void add_selection_to_training_set (std::size_t label)
   {
     if (m_selection == NULL)
@@ -147,9 +152,14 @@ public:
   //***********************Ziqian*******************************//
   
   void threshold_based_change_color(int index, int threshold, bool below, float* vmin = NULL, float* vmax = NULL);
-  
+
   bool can_show_probability();
   
+  //************************************************************//
+
+  //***********************Weixiao*******************************//
+  int get_total_number_facets();
+  int get_unlabelled_number_facets();
   //************************************************************//
   CGAL::Three::Scene_item* generate_one_item (const char* /* name */,
                                               int /* label */) const

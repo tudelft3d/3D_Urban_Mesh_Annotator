@@ -59,7 +59,8 @@ Surface_mesh_item_classification::Surface_mesh_item_classification(Scene_surface
 				m_mesh->face_color[fd].blue());
 			
 			m_mesh->face_shown[fd] = true;
-			m_label_prob[fd] = m_mesh->label_probabilities[fd];
+			if (!m_mesh->label_probabilities.empty())
+				m_label_prob[fd] = m_mesh->label_probabilities[fd];
 		}
 
 		m_sowf = new Sum_of_weighted_features(m_labels, m_features);
@@ -399,7 +400,6 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 			m_mesh->face_shown[fd] = true;
 		}
 	}
-
 	else if (index_color == 1) //(index_color == 2) // editing color
 	{
 		BOOST_FOREACH(face_descriptor fd, faces(*(m_mesh->polyhedron())))
@@ -412,10 +412,16 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 			float div = 1;
 
 			float prob_of_face;
-			prob_of_face = m_mesh->label_probabilities[fd];
-			prob_of_face *= 100;
+			if (!m_mesh->label_probabilities.empty())
+			{
+				prob_of_face = m_mesh->label_probabilities[fd];
+				prob_of_face *= 100;
+			}
 
-			if ((below && prob_of_face <= threshold) || (!below && prob_of_face >= threshold)) {
+			if (m_mesh->label_probabilities.empty() ||
+				(below && prob_of_face <= threshold) ||
+				(!below && prob_of_face >= threshold)) 
+			{
 				if (c < std::size_t(100))//c != std::size_t(-1) && 
 				{
 					m_mesh->face_label[fd] = c;
@@ -439,7 +445,8 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 				}
 				m_mesh->face_shown[fd] = true;
 			}
-			else {
+			else 
+			{
 				m_color[fd] = CGAL::Color((unsigned char)(255), (unsigned char)(255), (unsigned char)(255), (unsigned char)(0));
 				m_mesh->face_shown[fd] = false;
 			}
@@ -481,10 +488,16 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 				std::size_t c = m_training[fd];
 
 				float prob_of_face;
-				prob_of_face = m_mesh->label_probabilities[fd];
-				prob_of_face *= 100;
+				if (!m_mesh->label_probabilities.empty())
+				{
+					prob_of_face = m_mesh->label_probabilities[fd];
+					prob_of_face *= 100;
+				}
 
-				if ((below && prob_of_face <= threshold) || (!below && prob_of_face >= threshold)) {
+				if (m_mesh->label_probabilities.empty() ||
+					(below && prob_of_face <= threshold) || 
+					(!below && prob_of_face >= threshold))
+				{
 					//show them!
 					if (c < std::size_t(100))//c != std::size_t(-1) && 
 					{
@@ -502,7 +515,8 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 					}
 					m_mesh->face_shown[fd] = true;
 				}
-				else {
+				else 
+				{
 					m_color[fd] = CGAL::Color((unsigned char)(255), (unsigned char)(255), (unsigned char)(255), (unsigned char)(0));
 					m_mesh->face_shown[fd] = false;
 				}
@@ -511,13 +525,16 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 	}
 }
 
-bool Surface_mesh_item_classification::can_show_probability() {
-	if (m_mesh->label_probabilities.empty()) {
-		// probability should not be empty
+bool Surface_mesh_item_classification::can_show_probability()
+{
+	if (m_mesh->label_probabilities.empty()) 
+	{
 		return false;
 	}
-	BOOST_FOREACH(face_descriptor fd, faces(*(m_mesh->polyhedron()))) {
-		if (m_mesh->label_probabilities[fd] > 1 || m_mesh->label_probabilities[fd] < 0) {
+	BOOST_FOREACH(face_descriptor fd, faces(*(m_mesh->polyhedron())))
+	{
+		if (m_mesh->label_probabilities[fd] > 1 || m_mesh->label_probabilities[fd] < 0)
+		{
 			return false;
 		}
 	}
@@ -582,6 +599,23 @@ bool Surface_mesh_item_classification::can_show_probability() {
 
 /********************************************************************/
 
+
+//***********************Weixiao*******************************//
+int Surface_mesh_item_classification::get_total_number_facets()
+{ 
+	return m_mesh->polyhedron()->faces().size();
+};
+
+int Surface_mesh_item_classification::get_unlabelled_number_facets()
+{
+	int unlabelled_num = 0;
+	BOOST_FOREACH(face_descriptor fd, faces(*(m_mesh->polyhedron())))
+	{
+		if (m_mesh->face_label[fd] == -1 /*|| m_mesh->face_label[fd] == 0*/) ++unlabelled_num;
+	}
+	return unlabelled_num;
+};
+//************************************************************//
 
 void Surface_mesh_item_classification::compute_features(std::size_t nb_scales, float voxel_size)
 {

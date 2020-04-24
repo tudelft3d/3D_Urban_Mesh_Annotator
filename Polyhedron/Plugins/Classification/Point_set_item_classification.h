@@ -229,6 +229,10 @@ class Point_set_item_classification : public Item_classification_base
   bool can_show_probability();
   //************************************************************//
 
+  //***********************Weixiao*******************************//
+  int get_total_number_facets();
+  int get_unlabelled_number_facets();
+  //************************************************************//
   CGAL::Three::Scene_item* generate_one_item (const char* name,
                                               int label) const
   {
