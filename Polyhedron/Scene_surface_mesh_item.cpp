@@ -1888,7 +1888,6 @@ Scene_surface_mesh_item::select(double orig_x,
 				Q_EMIT selected_vertex(reinterpret_cast<void*>(vertex_to_emit));
 				std::size_t s_selected_f = static_cast<std::size_t>(selected_face);
 				Q_EMIT selected_facet(reinterpret_cast<void*>(s_selected_f));
-
 			}
 		}
 	}
@@ -2130,7 +2129,7 @@ bool Scene_surface_mesh_item::write_ply_mesh(std::ostream& stream, bool binary) 
 	CGAL::write_PLY(stream, *(d->smesh_), &(d->m_comments), this->vertex_color,
 		this->face_label, this->face_color, this->face_texcoord, this->face_textureid,
 		this->label_probabilities, this->face_segment_id, this->texture_name);
-
+	CGAL::Three::Three::information("Save successfully!");
 	return true;
 }
 
