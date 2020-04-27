@@ -142,8 +142,9 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 		std::vector<std::string> texture_name;
 		std::vector<float> fi_prob;
 		std::vector<int> fi_segment_id;
+		std::string input_comments;
 		std::string* comments = NULL;
-		if (!(CGAL::read_PLY(in, points, polygons, fcolors, vcolors, flabels, face_label_comment, fi_texcoord, texture_id, texture_name, fi_prob, fi_segment_id)))
+		if (!(CGAL::read_PLY(in, points, polygons, fcolors, vcolors, flabels, face_label_comment, fi_texcoord, texture_id, texture_name, fi_prob, fi_segment_id, input_comments)))
 		{
 			QApplication::restoreOverrideCursor();
 			return NULL;
@@ -211,13 +212,13 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 			}
 
 			//update face segment id (check if isolated segments are merged as one)
-
 			int segment_size = sm_item->updateSegmentId(face_visited_check);
 			CGAL::Three::Three::information("The number of segment is " + QString::number(segment_size));
 
 			sm_item->computeSegmentBoundary();
 
 			sm_item->face_label_comment = face_label_comment;
+			sm_item->input_comments = input_comments;
 			sm_item->setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
 			//*******************************************************************//
 
@@ -304,7 +305,6 @@ bool Polyhedron_demo_ply_plugin::save(const CGAL::Three::Scene_item* item, QFile
 	{
 		//***********************Weixiao Update write ply binary*******************************//
 		return sm_item->write_ply_mesh(out, (choice == tr("Binary")));
-
 		//*******************************************************************//
 			  //return CGAL::write_PLY (out, *(sm_item->polyhedron()));
 	}

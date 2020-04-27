@@ -2125,10 +2125,18 @@ bool Scene_surface_mesh_item::write_ply_mesh(std::ostream& stream, bool binary) 
 
 	if (binary)
 		CGAL::set_binary_mode(stream);
+	
+	//if the user do not start 3D Annotation, the comments keep same as input
+	bool used_old_comments = false;
+	if (d->m_comments.empty())
+	{
+		d->m_comments = this->input_comments;
+		used_old_comments = true;
+	}
 
 	CGAL::write_PLY(stream, *(d->smesh_), &(d->m_comments), this->vertex_color,
 		this->face_label, this->face_color, this->face_texcoord, this->face_textureid,
-		this->label_probabilities, this->face_segment_id, this->texture_name);
+		this->label_probabilities, this->face_segment_id, this->texture_name, used_old_comments);
 	CGAL::Three::Three::information("Save successfully!");
 	return true;
 }

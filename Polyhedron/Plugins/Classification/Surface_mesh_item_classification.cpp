@@ -19,7 +19,7 @@ Surface_mesh_item_classification::Surface_mesh_item_classification(Scene_surface
 	m_generator(NULL)
 {
 	//***********************Weixiao update initialize label and color*******************************//
-	if (m_mesh->face_label.empty() == false)
+	if (!m_mesh->face_label.empty() && !m_mesh->face_label_comment.empty())
 	{
 		m_index_color = 1;
 		backup_existing_colors_and_add_new();
@@ -48,7 +48,8 @@ Surface_mesh_item_classification::Surface_mesh_item_classification(Scene_surface
 			//	<<", " << m_mesh->face_color[fd].green() 
 			//	<< ", " << m_mesh->face_color[fd].blue() << std::endl;
 
-			m_training[fd] = m_classif[fd] = m_mesh->face_label[fd];
+			m_training[fd] = m_mesh->face_label[fd];
+			m_classif[fd] = m_mesh->face_label[fd];
 			if (m_mesh->face_label[fd] != -1)
 				m_label_colors[m_training[fd]] = m_mesh->face_color[fd];
 			else
@@ -86,9 +87,10 @@ Surface_mesh_item_classification::Surface_mesh_item_classification(Scene_surface
 		m_labels.add("unclassified");
 		//*******************************************************************//
 		m_labels.add("ground");
+		m_labels.add("building");
 		m_labels.add("vegetation");
-		m_labels.add("roof");
-		m_labels.add("facade");
+		m_labels.add("vehicle");
+		m_labels.add("water");
 
 		//for (std::size_t i = 0; i < m_labels.size(); ++i)
 		//	m_label_colors.push_back(this->get_new_label_color(m_labels[i]->name()));

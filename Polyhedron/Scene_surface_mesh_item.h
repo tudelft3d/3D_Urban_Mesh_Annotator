@@ -37,7 +37,7 @@
 
 class QSlider;
 struct Scene_surface_mesh_item_priv;
-/******************Ziqian*********************/
+/******************Ziqian && Weixiao*********************/
 typedef std::size_t seg_id;
 
 
@@ -47,8 +47,10 @@ public:
 	std::set<face_descriptor> faces_included;
 	std::set<seg_boundary_edge_info> boundary_edges;
 	std::size_t id;
-	Segment(std::vector<face_descriptor> faces) {
-		BOOST_FOREACH(face_descriptor fd, faces) {
+	Segment(std::vector<face_descriptor> faces) 
+	{
+		BOOST_FOREACH(face_descriptor fd, faces) 
+		{
 			if (fd.is_valid())
 				faces_included.insert(fd);
 		}
@@ -156,7 +158,7 @@ public:
 	std::vector<std::string> texture_name;
 	std::map<face_descriptor, float> label_probabilities;
 	std::map<face_descriptor, int> face_segment_id;
-
+	std::string input_comments;
 	std::string file_path;
 	//*******************************************************************//	
 	//***********************Ziqian*******************************//
