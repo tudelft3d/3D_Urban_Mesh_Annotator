@@ -1,7 +1,7 @@
 #ifndef ITEM_CLASSIFICATION_BASE_H
 #define ITEM_CLASSIFICATION_BASE_H
 
-#include <CGAL/Three/Scene_item.h>
+#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
 
 #include <QComboBox>
 #include <QLineEdit>

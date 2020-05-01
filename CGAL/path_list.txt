@@ -1,0 +1,22 @@
+.\CGAL-4.14\include\CGAL\IO\PLY_reader.h
+.\CGAL-4.14\include\CGAL\IO\PLY_writer.h
+.\CGAL-4.14\include\CGAL\IO\read_ply_points.h
+.\CGAL-4.14\include\CGAL\IO\write_ply_points.h
+
+.\CGAL-4.14\include\CGAL\Three\Scene_item.h
+.\CGAL-4.14\include\CGAL\Three\Scene_interface.h
+.\CGAL-4.14\include\CGAL\Three\Scene_draw_interface.h
+
+.\CGAL-4.14\include\CGAL\Qt\camera_impl.h
+
+///////////////////////////////////////////////////////
+#include "CGAL/IO/PLY_reader.h" //
+#include "CGAL/IO/PLY_writer.h" //
+#include "CGAL/IO/read_ply_points.h" //
+#include "CGAL/IO/write_ply_points.h" //
+
+#include "CGAL/Three/Scene_item.h" //
+#include "CGAL/Three/Scene_interface.h" //
+#include "CGAL/Three/Scene_draw_interface.h" //
+
+#include "CGAL/Qt/camera_impl.h" //

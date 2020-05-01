@@ -2,8 +2,8 @@
 #define SCENE_PLANE_ITEM_H
 
 
-#include  <CGAL/Three/Scene_item.h>
-#include <CGAL/Three/Scene_interface.h>
+#include "CGAL/Three/Scene_item.h" //#include  <CGAL/Three/Scene_item.h>
+#include "CGAL/Three/Scene_interface.h" //#include <CGAL/Three/Scene_interface.h>
 
 #include "Scene_basic_objects_config.h"
 

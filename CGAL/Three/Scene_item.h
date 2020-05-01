@@ -25,7 +25,7 @@
 #include <CGAL/license/Three.h>
 
 #include <CGAL/Three/Scene_item_config.h>
-#include <CGAL/Three/Scene_interface.h>
+#include "CGAL/Three/Scene_interface.h" //#include <CGAL/Three/Scene_interface.h>
 #include <QString>
 #include <QPixmap>
 #include <QFont>

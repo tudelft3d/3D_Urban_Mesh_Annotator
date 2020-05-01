@@ -1,5 +1,5 @@
 #include <CGAL/Three/TextRenderer.h>
-#include <CGAL/Three/Scene_item.h>
+#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_print_item_interface.h>
 #include "Scene_polyhedron_selection_item.h"
 void TextRenderer::draw(CGAL::Three::Viewer_interface *viewer)

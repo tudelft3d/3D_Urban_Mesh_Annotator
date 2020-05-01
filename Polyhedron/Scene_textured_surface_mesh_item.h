@@ -1,6 +1,6 @@
 #ifndef SCENE_TEXTURED_SURFACE_MESH_ITEM_H
 #define SCENE_TEXTURED_SURFACE_MESH_ITEM_H
-#include  <CGAL/Three/Scene_item.h>
+#include "CGAL/Three/Scene_item.h" //#include  <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Viewer_interface.h>
 #include "SMesh_type.h"
 #include <iostream>

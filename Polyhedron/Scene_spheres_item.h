@@ -4,8 +4,8 @@
 #include "create_sphere.h"
 
 #include <CGAL/Three/Scene_group_item.h>
-#include <CGAL/Three/Scene_item.h>
-#include <CGAL/Three/Scene_interface.h>
+#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
+#include "CGAL/Three/Scene_interface.h" //#include <CGAL/Three/Scene_interface.h>
 #include <CGAL/Three/Viewer_interface.h>
 #include <CGAL/Sphere_3.h>
 #include <CGAL/Plane_3.h>

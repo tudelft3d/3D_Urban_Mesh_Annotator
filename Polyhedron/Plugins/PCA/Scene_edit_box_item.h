@@ -1,7 +1,7 @@
 #ifndef SCENE_EDIT_BOX_ITEM_H
 #define SCENE_EDIT_BOX_ITEM_H
 
-#include <CGAL/Three/Scene_item.h>
+#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_transparent_interface.h>
 #include <CGAL/Simple_cartesian.h>
 #include "create_sphere.h"

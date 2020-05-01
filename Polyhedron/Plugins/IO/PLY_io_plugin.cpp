@@ -8,8 +8,8 @@
 #include <QApplication>
 #include <fstream>
 
-#include <CGAL/IO/PLY_reader.h>
-#include <CGAL/IO/PLY_writer.h>
+#include "CGAL/IO/PLY_reader.h" //#include <CGAL/IO/PLY_reader.h>
+#include "CGAL/IO/PLY_writer.h" //#include <CGAL/IO/PLY_writer.h>
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
 #include <QMessageBox>
 

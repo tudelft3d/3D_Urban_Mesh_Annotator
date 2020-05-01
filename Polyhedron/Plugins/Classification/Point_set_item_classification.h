@@ -5,7 +5,7 @@
 #define CGAL_CLASSIFICATION_VERBOSE
 #define CGAL_CLASSTRAINING_VERBOSE
 
-#include <CGAL/Three/Scene_item.h>
+#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
 
 #include "Scene_points_with_normal_item.h"
 #include "Item_classification_base.h"

@@ -1,6 +1,6 @@
 ﻿#ifndef POINT_SET_ITEM_H
 #define POINT_SET_ITEM_H
-#include <CGAL/Three/Scene_item.h>
+#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_item_with_properties.h>
 #include <CGAL/Three/Scene_zoomable_item_interface.h>
 #include "Scene_points_with_normal_item_config.h"

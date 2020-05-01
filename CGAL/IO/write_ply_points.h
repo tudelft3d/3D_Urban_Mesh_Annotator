@@ -32,7 +32,7 @@
 
 #include <CGAL/property_map.h>
 #include <CGAL/point_set_processing_assertions.h>
-#include <CGAL/IO/read_ply_points.h>
+#include "CGAL/IO/read_ply_points.h" //#include <CGAL/IO/read_ply_points.h>
 #include <CGAL/Iterator_range.h>
 
 #include <CGAL/boost/graph/named_function_params.h>

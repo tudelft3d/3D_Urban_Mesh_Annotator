@@ -4,7 +4,7 @@
 #define VIEWER_H
 
 #include <CGAL/Three/Viewer_config.h>
-#include <CGAL/Three/Scene_interface.h>
+#include "CGAL/Three/Scene_interface.h" //#include <CGAL/Three/Scene_interface.h>
 #include <QOpenGLBuffer>
 #include <QOpenGLDebugMessage>
 #include <QOpenGLVertexArrayObject>

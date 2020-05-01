@@ -14,7 +14,7 @@
 #include "Scene_points_with_normal_item.h"
 #include "Scene_polylines_item.h"
 
-#include <CGAL/Three/Scene_interface.h>
+#include "CGAL/Three/Scene_interface.h" //#include <CGAL/Three/Scene_interface.h>
 #include <CGAL/Three/Polyhedron_demo_plugin_helper.h>
 #include <CGAL/Three/Three.h>
 #include "ui_Point_set_selection_widget.h"

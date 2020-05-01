@@ -4,7 +4,7 @@
 //#define CGAL_DO_NOT_USE_BOYKOV_KOLMOGOROV_MAXFLOW_SOFTWARE
 #define CGAL_CLASSIFICATION_VERBOSE
 
-#include <CGAL/Three/Scene_item.h>
+#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
 
 #include "Scene_surface_mesh_item.h"
 #include "Scene_polyhedron_selection_item.h"
