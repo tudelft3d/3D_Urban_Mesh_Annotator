@@ -1,6 +1,9 @@
 #include "config.h"
 #include "Scene.h"
 
+//********************Weixiao Update************************//
+#include <CGAL/Three/Three.h>
+//**********************************************************//
 #include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_print_item_interface.h>
 #include <CGAL/Three/Scene_transparent_interface.h>
@@ -504,6 +507,56 @@ bool item_should_be_skipped_in_draw(Scene_item* item) {
 	return true;
 }
 
+
+//********************Weixiao Update************************//
+void Scene::SwitchRenderingMode(CGAL::Three::Viewer_interface *, const int rendering_num)
+{
+	Scene_item* it;
+	if (selected_item != 0 && selected_item !=-1)
+		it = item(Scene::Item_id(selected_item - 1));
+	else
+		it = item(Scene::Item_id(0));
+
+	switch (rendering_num)
+	{
+	case 1:
+		if (it->renderingMode() != TextureMode)
+		{
+			it->setRenderingMode(TextureMode);
+			it->redraw();
+			CGAL::Three::Three::information("Switch to Texture rendering mode.");
+			//it->draw(viewer);
+		}
+		else
+		{
+			it->setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
+			it->redraw();
+			CGAL::Three::Three::information("Switch to default rendering mode.");
+		}
+		break;
+	case 2:
+		if (it->renderingMode() != Flat)
+		{
+			it->setRenderingMode(Flat);
+			it->redraw();
+			CGAL::Three::Three::information("Switch to Flat rendering mode.");
+			//it->draw(viewer);
+		}
+		else
+		{
+			it->setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
+			it->redraw();
+			CGAL::Three::Three::information("Switch to default rendering mode.");
+		}
+		break;
+	default:
+		it->setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
+		it->redraw();
+		CGAL::Three::Three::information("Switch to default rendering mode.");
+		break;
+	}
+}
+//**********************************************************//
 
 void Scene::renderScene(const QList<Scene_interface::Item_id>& items,
 	Viewer_interface* viewer,
@@ -1177,6 +1230,7 @@ bool Scene::sort_lists(QVector<QList<int> >& sorted_lists, bool up)
 	}
 	return true;
 }
+
 void Scene::moveRowUp()
 {
 	QVector<QList<int> >sorted_lists(1);

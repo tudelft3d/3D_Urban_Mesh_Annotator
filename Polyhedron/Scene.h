@@ -93,6 +93,13 @@ public:
   //!Re-computes the primitiveIds for `item`
   void updatePrimitiveIds(Viewer_interface *, Scene_item *item) Q_DECL_OVERRIDE;
   bool testDisplayId(double x, double y, double z, CGAL::Three::Viewer_interface* viewer) Q_DECL_OVERRIDE;
+  //********************Weixiao Update************************//
+  void SwitchRenderingMode(CGAL::Three::Viewer_interface *, const int) Q_DECL_OVERRIDE;
+  int getSelected_item() 
+  {
+	  return selected_item;
+  }
+  //**********************************************************//
   Bbox bbox() const Q_DECL_OVERRIDE;
   double len_diagonal() const Q_DECL_OVERRIDE
   {

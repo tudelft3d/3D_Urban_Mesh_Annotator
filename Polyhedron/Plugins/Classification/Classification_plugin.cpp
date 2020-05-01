@@ -403,15 +403,15 @@ public Q_SLOTS:
 
 	void enable_computation()
 	{
-		ui_widget.features_menu->setEnabled(true);
-		ui_widget.training_menu->setEnabled(true);
+		ui_widget.features_menu->setEnabled(false);//true
+		ui_widget.training_menu->setEnabled(false);//true
 		ui_widget.classifier_menu->setEnabled(false);
 		action_statistics->setEnabled(false);
 		action_train->setEnabled(false);
-		action_reset_local->setEnabled(true);
-		action_reset->setEnabled(true);
-		action_random_region->setEnabled(true);
-		action_validate->setEnabled(true);
+		action_reset_local->setEnabled(false);//true
+		action_reset->setEnabled(false);//true
+		action_random_region->setEnabled(false);//true
+		action_validate->setEnabled(false);//true
 		action_save_config->setEnabled(false);
 		action_load_config->setEnabled(false);
 		action_run->setEnabled(false);
@@ -423,20 +423,20 @@ public Q_SLOTS:
 
 	void enable_classif()
 	{
-		ui_widget.features_menu->setEnabled(true);
-		ui_widget.training_menu->setEnabled(true);
-		ui_widget.classifier_menu->setEnabled(true);
-		action_statistics->setEnabled(true);
-		action_train->setEnabled(true);
-		action_reset_local->setEnabled(true);
-		action_reset->setEnabled(true);
-		action_random_region->setEnabled(true);
-		action_validate->setEnabled(true);
-		action_save_config->setEnabled(true);
-		action_load_config->setEnabled(true);
-		action_run->setEnabled(true);
-		action_run_smoothed->setEnabled(true);
-		action_run_graphcut->setEnabled(true);
+		ui_widget.features_menu->setEnabled(false);//true
+		ui_widget.training_menu->setEnabled(false);//true
+		ui_widget.classifier_menu->setEnabled(false);//true
+		action_statistics->setEnabled(false);//true
+		action_train->setEnabled(false);//true
+		action_reset_local->setEnabled(false);//true
+		action_reset->setEnabled(false);//true
+		action_random_region->setEnabled(false);//true
+		action_validate->setEnabled(false);//true
+		action_save_config->setEnabled(false);//true
+		action_load_config->setEnabled(false);//true
+		action_run->setEnabled(false);//true
+		action_run_smoothed->setEnabled(false);//true
+		action_run_graphcut->setEnabled(false);//true
 		ui_widget.frame->setEnabled(true);
 	}
 
@@ -602,38 +602,65 @@ public Q_SLOTS:
 	void on_help_clicked()
 	{
 		QMessageBox::information(dock_widget, QString("3D Annotator"),
+			//QString("3D Annotator\n"
+			//	"\n"
+			//	"Welcome to 3D Annotator! Please read carefully this notice\n"
+			//	"before using the plugin.\n"
+			//	"\n"
+			//	"[QUICK INTRODUCTION]\n"
+			//	"\n"
+			//	"In order to classify, you need to perform the following steps:\n"
+			//	"\n"
+			//	"1. Compute the features\n"
+			//	"2. Set up the labels (ground, vegetation, etc.) that you need\n"
+			//	"3. Select a training set for each of these labels\n"
+			//	"4. Train the classifier\n"
+			//	"\n"
+			//	"You can then either select more inliers for training and train again\n"
+			//	"to improve the results, classify with or without regularization or\n"
+			//	"save the classifier's configuration.\n"
+			//	"\n"
+			//	"When loading a classifier's configuration, the computed features\n"
+			//	"should be the same (same number of scales, etc.) and the labels should\n"
+			//	"be the same as when the classifier's configuration was saved.\n"
+			//	"\n"
+			//	"[IMPORTANT NOTICE ON SAVING CLASSIFIED ITEMS]\n"
+			//	"\n"
+			//	"If you intend to save the file after classifying, PLEASE CLOSE THE\n"
+			//	"CLASSIFICATION PLUGIN FIRST: for visualization, colors are saved in\n"
+			//	"the point set. If you do not close the classification plugin, colors\n"
+			//	"will be saved and might overwrite existing colors of the point cloud.\n"
+			//	"\n"
+			//	"Classification results will be saved if you use the PLY\n"
+			//	"formats. Training will be saved if you use the PLY format.\n"));
 			QString("3D Annotator\n"
 				"\n"
 				"Welcome to 3D Annotator! Please read carefully this notice\n"
 				"before using the plugin.\n"
 				"\n"
 				"[QUICK INTRODUCTION]\n"
+				"You need to click the 'selection' layer in 'Geometric Objects' to start annotation process. After you finished, you have to click the first(top) layer then saving your work.\n" 
 				"\n"
-				"In order to classify, you need to perform the following steps:\n"
-				"\n"
-				"1. Compute the features\n"
-				"2. Set up the labels (ground, vegetation, etc.) that you need\n"
-				"3. Select a training set for each of these labels\n"
-				"4. Train the classifier\n"
-				"\n"
-				"You can then either select more inliers for training and train again\n"
-				"to improve the results, classify with or without regularization or\n"
-				"save the classifier's configuration.\n"
-				"\n"
-				"When loading a classifier's configuration, the computed features\n"
-				"should be the same (same number of scales, etc.) and the labels should\n"
-				"be the same as when the classifier's configuration was saved.\n"
-				"\n"
-				"[IMPORTANT NOTICE ON SAVING CLASSIFIED ITEMS]\n"
-				"\n"
-				"If you intend to save the file after classifying, PLEASE CLOSE THE\n"
-				"CLASSIFICATION PLUGIN FIRST: for visualization, colors are saved in\n"
-				"the point set. If you do not close the classification plugin, colors\n"
-				"will be saved and might overwrite existing colors of the point cloud.\n"
-				"\n"
-				"Classification results will be saved if you use the PLY\n"
-				"formats. Training will be saved if you use the PLY format.\n"));
-
+				"In order to annotate the data, you might need to use the following shortcuts:\n"
+				"[Most used]\n"
+				"Shift + Left Button: Selection\n"
+				"Shift + D + Left Button: Deselection\n"
+				"Shift + [Capital letter of labels in the bracket(?)] : Add selection to the label category\n"
+				"Ctrl + 1: Switch on/off Texture rendering mode\n"
+				"Ctrl + 2: Switch on/off Flat rendering mode\n"
+				"Ctrl + Left Button: Update to the new view center (Validate: data(top) layer; in selected area of selection layer;) \n"
+				"Ctrl + S: Save data\n"
+				"Z + Mouse Left Button: Zoom into the position\n"
+				"[Additional used]\n"
+				"Left Button Double Click: Set orthographic projection\n"
+				"Shift + Right Button: Pop up context menu of current layer\n"
+				"Ctrl + Space: Turn on/off current view\n"
+				"Ctrl + R: Recenter the view center to original\n"
+				"Ctrl + L: Load data\n"
+				"Ctrl + F1: Save snapshot and camera parameters\n"
+				"Ctrl + F2: Load camera parameter and move to the view\n"
+				"D + Mouse Left Button 1st && 2nd: Measure euclidean distance between 1st and 2nd point\n"
+				));
 	}
 
 	void on_compute_features_button_clicked()

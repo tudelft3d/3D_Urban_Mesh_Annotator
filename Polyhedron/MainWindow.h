@@ -103,11 +103,15 @@ public Q_SLOTS:
   void updateViewerBBox(bool b);
   //! Opens a script or a file with the default loader if there is.
   void open(QString) Q_DECL_OVERRIDE;
-  //! Is called when the up button is pressed.
-  void on_upButton_pressed();
-  //! Is called when the down button is pressed.
-  void on_downButton_pressed();
-  //! COllapses the groups that were before the Geometric Objects view was re-drawn.
+  
+  //********************Weixiao Update************************//
+  ////! Is called when the up button is pressed.
+  //void on_upButton_pressed();
+  ////! Is called when the down button is pressed.
+  //void on_downButton_pressed();
+  //**********************************************************//
+
+  ////! COllapses the groups that were before the Geometric Objects view was re-drawn.
   void restoreCollapseState();
   //! Expands a group
   void setExpanded(QModelIndex);
@@ -149,6 +153,16 @@ public Q_SLOTS:
    * position printed by this function.
    */
   void showSelectedPoint(double, double, double);
+
+  //********************Weixiao Update************************//
+ /*!
+  * Sets the scene center to the target position and makes the
+  * scene slide to this new center. Also sets the pivotPoint of
+  * the camera to this position.
+  */
+  void showRecenteredView(double, double, double);
+  //**********************************************************//
+
   /*!
    * Removes an item from the current selection.
    */
@@ -302,8 +316,10 @@ protected Q_SLOTS:
   void on_actionLoad_triggered();
   //!Erases the selected items. Returns true if items remain in the Geometric Objects view.
   bool on_actionErase_triggered();
-  //!Duplicates the selected item and selects the new item.
-  void on_actionDuplicate_triggered();
+  //********************Weixiao Update************************//
+	////!Duplicates the selected item and selects the new item.
+	// void on_actionDuplicate_triggered();
+  //**********************************************************//
   //!If QT_SCRIPT_LIB is defined, opens a dialog to choose a script.
   void on_actionLoadScript_triggered();
   //!Loads a plugin from a specified directory

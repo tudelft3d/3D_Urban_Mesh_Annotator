@@ -37,7 +37,7 @@
      <x>0</x>
      <y>0</y>
      <width>978</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -47,7 +47,6 @@
     <addaction name="actionLoad"/>
     <addaction name="actionErase"/>
     <addaction name="actionEraseAll"/>
-    <addaction name="actionDuplicate"/>
     <addaction name="action_Save"/>
     <addaction name="actionSaveAs"/>
     <addaction name="actionSa_ve_Scene_as_Script"/>
@@ -64,11 +63,8 @@
      <string>&amp;Edit</string>
     </property>
     <addaction name="actionShowHide"/>
-    <addaction name="actionSetPolyhedronA"/>
-    <addaction name="actionSetPolyhedronB"/>
     <addaction name="actionSelectAllItems"/>
     <addaction name="actionPreferences"/>
-    <addaction name="actionColorItems"/>
    </widget>
    <widget class="QMenu" name="menuOperations">
     <property name="title">
@@ -95,7 +91,6 @@
     </widget>
     <addaction name="actionRecenterScene"/>
     <addaction name="actionLookAt"/>
-    <addaction name="actionDrawTwoSides"/>
     <addaction name="actionSwitchProjection"/>
     <addaction name="menuDockWindows"/>
     <addaction name="menuCamera"/>
@@ -148,39 +143,6 @@
            <property name="icon">
             <iconset resource="Polyhedron_3.qrc">
              <normaloff>:/cgal/icons/minus</normaloff>:/cgal/icons/minus</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="duplicateButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="Polyhedron_3.qrc">
-             <normaloff>:/cgal/icons/duplicate</normaloff>:/cgal/icons/duplicate</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="upButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="Polyhedron_3.qrc">
-             <normaloff>:/cgal/icons/resources/up.png</normaloff>:/cgal/icons/resources/up.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="downButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="Polyhedron_3.qrc">
-             <normaloff>:/cgal/icons/resources/down.png</normaloff>:/cgal/icons/resources/down.png</iconset>
            </property>
           </widget>
          </item>
@@ -294,8 +256,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>536</width>
-            <height>174</height>
+            <width>541</width>
+            <height>177</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout">
@@ -369,18 +331,6 @@
     <string>Del</string>
    </property>
   </action>
-  <action name="actionDuplicate">
-   <property name="icon">
-    <iconset resource="Polyhedron_3.qrc">
-     <normaloff>:/cgal/icons/duplicate</normaloff>:/cgal/icons/duplicate</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Duplicate</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+D</string>
-   </property>
-  </action>
   <action name="dummyAction">
    <property name="text">
     <string>n/a</string>
@@ -394,6 +344,9 @@
   <action name="actionSaveAs">
    <property name="text">
     <string>Save &amp;as...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionShowHide">

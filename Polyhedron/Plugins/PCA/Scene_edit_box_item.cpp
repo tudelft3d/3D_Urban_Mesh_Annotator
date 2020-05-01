@@ -1092,7 +1092,10 @@ void Scene_edit_box_item_priv::reset_selection()
   selection_on = false;
   CGAL::QGLViewer* viewer = *CGAL::QGLViewer::QGLViewerPool().begin();
   viewer->setManipulatedFrame(frame);
-  viewer->setMouseBinding(Qt::ShiftModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
+  //viewer->setMouseBinding(Qt::ShiftModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
+ //********************Weixiao Update************************//
+  viewer->setMouseBinding(Qt::ControlModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
+  //**********************************************************//
   constraint.setTranslationConstraintType(CGAL::qglviewer::AxisPlaneConstraint::FREE);
   selected_vertices.clear();
 }

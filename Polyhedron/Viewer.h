@@ -86,6 +86,11 @@ public:
 	//!Set total number of depth peeling passes.
 	void setTotalPass(int);
 
+	//********************Weixiao Update************************//
+	void save_snapshot_with_camera_params();
+	void load_camera_params_and_show_view();
+	//**********************************************************//
+
 Q_SIGNALS:
 	void sendMessage(QString);
 public Q_SLOTS:

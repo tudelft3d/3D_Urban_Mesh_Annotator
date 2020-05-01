@@ -170,6 +170,11 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
     shortcut = new QShortcut(QKeySequence(Qt::Key_F11), this);
     connect(shortcut, SIGNAL(activated()),
             this, SLOT(toggleFullScreen()));
+	//********************Weixiao Update************************//
+	//shortcut = new QShortcut(QKeySequence(Qt::Key_S + Qt::CTRL), this);
+	//connect(shortcut, SIGNAL(activated()),
+	//	this, SLOT(on_actionSaveAs_triggered()));
+	//**********************************************************//
   }
 
   proxyModel = new QSortFilterProxyModel(this);
@@ -250,8 +255,13 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
   connect(viewer, SIGNAL(selected(int)),
           this, SLOT(selectSceneItem(int)));
 
+  //connect(viewer, SIGNAL(selectedPoint(double, double, double)),
+  //        this, SLOT(showSelectedPoint(double, double, double)));
+
+  //********************Weixiao Update************************//
   connect(viewer, SIGNAL(selectedPoint(double, double, double)),
-          this, SLOT(showSelectedPoint(double, double, double)));
+	  this, SLOT(showRecenteredView(double, double, double)));
+  //**********************************************************//
 
   connect(viewer, SIGNAL(selectionRay(double, double, double,
                                       double, double, double)),
@@ -284,7 +294,10 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
   ui->addButton->setDefaultAction(ui->actionLoad);
   // Same with "removeButton" and "duplicateButton"
   ui->removeButton->setDefaultAction(ui->actionErase);
-  ui->duplicateButton->setDefaultAction(ui->actionDuplicate);
+  //********************Weixiao Update************************//
+  //ui->duplicateButton->setDefaultAction(ui->actionDuplicate);
+//**********************************************************//
+  
 
   // Connect actionQuit (Ctrl+Q) and qApp->quit()
   connect(ui->actionQuit, SIGNAL(triggered()),
@@ -1264,7 +1277,6 @@ void MainWindow::selectSceneItem(int i)
   }
 }
 
-
 void MainWindow::showSelectedPoint(double x, double y, double z)
 {
   static double x_prev = 0;
@@ -1280,6 +1292,27 @@ void MainWindow::showSelectedPoint(double x, double y, double z)
   y_prev = y;
   z_prev = z;
 }
+
+//********************Weixiao Update************************//
+void MainWindow::showRecenteredView(double x, double y, double z)
+{
+	if (viewer->camera()->frame()->isSpinning())
+		viewer->camera()->frame()->stopSpinning();
+	//viewerShow(x + viewer->offset().x, y+ viewer->offset().y, z + viewer->offset().z);
+	CGAL::qglviewer::ManipulatedCameraFrame backup_frame(*viewer->camera()->frame());
+	viewer->camera()->fitSphere(CGAL::qglviewer::Vec(x, y, z),
+		viewer->camera()->sceneRadius() / 100);
+	*viewer->camera()->frame() = backup_frame;
+	viewer->setVisualHintsMask(1);
+	viewer->camera()->setPivotPoint(CGAL::qglviewer::Vec(x, y, z));
+
+	information(
+		QString("Jump to new center of the current view: (%1, %2, %3)").
+		arg(x, 0, 'g', 10).
+		arg(y, 0, 'g', 10).
+		arg(z, 0, 'g', 10));
+}
+//**********************************************************//
 
 void MainWindow::unSelectSceneItem(int i)
 {
@@ -2019,11 +2052,14 @@ void MainWindow::on_actionEraseAll_triggered()
   on_actionErase_triggered();
 }
 
-void MainWindow::on_actionDuplicate_triggered()
-{
-  int index = scene->duplicate(getSelectedSceneItemIndex());
-  selectSceneItem(index);
-}
+//********************Weixiao Update************************//
+//void MainWindow::on_actionDuplicate_triggered()
+//{
+//	int index = scene->duplicate(getSelectedSceneItemIndex());
+//	selectSceneItem(index);
+//}
+//**********************************************************//
+
 
 void MainWindow::on_actionShowHide_triggered()
 {
@@ -2386,17 +2422,17 @@ void MainWindow::makeNewGroup()
     Scene_group_item * group = new Scene_group_item();
     scene->addItem(group);
 }
-
-void MainWindow::on_upButton_pressed()
-{
-    scene->moveRowUp();
-}
-
-void MainWindow::on_downButton_pressed()
-{
-    scene->moveRowDown();
-}
-
+//********************Weixiao Update************************//
+//void MainWindow::on_upButton_pressed()
+//{
+//    scene->moveRowUp();
+//}
+//
+//void MainWindow::on_downButton_pressed()
+//{
+//    scene->moveRowDown();
+//}
+//**********************************************************//
 void MainWindow::recenterSceneView(const QModelIndex &id)
 {
     if(id.isValid())

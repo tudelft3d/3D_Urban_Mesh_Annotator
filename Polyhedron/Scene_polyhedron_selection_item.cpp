@@ -1664,6 +1664,7 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
 		selected_facets_copy.insert(fh_1);
 	}
 
+	bool check_original_segment = false;
 	while (!selected_facets_copy.empty())
 	{
 		seg_id idForNewSeg = poly_item->segments.size();
@@ -1673,6 +1674,11 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
 		connected_componet.push_back(*selected_facets_copy.begin());
 
 		extract_connected_component(selected_facets_copy, connected_componet);
+		const int current_seg_id = poly_item->face_segment_id[connected_componet[0]];
+
+		//left the last component for remaining segment
+		if (selected_facets_copy.empty() && check_original_segment)
+			continue;
 
 		//delete faces in original segment
 		Q_FOREACH(fg_face_descriptor fh_2, connected_componet)
@@ -1682,6 +1688,13 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
 		}
 		Segment temp(connected_componet);
 		poly_item->segments[idForNewSeg] = temp;
+
+		//check remaining segment
+		if (selected_facets_copy.empty() && !check_original_segment)
+		{
+			check_original_segment = true;
+			selected_facets_copy = poly_item->segments[current_seg_id].faces_included;
+		}
 	}
 
 	poly_item->computeSegments();

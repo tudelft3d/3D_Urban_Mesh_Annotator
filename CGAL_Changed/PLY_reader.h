@@ -461,6 +461,7 @@ namespace CGAL {
 			std::vector<std::string>& texture_name,
 			std::vector<float>& fi_prob,
 			std::vector<int>& fi_segment_id,
+			std::string &input_comments,
 			bool /* verbose */ = false)
 	{
 		if (!in)
@@ -477,6 +478,7 @@ namespace CGAL {
 		}
 
 		std::string comments = reader.comments();
+		input_comments = comments;
 		std::istringstream iss(comments);
 		std::string line, word;
 		while (getline(iss, line))

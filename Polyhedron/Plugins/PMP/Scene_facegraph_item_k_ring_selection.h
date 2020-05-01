@@ -515,6 +515,15 @@ protected:
 		else
 			Q_EMIT selected(selection);
 	}
+	//void process_segment_selection(fg_face_descriptor clicked) {
+	//	const std::set<fg_face_descriptor>& selection = get_segment(clicked);
+	//	if (is_highlighting)
+	//	{
+	//		Q_EMIT selected_HL(selection);
+	//	}
+	//	else
+	//		Q_EMIT selected(selection);
+	//}
 	/******************************************************/
 
 	template <class Handle>
@@ -580,7 +589,7 @@ protected:
 		return selection;
 	}
 
-	/**********************Ziqian************************/
+	/**********************Ziqian && Weixiao************************/
 	std::set<fg_face_descriptor>
 		get_segment(fg_face_descriptor f)
 	{

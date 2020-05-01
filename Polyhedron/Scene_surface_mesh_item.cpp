@@ -228,7 +228,6 @@ struct Scene_surface_mesh_item_priv {
 	void addSelectedFlatData(Point p, EPICK::Vector_3 n, CGAL::Color* c, Scene_item_rendering_helper::Gl_data_names name) const;
 	/**********************************************************/
 
-
 	//! \brief triangulate_facet Triangulates a facet.
 	//! \param fd a face_descriptor of the facet that needs to be triangulated.
 	//! \param fnormals a property_map containing the normals of the mesh.
@@ -480,7 +479,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 		alphaSlider->setMaximum(255);
 		//alphaSlider->setValue(255);
 		//******Weixiao Update transparent slider*******//
-		alphaSlider->setValue(160);
+		alphaSlider->setValue(120);
 		//***********************************************//
 	}
 	smooth_vertices.clear();
@@ -973,7 +972,7 @@ void Scene_surface_mesh_item::get_connected_faces(face_descriptor fd, std::vecto
 			break;
 	}
 }
-
+//**************************Zi qian****************************//
 void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 	m_RMode = renderingMode();
 	d->chosen_segments.insert(seg);
@@ -1242,7 +1241,7 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 			{
 				qWarning("Could not read image file!");
 				QImage dummy(128, 128, QImage::Format_RGB32);
-				dummy.fill(Qt::green);
+				dummy.fill(Qt::gray);
 				buf = dummy;
 			}
 

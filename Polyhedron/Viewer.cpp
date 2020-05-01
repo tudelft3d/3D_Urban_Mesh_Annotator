@@ -1,4 +1,5 @@
 #include "Viewer.h"
+#include <CGAL/Three/Three.h>
 #include <CGAL/Three/Scene_draw_interface.h>
 #include <QMouseEvent>
 #include <QKeyEvent>
@@ -24,7 +25,6 @@
 #include <QByteArray>
 #include <QBuffer>
 #endif
-
 
 class Viewer_impl {
 public:
@@ -83,7 +83,7 @@ public:
 	bool distance_is_displayed;
 	bool i_is_pressed;
 	bool initialized;
-	bool z_is_pressed;
+	bool o_is_pressed;
 	QImage static_image;
 	//!Draws the distance between two selected points.
 	void showDistance(QPoint);
@@ -266,27 +266,43 @@ Viewer::Viewer(QWidget* parent, bool antialiasing)
 	setShortcut(CGAL::qglviewer::EXIT_VIEWER, 0);
 	setKeyDescription(Qt::Key_T,
 		tr("Turn the camera by 180 degrees"));
-	setKeyDescription(Qt::Key_M,
-		tr("Toggle macro mode: useful to view details very near from the camera, "
-			"but decrease the z-buffer precision"));
+	//********************Weixiao Update************************//
+	//setKeyDescription(Qt::Key_M,
+	//	tr("Toggle macro mode: useful to view details very near from the camera, "
+	//		"but decrease the z-buffer precision"));
+	//**********************************************************//
 	setKeyDescription(Qt::Key_I + Qt::CTRL,
 		tr("Toggle the primitive IDs visibility of the selected Item."));
 	setKeyDescription(Qt::Key_D,
-		tr("Disable the distance between two points  visibility."));
+		tr("Disable the distance between two points visibility."));
 	setKeyDescription(Qt::Key_F5,
 		tr("Reload selected items if possible."));
 
 	//modify mouse bindings that have been updated
 	setMouseBinding(Qt::Key(0), Qt::NoModifier, Qt::LeftButton, CGAL::qglviewer::RAP_FROM_PIXEL, true, Qt::RightButton);
+	setMouseBinding(Qt::Key_R, Qt::NoModifier, Qt::LeftButton, CGAL::qglviewer::RAP_FROM_PIXEL);
+
 	setMouseBindingDescription(Qt::ShiftModifier, Qt::RightButton,
 		tr("Select and pop context menu"));
-	setMouseBinding(Qt::Key_R, Qt::NoModifier, Qt::LeftButton, CGAL::qglviewer::RAP_FROM_PIXEL);
-	//use the new API for these
-	setMouseBinding(Qt::ShiftModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
 
-	setMouseBindingDescription(Qt::Key(0), Qt::ShiftModifier, Qt::LeftButton,
-		tr("Selects and display context "
-			"menu of the selected item"));
+	//use the new API for these
+	//********************Weixiao Update************************//
+	//setMouseBinding(Qt::ShiftModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
+	setMouseBinding(Qt::ControlModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
+
+	setKeyDescription(Qt::Key_F1 + Qt::CTRL,
+		tr("Save snapshot with camera parameters."));
+	setKeyDescription(Qt::Key_F2 + Qt::CTRL,
+		tr("Load camera parameters and show the view."));
+	setKeyDescription(Qt::Key_1 + Qt::CTRL,
+		tr("Toggle the texture rendering mode."));
+	setKeyDescription(Qt::Key_2 + Qt::CTRL,
+		tr("Toggle the flat rendering mode."));
+	//**********************************************************//
+
+	//setMouseBindingDescription(Qt::Key(0), Qt::ShiftModifier, Qt::LeftButton,
+	//	tr("Selects and display context "
+	//		"menu of the selected item"));
 	setMouseBindingDescription(Qt::Key_I, Qt::NoModifier, Qt::LeftButton,
 		tr("Show/hide the primitive ID."));
 	setMouseBindingDescription(Qt::Key_D, Qt::NoModifier, Qt::LeftButton,
@@ -303,7 +319,7 @@ Viewer::Viewer(QWidget* parent, bool antialiasing)
 	prev_radius = sceneRadius();
 	d->has_text = false;
 	d->i_is_pressed = false;
-	d->z_is_pressed = false;
+	d->o_is_pressed = false;
 	d->distance_is_displayed = false;
 	d->is_d_pressed = false;
 	d->viewer = this;
@@ -535,7 +551,9 @@ void Viewer::mousePressEvent(QMouseEvent* event)
 	if (event->button() == Qt::RightButton && 
 		event->modifiers().testFlag(Qt::ShiftModifier))
 	{
-		select(event->pos());
+		//********************Weixiao Update************************//
+		//select(event->pos());
+		//**********************************************************//
 		requestContextMenu(event->globalPos());
 		event->accept();
 	}
@@ -547,7 +565,7 @@ void Viewer::mousePressEvent(QMouseEvent* event)
 	}
 	else if (!event->modifiers()
 		&& event->button() == Qt::LeftButton
-		&& d->z_is_pressed)
+		&& d->o_is_pressed)
 	{
 		d->scene->zoomToPosition(event->pos(), this);
 	}
@@ -588,27 +606,27 @@ void Viewer::keyPressEvent(QKeyEvent* e)
 			turnCameraBy180Degres();
 			return;
 		}
-		else if (e->key() == Qt::Key_M) {
-			d->macro_mode = !d->macro_mode;
+		//********************Weixiao Update************************//
+		//else if (e->key() == Qt::Key_M) {
+		//	d->macro_mode = !d->macro_mode;
 
-			if (d->macro_mode) {
-				camera()->setZNearCoefficient(0.0005f);
-			}
-			else {
-				camera()->setZNearCoefficient(0.005f);
-			}
-			this->displayMessage(tr("Macro mode: %1").
-				arg(d->macro_mode ? tr("on") : tr("off")));
+		//	if (d->macro_mode) {
+		//		camera()->setZNearCoefficient(0.0005f);
+		//	}
+		//	else {
+		//		camera()->setZNearCoefficient(0.005f);
+		//	}
+		//	this->displayMessage(tr("Macro mode: %1").
+		//		arg(d->macro_mode ? tr("on") : tr("off")));
 
-
-
-			return;
-		}
+		//	return;
+		//}
+		//**********************************************************//
 		else if (e->key() == Qt::Key_I) {
 			d->i_is_pressed = true;
 		}
 		else if (e->key() == Qt::Key_O) {
-			d->z_is_pressed = true;
+			d->o_is_pressed = true;
 		}
 		else if (e->key() == Qt::Key_D) {
 			if (e->isAutoRepeat())
@@ -635,11 +653,34 @@ void Viewer::keyPressEvent(QKeyEvent* e)
 		return;
 	}
 
-	else if (e->key() == Qt::Key_S && e->modifiers() & Qt::ControlModifier) {
-		this->saveSnapshot();
+	//********************Weixiao Update************************//
+	//else if (e->key() == Qt::Key_S && e->modifiers() & Qt::ControlModifier) {
+	//	this->saveSnapshot();
+	//	return;
+	//}
+	else if (e->key() == Qt::Key_F1 && e->modifiers() & Qt::ControlModifier) 
+	{
+		this->save_snapshot_with_camera_params();
 		return;
 	}
 
+	else if (e->key() == Qt::Key_F2 && e->modifiers() & Qt::ControlModifier)
+	{
+		this->load_camera_params_and_show_view();
+		return;
+	}
+
+	else if (e->key() == Qt::Key_1 && e->modifiers() & Qt::ControlModifier)
+	{
+		d->scene->SwitchRenderingMode(this, 1);
+		return;
+	}
+	else if (e->key() == Qt::Key_2 && e->modifiers() & Qt::ControlModifier)
+	{
+		d->scene->SwitchRenderingMode(this, 2);
+		return;
+	}
+	//**********************************************************//
 	//forward the event to the scene (item handling of the event)
 	if (!d->scene->keyPressEvent(e))
 		CGAL::QGLViewer::keyPressEvent(e);
@@ -651,7 +692,7 @@ void Viewer::keyReleaseEvent(QKeyEvent* e)
 		d->i_is_pressed = false;
 	}
 	else if (e->key() == Qt::Key_O) {
-		d->z_is_pressed = false;
+		d->o_is_pressed = false;
 	}
 	else if (!e->modifiers() && e->key() == Qt::Key_D)
 	{
@@ -661,6 +702,7 @@ void Viewer::keyReleaseEvent(QKeyEvent* e)
 		}
 		d->is_d_pressed = false;
 	}
+
 	CGAL::QGLViewer::keyReleaseEvent(e);
 }
 
@@ -675,6 +717,96 @@ void Viewer::turnCameraBy180Degres() {
 	camera->setOrientation(frame_from.orientation());
 	camera->interpolateTo(frame_to, 0.5f);
 }
+
+//********************Weixiao Update************************//
+void Viewer::load_camera_params_and_show_view()
+{
+	QString filename =
+		QFileDialog::getOpenFileName(this,
+			tr("Load camera position from file"),
+			QString(),
+			tr("(*.txt)"));
+	QFile file(filename);
+
+	std::clog << "Loading camera position " << qPrintable(filename) << std::endl;
+	file.open(QIODevice::ReadOnly);
+	QTextStream input(&file);
+	QString cam_pos;
+	int line_count = 0;
+	while (!input.atEnd()) 
+	{
+		QString text = input.readLine(1000);
+		QString coord = input.readLine(1000);
+		if (text.isNull() || coord.isNull())
+			return;
+		CGAL::qglviewer::Frame frame;
+		if (this->readFrame(coord, frame) && line_count < 2)
+			cam_pos = this->dumpFrame(frame);
+
+		line_count += 2;
+	}
+
+	if (line_count > 2)
+		CGAL::Three::Three::information("Input camera file contain more than one camera positions, \
+		the viewer only show the first one. Please use the Plugin 'Camera Positions' for adding more camera positions");
+
+	this->moveCameraToCoordinates(cam_pos);
+}
+
+void Viewer::save_snapshot_with_camera_params()
+{
+	//save image
+	qreal aspectRatio = width() / static_cast<qreal>(height());
+	static ImageInterface* imageInterface = NULL;
+
+	if (!imageInterface)
+		imageInterface = new ImageInterface(this, aspectRatio);
+
+	imageInterface->imgWidth->setValue(width());
+	imageInterface->imgHeight->setValue(height());
+
+	if (imageInterface->exec() == QDialog::Rejected)
+		return;
+	QSize finalSize(imageInterface->imgWidth->value(), imageInterface->imgHeight->value());
+	bool expand = imageInterface->expandFrustum->isChecked();
+	QString fileName = QFileDialog::getSaveFileName(this,
+		tr("Save Snapshot"), "", tr("Image Files (*.png *.jpg *.bmp)"));
+	if (fileName.isEmpty())
+		return;
+
+	QImage* image = takeSnapshot(CGAL::qglviewer::SnapShotBackground(imageInterface->color_comboBox->currentIndex()),
+		finalSize, imageInterface->oversampling->value(), expand);
+	if (image)
+	{
+		image->save(fileName);
+		delete image;
+	}
+
+	//get filepath and name for camera position
+	std::string tmp_str = fileName.toStdString();
+	char * filechar = (char *)tmp_str.data();
+	char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFname[_MAX_FNAME], szExt[_MAX_EXT];
+	_splitpath(filechar, szDrive, szDir, szFname, szExt);
+	std::stringstream cam_res;
+	cam_res << szDrive << szDir << szFname << ".txt";
+	QString cam_filename = cam_res.str().data();
+
+	std::stringstream ind_res;
+	ind_res << szFname;
+	QString cam_ind = ind_res.str().data();
+
+	//save camera parameters
+	QString cam_params = this->dumpCameraCoordinates();
+	QFile cam_file(cam_filename);
+	cam_file.open(QIODevice::WriteOnly);
+	QTextStream out(&cam_file);
+	out << "Camera Position #" << cam_ind
+		<< "\n"
+		<< cam_params
+		<< "\n";
+	cam_file.close();
+}
+//**********************************************************//
 
 void Viewer_impl::draw_aux(bool with_names, Viewer* viewer)
 {
@@ -1464,7 +1596,6 @@ void Viewer::updateIds(CGAL::Three::Scene_item* item)
 	d->scene->updatePrimitiveIds(this, item);
 	d->scene->updatePrimitiveIds(this, item);
 }
-
 
 TextRenderer* Viewer::textRenderer()
 {

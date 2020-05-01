@@ -109,7 +109,9 @@ public:
 	bool save(const CGAL::Three::Scene_item* scene_item, QFileInfo fileinfo) {
 		const Scene_polyhedron_selection_item* item = qobject_cast<const Scene_polyhedron_selection_item*>(scene_item);
 		if (item == NULL) { return false; }
-
+		//********************Weixiao Update************************//
+		CGAL::Three::Three::warning("You are not saving your labeling work but the selection area. For saving the work, you need to select the first layer! ");
+		//**********************************************************//
 		return item->save(fileinfo.filePath().toStdString());
 	}
 

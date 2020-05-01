@@ -363,14 +363,21 @@ public Q_SLOTS:
   void setPointsPlusNormalsMode(){
     setRenderingMode(PointsPlusNormals);
   }
-  //***********************Weixiao Update*******************************//
+  //***********************Weixiao Update rendering texture mode*******************************//
   //!Sets the RenderingMode to TextureMode.
-  void setTextureModeMode() {
+  void setTextureModeMode() 
+  {
 	  setRenderingMode(TextureMode);
   }
 
-  void setTextureModePlusFlatEdgesMode() {
+  void setTextureModePlusFlatEdgesMode()
+  {
 	  setRenderingMode(TextureModePlusFlatEdges);
+  }
+  //**********************Ziqian + gwx*******************************//
+  void setEmphasizingMode()
+  {
+	  setRenderingMode(Emphasizing);
   }
   //*******************************************************************//
 
