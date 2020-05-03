@@ -1311,6 +1311,8 @@ void MainWindow::showRecenteredView(double x, double y, double z)
 		arg(x, 0, 'g', 10).
 		arg(y, 0, 'g', 10).
 		arg(z, 0, 'g', 10));
+
+	warning(QString("If you are in selection mode, you need to click the selection layer for continuing selection."));
 }
 //**********************************************************//
 
