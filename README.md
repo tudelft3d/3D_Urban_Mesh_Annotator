@@ -18,22 +18,22 @@
 	zlib  
   
 # Required sub-modules:  
-QT:  
-	Qt5Core  
-	Qt5OpenGL  
-	Qt5Svg    
-	Qt5Widgets  
-	Qt5Gui  
-	Qt5Xml  
-	Qt5Script  
-	imageformats/qjpeg  
-	platforms/qwindows  
-  
-boost:  
-	boost_serialization  
-	boost_iostreams  
-	boost_zlib  
-	boost_bzip2  
+	QT:  
+		Qt5Core  
+		Qt5OpenGL  
+		Qt5Svg    
+		Qt5Widgets  
+		Qt5Gui  
+		Qt5Xml  
+		Qt5Script  
+		imageformats/qjpeg  
+		platforms/qwindows  
+
+	boost:  
+		boost_serialization  
+		boost_iostreams  
+		boost_zlib  
+		boost_bzip2  
   
 # Modified CGAL files:  
 	.\CGAL-4.14\include\CGAL\IO\PLY_reader.h
