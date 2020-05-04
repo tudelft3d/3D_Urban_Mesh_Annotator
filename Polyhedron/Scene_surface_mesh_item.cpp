@@ -56,7 +56,7 @@
 #include <CGAL/Three/Triangle_container.h>
 #include <CGAL/Three/Edge_container.h>
 #include <CGAL/Three/Point_container.h>
-#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
+#include <CGAL/Three/Three.h>
 #include <CGAL/Buffer_for_vao.h>
 #include <QMenu>
 #include "id_printing.h"
@@ -988,7 +988,8 @@ void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 }
 void Scene_surface_mesh_item::unemphasize() {
 	//setRenderingMode(m_RMode);
-	CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(tmp_default_renderingmode);
+	if (tmp_default_renderingmode >= 0 && tmp_default_renderingmode < NumberOfRenderingMode)
+		CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(tmp_default_renderingmode);
 	setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
 	d->chosen_segments.clear();
 	d->compute_elements(ALL);
@@ -2128,7 +2129,7 @@ bool Scene_surface_mesh_item::write_ply_mesh(std::ostream& stream, bool binary) 
 
 	if (binary)
 		CGAL::set_binary_mode(stream);
-	
+
 	//if the user do not start 3D Annotation, the comments keep same as input
 	bool used_old_comments = false;
 	if (d->m_comments.empty())
