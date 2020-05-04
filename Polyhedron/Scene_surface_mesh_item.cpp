@@ -157,7 +157,6 @@ struct Scene_surface_mesh_item_priv {
 
 		//***********************Weixiao Update texture item*******************************//
 		texture_item = new Scene_textured_surface_mesh_item();
-
 		//*******************************************************************//
 	}
 
@@ -196,8 +195,6 @@ struct Scene_surface_mesh_item_priv {
 
 		//***********************Weixiao Update texture item*******************************//
 		texture_item = new Scene_textured_surface_mesh_item();
-		CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
-		CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
 		//*******************************************************************//
 	}
 

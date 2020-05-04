@@ -350,6 +350,12 @@ public Q_SLOTS:
 				sm_selection->trigger();
 			else
 				print_message("Warning: can't find Surface Mesh Selection plugin");
+
+			//********************Weixiao Update************************//
+			CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
+			mesh_item->setRenderingMode(TextureModePlusFlatEdges);
+			CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
+			//**********************************************************//
 		}
 
 		on_help_clicked();
