@@ -2,7 +2,7 @@
 #include "Scene.h"
 
 //********************Weixiao Update************************//
-#include <CGAL/Three/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
 //**********************************************************//
 #include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_print_item_interface.h>

@@ -3,7 +3,7 @@
 #include "Scene_points_with_normal_item.h"
 
 #include <CGAL/Three/Polyhedron_demo_io_plugin_interface.h>
-#include <CGAL/Three/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
 #include <QInputDialog>
 #include <QApplication>
 #include <fstream>

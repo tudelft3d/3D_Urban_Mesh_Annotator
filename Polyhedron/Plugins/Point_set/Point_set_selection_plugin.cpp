@@ -16,7 +16,7 @@
 
 #include "CGAL/Three/Scene_interface.h" //#include <CGAL/Three/Scene_interface.h>
 #include <CGAL/Three/Polyhedron_demo_plugin_helper.h>
-#include <CGAL/Three/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
 #include "ui_Point_set_selection_widget.h"
 #include <Plugins/PCA/Scene_edit_box_item.h>
 #include "Point_set_3.h"

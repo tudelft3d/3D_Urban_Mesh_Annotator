@@ -1,7 +1,7 @@
 #include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_group_item.h>
 #include "CGAL/Three/Scene_interface.h" //#include <CGAL/Three/Scene_interface.h>
-#include <CGAL/Three/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
 #include <QMenu>
 #include <iostream>
 #include <QDebug>

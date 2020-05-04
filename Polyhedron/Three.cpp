@@ -1,4 +1,4 @@
-#include <CGAL/Three/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
 #include <QDockWidget>
 #include <QMetaMethod>
 #include <QAction>
@@ -154,6 +154,13 @@ RenderingMode Three::defaultPointSetRenderingMode()
 {
   return s_defaultPSRM;
 }
+
+//********************Weixiao Update************************//
+void Three::SetdefaultSurfaceMeshRenderingMode(RenderingMode default_renderingmode)
+{
+	s_defaultSMRM = default_renderingmode;
+}
+//**********************************************************//
 
 QString Three::modeName(RenderingMode mode) {
   switch(mode)

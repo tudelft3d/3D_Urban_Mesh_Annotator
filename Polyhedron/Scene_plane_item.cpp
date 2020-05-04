@@ -1,6 +1,6 @@
 #include "Scene_plane_item.h"
 #include <QApplication>
-#include <CGAL/Three/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
 
 using namespace CGAL::Three;
 

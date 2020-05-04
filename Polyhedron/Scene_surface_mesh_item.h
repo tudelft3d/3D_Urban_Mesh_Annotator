@@ -12,7 +12,7 @@
 
 //***********************Weixiao Update*******************************//
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
-#include "CGAL/IO/PLY_reader.h" //#include <CGAL/IO/PLY_reader.h>
+#include <CGAL/IO/PLY_reader.h>
 #include "Scene_textured_surface_mesh_item.h"
 //*******************************************************************//	
 
@@ -20,7 +20,7 @@
 #include "SMesh_type.h"
 #endif
 
-#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
+#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_item_rendering_helper.h>
 #include <CGAL/Three/Viewer_interface.h>
 
@@ -161,7 +161,7 @@ public:
 	std::string input_comments;
 	std::string file_path;
 	//*******************************************************************//	
-	//***********************Ziqian*******************************//
+	//***********************Ziqian && Weixiao*******************************//
 	std::map<face_descriptor, bool> face_shown;
 	std::map<face_descriptor, QColor> face_color_backup;
 
@@ -174,7 +174,7 @@ public:
 	// this process is finished in PLY reading only, after the scene_surface_mesh is built.
 	void computeSegments();
 	bool segmentBoundryShow = true;
-	RenderingMode m_RMode;
+	RenderingMode m_RMode, tmp_default_renderingmode;
 	//************************************************************//
 	//statistics
 	enum STATS

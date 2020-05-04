@@ -2,7 +2,7 @@
 #include "Scene_spheres_item.h"
 
 #include <CGAL/bounding_box.h>
-#include <CGAL/Three/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
 #include <QMenu>
 #include <QSlider>
 #include <QWidgetAction>

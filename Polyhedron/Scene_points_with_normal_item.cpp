@@ -8,7 +8,7 @@
 #include <CGAL/Memory_sizer.h>
 
 #include <CGAL/Three/Viewer_interface.h>
-#include <CGAL/Three/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
 #include <CGAL/Orthogonal_k_neighbor_search.h>
 #include <CGAL/Search_traits_3.h>
 #include <CGAL/Search_traits_adapter.h>

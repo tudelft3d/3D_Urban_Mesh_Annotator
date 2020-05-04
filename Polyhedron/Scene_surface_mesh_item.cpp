@@ -39,8 +39,8 @@
 #include <CGAL/IO/File_writer_wavefront.h>
 #include <CGAL/IO/generic_copy_OFF.h>
 #include <CGAL/IO/OBJ_reader.h>
-#include "CGAL/IO/PLY_reader.h" //#include <CGAL/IO/PLY_reader.h>
-#include "CGAL/IO/PLY_writer.h" //#include <CGAL/IO/PLY_writer.h>
+#include <CGAL/IO/PLY_reader.h>
+#include <CGAL/IO/PLY_writer.h>
 #include <CGAL/Polygon_mesh_processing/measure.h>
 #include <CGAL/statistics_helpers.h>
 
@@ -56,7 +56,7 @@
 #include <CGAL/Three/Triangle_container.h>
 #include <CGAL/Three/Edge_container.h>
 #include <CGAL/Three/Point_container.h>
-#include <CGAL/Three/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
 #include <CGAL/Buffer_for_vao.h>
 #include <QMenu>
 #include "id_printing.h"
@@ -157,6 +157,7 @@ struct Scene_surface_mesh_item_priv {
 
 		//***********************Weixiao Update texture item*******************************//
 		texture_item = new Scene_textured_surface_mesh_item();
+
 		//*******************************************************************//
 	}
 
@@ -195,6 +196,8 @@ struct Scene_surface_mesh_item_priv {
 
 		//***********************Weixiao Update texture item*******************************//
 		texture_item = new Scene_textured_surface_mesh_item();
+		CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
+		CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
 		//*******************************************************************//
 	}
 
@@ -972,12 +975,15 @@ void Scene_surface_mesh_item::get_connected_faces(face_descriptor fd, std::vecto
 			break;
 	}
 }
-//**************************Zi qian****************************//
+//**************************Zi qian && Weixiao****************************//
 void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 	m_RMode = renderingMode();
 	d->chosen_segments.insert(seg);
 	d->compute_elements(ALL);
 	setRenderingMode(Emphasizing);
+
+	tmp_default_renderingmode = CGAL::Three::Three::defaultSurfaceMeshRenderingMode();
+	CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(Emphasizing);
 
 	Q_EMIT itemChanged();
 	invalidateOpenGLBuffers();
@@ -988,6 +994,8 @@ void Scene_surface_mesh_item::unemphasize() {
 	setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
 	d->chosen_segments.clear();
 	d->compute_elements(ALL);
+
+	CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(tmp_default_renderingmode);
 
 	Q_EMIT itemChanged();
 	invalidateOpenGLBuffers();

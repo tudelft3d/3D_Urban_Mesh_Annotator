@@ -1646,6 +1646,13 @@ void Scene_polyhedron_selection_item::extract_connected_component
 			}
 		}
 	}
+
+	//check validation
+	Q_FOREACH(fg_face_descriptor fd_tmp, original_face_set)
+	{
+		if (!fd_tmp.is_valid())
+			original_face_set.erase(fd_tmp);
+	}
 }
 
 bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment() 
