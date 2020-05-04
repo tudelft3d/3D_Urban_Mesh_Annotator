@@ -35,10 +35,13 @@ boost:
 	boost_zlib  
 	boost_bzip2  
   
-# Replace CGAL files:  
-	.\CGAL-4.14\include\CGAL\IO\PLY_reader.h  
-	.\CGAL-4.14\include\CGAL\IO\PLY_writer.h  
-	.\CGAL-4.14\include\CGAL\IO\read_ply_points.h  
-	.\CGAL-4.14\include\CGAL\IO\write_ply_points.h  
-	.\CGAL-4.14\include\CGAL\Three\Scene_item.h  
-	.\CGAL-4.14\include\CGAL\Three\Scene_interface.h  
+# Modified CGAL files:  
+	.\CGAL-4.14\include\CGAL\IO\PLY_reader.h
+	.\CGAL-4.14\include\CGAL\IO\PLY_writer.h
+	.\CGAL-4.14\include\CGAL\IO\read_ply_points.h
+	.\CGAL-4.14\include\CGAL\IO\write_ply_points.h
+	.\CGAL-4.14\include\CGAL\Three\Three.h
+	.\CGAL-4.14\include\CGAL\Three\Scene_item.h
+	.\CGAL-4.14\include\CGAL\Three\Scene_interface.h
+	.\CGAL-4.14\include\CGAL\Three\Scene_draw_interface.h
+	.\CGAL-4.14\include\CGAL\Qt\camera_impl.h
