@@ -988,11 +988,10 @@ void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 }
 void Scene_surface_mesh_item::unemphasize() {
 	//setRenderingMode(m_RMode);
+	CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(tmp_default_renderingmode);
 	setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
 	d->chosen_segments.clear();
 	d->compute_elements(ALL);
-
-	CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(tmp_default_renderingmode);
 
 	Q_EMIT itemChanged();
 	invalidateOpenGLBuffers();
