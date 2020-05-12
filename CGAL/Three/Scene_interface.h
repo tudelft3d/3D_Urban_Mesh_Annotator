@@ -24,7 +24,7 @@
 
 #ifndef SCENE_INTERFACE_H
 #define SCENE_INTERFACE_H
-#include <CGAL/license/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/license/Three.h>
 /*!
 * \ingroup PkgThreeRef
 * The RenderingMode determines which of an item's primitives must be drawn.

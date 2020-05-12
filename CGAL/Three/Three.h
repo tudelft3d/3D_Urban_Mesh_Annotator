@@ -57,6 +57,9 @@ public:
   static int getDefaultLinesWidth();
   //********************Weixiao Update************************//
   static void SetdefaultSurfaceMeshRenderingMode(RenderingMode);
+  static void setDefaultPointSize(int);
+  static void setDefaultNormalLength(int);
+  static void setDefaultLinesWidth(int);
   //**********************************************************//
   /*! \brief Adds a dock widget to the interface
    *

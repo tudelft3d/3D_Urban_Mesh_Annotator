@@ -5,7 +5,7 @@
 // published by the Free Software Foundation; either version 3 of the License,
 // or (at your option) any later version.
 //
-// Licensees holding a valid commercial license mawrite_ply_points.h>y use this file in
+// Licensees holding a valid commercial license may use this file in
 // accordance with the commercial license agreement provided with the software.
 //
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
@@ -20,7 +20,7 @@
 #ifndef CGAL_IO_PLY_WRITER_H
 #define CGAL_IO_PLY_WRITER_H
 
-#include "CGAL/IO/write_ply_points.h" //#include <CGAL/IO/write_ply_points.h>
+#include <CGAL/IO/write_ply_points.h>
 
 namespace CGAL{
 
@@ -268,7 +268,7 @@ namespace CGAL{
 			  {
 				  out << face_color[fd].red() << " ";
 				  out << face_color[fd].green() << " ";
-				  out << face_color[fd].blue()<< " ";
+				  out << face_color[fd].blue() << " ";
 			  }
 
 			  if (face_texcoord.empty() == false)
@@ -299,7 +299,6 @@ namespace CGAL{
 
 			  out << std::endl;
 		  }
-
 	  }
 
 	  return out.good();

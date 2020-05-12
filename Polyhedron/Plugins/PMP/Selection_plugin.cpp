@@ -148,7 +148,15 @@ public:
 		addDockWidget(dock_widget);
 
 		connect(ui_widget.Select_all_button, SIGNAL(clicked()), this, SLOT(on_Select_all_button_clicked()));
-		connect(ui_widget.Select_all_shown_button, SIGNAL(clicked()), this, SLOT(on_Select_all_shown_button_clicked()));
+		//********************Weixiao Update************************//
+		//connect(ui_widget.Select_all_shown_button, SIGNAL(clicked()), this, SLOT(on_Select_all_shown_button_clicked()));
+		connect(ui_widget.Delete_facets_from_selection, SIGNAL(clicked()), this, SLOT(on_Delete_facets_from_selection_clicked()));
+		ui_widget.Delete_facets_from_selection->setEnabled(false);
+
+		connect(ui_widget.Delete_selection_button, SIGNAL(clicked()), this, SLOT(on_Delete_selection_clicked()));
+		connect(ui_widget.SelectClasses, SIGNAL(clicked()), this, SLOT(on_Selected_class_clicked()));
+		connect(ui_widget.comboBox_2, SIGNAL(currentIndexChanged(int)), this, SLOT(on_selected_label_combo_box_changed(int)));
+		//**********************************************************//
 		/************************Ziqian***************************/
 		//connect(ui_widget.Select_all_NTButton, SIGNAL(clicked()), this, SLOT(on_Select_all_NTButton_clicked()));
 		//connect(ui_widget.Select_boundaryButton, SIGNAL(clicked()), this, SLOT(on_Select_boundaryButton_clicked()));
@@ -236,6 +244,10 @@ public Q_SLOTS:
 		connect(new_item, SIGNAL(simplicesSelected(CGAL::Three::Scene_item*)), this, SLOT(filter_operations()));
 		scene->setSelectedItem(item_id);
 		//on_SelectionOrEuler_changed(ui_widget.selectionOrEuler->currentIndex());
+		//********************Weixiao Update************************//
+		on_selected_label_combo_box_changed(ui_widget.comboBox_2->currentIndex());
+		connect(new_item->poly_item, SIGNAL(selection_done()), this, SLOT(reset_highlight_facets_if_selected()));
+		//**********************************************************//
 		if (last_mode == 0)
 			on_Selection_type_combo_box_changed(ui_widget.Selection_type_combo_box->currentIndex());//ui_widget.Selection_type_combo_box->currentIndex());
 		filter_operations();
@@ -262,7 +274,8 @@ public Q_SLOTS:
 		print_message(s);
 	}
 
-	void selection_action() {
+	void selection_action() 
+	{
 		dock_widget->show();
 		dock_widget->raise();
 		Scene_face_graph_item* poly_item = getSelectedItem<Scene_face_graph_item>();
@@ -270,6 +283,10 @@ public Q_SLOTS:
 		Scene_polyhedron_selection_item* new_item = new Scene_polyhedron_selection_item(poly_item, mw);
 		new_item->setName(QString("%1 (selection)").arg(poly_item->name()));
 		connectItem(new_item);
+		//********************Weixiao Update************************//
+		poly_item->fill_classes_combo_box(ui_widget.comboBox_2);
+		poly_item->update_labels_for_selection();
+		//**********************************************************//
 	}
 
 	Scene_polyhedron_selection_item* onTheFlyItem() {
@@ -280,7 +297,6 @@ public Q_SLOTS:
 		new_item->setName(QString("%1 (selection)").arg(poly_item->name()));
 		connectItem(new_item);
 		return new_item;
-
 	}
 	// Select all
 	void on_Select_all_button_clicked() {
@@ -296,20 +312,77 @@ public Q_SLOTS:
 		selection_item->select_all();
 		filter_operations();
 	}
-	/***************************Ziqian*****************************************/
-	void on_Select_all_shown_button_clicked() {
-		print_message("on_Select_all_shown_button_clicked!");
+	/***************************Ziqian && Weixiao*****************************************/
+	//void on_Select_all_shown_button_clicked() {
+	//	print_message("on_Select_all_shown_button_clicked!");
+	//	Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
+	//	if (!selection_item)
+	//		selection_item = onTheFlyItem();
+	//	if (!selection_item)
+	//	{
+	//		print_message("Error: there is no selected polyhedron selection item!");
+	//		return;
+	//	}
+
+	//	selection_item->select_all_shown();
+	//	filter_operations();
+	//}
+	
+	void on_Selected_class_clicked()
+	{
 		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
-		if (!selection_item)
-			selection_item = onTheFlyItem();
+		int index = ui_widget.comboBox_2->currentIndex();
+		if (index == 0)
+		{
+			Q_EMIT selection_item->selected_HL(std::set<fg_face_descriptor>());
+		}
+		else
+		{
+			std::set<fg_face_descriptor> temp_segment_faces;
+			int ind_new = index == 1 ? -1 : index - 2;
+			if (!selection_item->poly_item->semantic_facet_map.empty() &&
+				!selection_item->poly_item->semantic_facet_map[ind_new].empty())
+			{
+				BOOST_FOREACH(fg_face_descriptor fd, selection_item->poly_item->semantic_facet_map[ind_new])
+				{
+					if (fd.is_valid())
+						temp_segment_faces.insert(fd);
+				}
+			}
+			Q_EMIT selection_item->selected(temp_segment_faces);
+			ui_widget.comboBox_2->setCurrentIndex(0);
+		}
+	}
+
+	void on_Delete_selection_clicked()
+	{
+		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
 		if (!selection_item)
 		{
 			print_message("Error: there is no selected polyhedron selection item!");
 			return;
 		}
+		int item_id = scene->item_id(selection_item);
+		ui_widget.comboBox_2->setDisabled(true);
+		ui_widget.SelectClasses->setDisabled(true);
+		scene->erase(item_id);
+	}
 
-		selection_item->select_all_shown();
-		filter_operations();
+	void on_Delete_facets_from_selection_clicked()
+	{
+		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
+		if (!selection_item)
+		{
+			print_message("Error: there is no selected polyhedron selection item!");
+			return;
+		}
+		if (selection_item->selected_facets.empty())
+		{
+			print_message("Error: there are no selected facets!");
+			return;
+		}
+
+		selection_item->erase_selected_facets();
 	}
 
 	void check_selection_validation() {
@@ -330,7 +403,6 @@ public Q_SLOTS:
 			return;
 		}
 		selection_item->clear_all();
-
 	}
 	
 	void on_Recommendation_button_clicked() {
@@ -391,6 +463,8 @@ public Q_SLOTS:
 		}
 
 		selection_item->clear_all();
+
+		reset_highlight_facets_if_selected();
 		filter_operations();
 	}
 
@@ -470,6 +544,15 @@ public Q_SLOTS:
 	//	filter_operations();
 	//}
 	/****************************************************************/
+	void reset_highlight_facets_if_selected()
+	{
+		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
+		if (ui_widget.comboBox_2->currentIndex() != 0)
+		{
+			ui_widget.comboBox_2->setCurrentIndex(0);
+			on_Selected_class_clicked();
+		}
+	}
 
 	// Create selection item for selected polyhedron item
 	void on_Create_selection_item_button_clicked() {
@@ -499,12 +582,28 @@ public Q_SLOTS:
 		}
 	}
 
+	void on_selected_label_combo_box_changed(int index)
+	{
+		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
+		std::set<fg_face_descriptor> temp_segment_faces;
+		int ind_new = index == 1 ? -1 : index - 2;
+		if (!selection_item->poly_item->semantic_facet_map.empty() && ind_new > -2)
+		{
+			BOOST_FOREACH(fg_face_descriptor fd, selection_item->poly_item->semantic_facet_map[ind_new])
+			{
+				if (fd.is_valid())
+					temp_segment_faces.insert(fd);
+			}
+		}
+		Q_EMIT selection_item->selected_HL(temp_segment_faces);
+	}
+
 	void on_Selection_type_combo_box_changed(int index) {
 
 		typedef Scene_polyhedron_selection_item::Active_handle Active_handle;
 		for (Selection_item_map::iterator it = selection_item_map.begin(); it != selection_item_map.end(); ++it) {
 
-			/*******************************Ziqian*********************************/
+			/*******************************Ziqian && Weixiao*********************************/
 			//switch (index)
 			//{
 			//case 0:
@@ -530,6 +629,11 @@ public Q_SLOTS:
 				ui_widget.Brush_size_spin_box->setDisabled(true);
 				ui_widget.Recommendation_button->setDisabled(true);
 				ui_widget.comboBox->setDisabled(true);
+				ui_widget.SelectClasses->setEnabled(true);
+				//********************Weixiao Update************************//
+				ui_widget.comboBox_2->setCurrentIndex(current_label_index);
+				ui_widget.comboBox_2->setEnabled(true);
+				//**********************************************************//
 				//ui_widget.Expand_reduce_button->setDisabled(true);
 				//ui_widget.Expand_reduce_spin_box->setDisabled(true);
 				//ui_widget.operationsBox->setDisabled(true);
@@ -549,8 +653,14 @@ public Q_SLOTS:
 				ui_widget.lassoCheckBox->setEnabled(true);
 				ui_widget.label->setEnabled(true);
 				ui_widget.Brush_size_spin_box->setEnabled(true);
-				ui_widget.Recommendation_button->setEnabled(true);
-				ui_widget.comboBox->setEnabled(true);
+				//ui_widget.Recommendation_button->setEnabled(true);
+				//ui_widget.comboBox->setEnabled(true);
+				ui_widget.SelectClasses->setDisabled(true);
+				//********************Weixiao Update************************//
+				current_label_index = ui_widget.comboBox_2->currentIndex();
+				ui_widget.comboBox_2->setCurrentIndex(0);
+				ui_widget.comboBox_2->setDisabled(true);
+				//**********************************************************//
 				//ui_widget.Select_all_NTButton->show();
 				//ui_widget.Add_to_selection_button->hide();
 				//ui_widget.Select_boundaryButton->hide();
@@ -1015,55 +1125,22 @@ public Q_SLOTS:
 
 	void on_Expand_reduce_button_clicked() {
 		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
-		if (!selection_item) {
+		if (!selection_item) 
+		{
 			print_message("Error: there is no selected polyhedron selection item!");
 			return;
 		}
 
 		int steps = ui_widget.Expand_reduce_spin_box->value();
 		/********************Ziqian********************/
-		if (selection_item->get_active_handle_type() == 1)// face
-			selection_item->expand_or_reduce(steps);
-		else {
-			bool reduce = false;
-			if (steps < 0) {
-				selection_item->inverse_selection();
-				steps = -steps;
-				reduce = true;
-			}
-			for (int time = 0; time < steps; time++) {
-				selection_item->expand_or_reduce(steps);
-
-				std::set<seg_id> segment_expanded;
-				BOOST_FOREACH(fg_face_descriptor fh, faces(*selection_item->polyhedron()))
-				{
-					if (selection_item->selected_facets.find(fh) != selection_item->selected_facets.end())
-						segment_expanded.insert(selection_item->poly_item->face_segment_id[fh]);
-				}
-
-				BOOST_FOREACH(seg_id i, segment_expanded) {
-					Segment pre_seg = selection_item->poly_item->segments[i];
-					BOOST_FOREACH(face_descriptor j, pre_seg.faces_included) {
-						selection_item->selected_facets.insert(j);
-					}
-				}
-			}
-
-			if (reduce) {
-				selection_item->inverse_selection();
-				steps = -steps;
-			}
-
-			selection_item->invalidateOpenGLBuffers();
-			selection_item->itemChanged();
-		}
+		selection_item->segment_expand_or_reduce(steps);
 		/**********************************************/
-
 		filter_operations();
 	}
 	
 	// To handle empty selection items coming from loader
-	void new_item_created(int item_id) {
+	void new_item_created(int item_id)
+	{
 		typedef Scene_polyhedron_selection_item::Active_handle Active_handle;
 		Scene_polyhedron_selection_item* selection_item =
 			qobject_cast<Scene_polyhedron_selection_item*>(scene->item(item_id));
@@ -1091,7 +1168,8 @@ public Q_SLOTS:
 				return;
 			}
 		}
-		else {
+		else 
+		{
 			poly_item = getSelectedItem<Scene_face_graph_item>();
 		}
 		if (!poly_item) {
@@ -1242,6 +1320,9 @@ private:
 	Selection_item_map selection_item_map;
 	int last_mode;
 	bool from_plugin;
+	//********************Weixiao Update************************//
+	int current_label_index = 0;
+	//**********************************************************//
 }; // end Polyhedron_demo_selection_plugin
 
 //Q_EXPORT_PLUGIN2(Polyhedron_demo_selection_plugin, Polyhedron_demo_selection_plugin)

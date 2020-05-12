@@ -232,3 +232,21 @@ int Three::getDefaultLinesWidth()
 {
   return default_lines_width;
 }
+
+//********************Weixiao Update************************//
+void Three::setDefaultPointSize(int value)
+{
+	default_point_size = value;
+}
+
+void Three::setDefaultNormalLength(int value)
+{
+	default_normal_length = value;
+}
+
+void Three::setDefaultLinesWidth(int value)
+{
+	default_lines_width = value;
+}
+//**********************************************************//
+

@@ -386,7 +386,10 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 
   //Manages the group_item creation
   actionAddToGroup= new QAction("Add New Group", this);
-
+  //********************Weixiao Update************************//
+  actionAddToGroup->setEnabled(false);
+  actionAddToGroup->setVisible(false);
+  //**********************************************************//
   if(actionAddToGroup) {
     connect(actionAddToGroup, SIGNAL(triggered()),
             this, SLOT(makeNewGroup()));
@@ -1869,18 +1872,20 @@ void MainWindow::on_actionLoad_triggered()
   Q_FOREACH(const QString& filename, dialog.selectedFiles()) {
     
     CGAL::Three::Scene_item* item = NULL;
-    if(selectedPlugin) {
+    if(selectedPlugin) 
+	{
       QFileInfo info(filename);
       item = loadItem(info, selectedPlugin);
       item->setColor(colors_[++nb_item]);
       Scene::Item_id index = scene->addItem(item);
       selectSceneItem(index);
-      CGAL::Three::Scene_group_item* group =
-              qobject_cast<CGAL::Three::Scene_group_item*>(item);
+      CGAL::Three::Scene_group_item* group = qobject_cast<CGAL::Three::Scene_group_item*>(item);
       if(group)
         scene->redraw_model();
       this->addToRecentFiles(filename);
-    } else {
+    } 
+	else 
+	{
       int scene_size = scene->numberOfEntries();
       open(filename);
       if(scene->numberOfEntries() != scene_size)

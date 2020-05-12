@@ -1620,7 +1620,7 @@ void Scene_polyhedron_selection_item::extract_connected_component
 (
 	std::set<fg_face_descriptor>& original_face_set,
 	std::vector<fg_face_descriptor>& connected_componet
-)
+) 
 {
 	int size = 1;
 	std::map<fg_face_descriptor, bool> visited_check;
@@ -1634,13 +1634,13 @@ void Scene_polyhedron_selection_item::extract_connected_component
 
 		poly_item->get_connected_faces(connected_componet[fd], connected_faces);
 
-		Q_FOREACH(fg_face_descriptor fd1, connected_faces)
+		Q_FOREACH(fg_face_descriptor fd1, connected_faces) 
 		{
 			if (!fd1.is_valid() || visited_check[fd1])
 				continue;
 			visited_check[fd1] = true;
 			if (original_face_set.erase(fd1) > 0)
-			{
+			{		
 				connected_componet.push_back(fd1);
 				size++;
 			}
@@ -1655,14 +1655,14 @@ void Scene_polyhedron_selection_item::extract_connected_component
 	}
 }
 
-bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
+bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment() 
 {
 
 	std::set<seg_id> involvedSegments;
 	std::set<fg_face_descriptor> selected_facets_copy;
 	int orig_segmt_num = poly_item->segments.size();
-
-	Q_FOREACH(fg_face_descriptor fh_1, selected_facets)
+	
+	Q_FOREACH(fg_face_descriptor fh_1, selected_facets) 
 	{
 		involvedSegments.insert(poly_item->face_segment_id[fh_1]);
 		//std::set not include duplicated values 
@@ -1671,7 +1671,7 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
 		selected_facets_copy.insert(fh_1);
 	}
 
-	bool check_original_segment = false,
+	bool check_original_segment = false, 
 		catch_largest_segment = false;
 	while (!selected_facets_copy.empty())
 	{
@@ -1738,6 +1738,45 @@ void Scene_polyhedron_selection_item::segmentifySelection() {
 	}
 	invalidateOpenGLBuffers();
 	Q_EMIT itemChanged();
+}
+
+void Scene_polyhedron_selection_item::segment_expand_or_reduce(int &steps)
+{
+	if (get_active_handle_type() == 1)// face
+		expand_or_reduce(steps);
+	else {
+		bool reduce = false;
+		if (steps < 0) {
+			inverse_selection();
+			steps = -steps;
+			reduce = true;
+		}
+		for (int time = 0; time < steps; time++) {
+			expand_or_reduce(steps);
+
+			std::set<seg_id> segment_expanded;
+			BOOST_FOREACH(fg_face_descriptor fh, faces(*polyhedron()))
+			{
+				if (selected_facets.find(fh) != selected_facets.end())
+					segment_expanded.insert(poly_item->face_segment_id[fh]);
+			}
+
+			BOOST_FOREACH(seg_id i, segment_expanded) {
+				Segment pre_seg = poly_item->segments[i];
+				BOOST_FOREACH(face_descriptor j, pre_seg.faces_included) {
+					selected_facets.insert(j);
+				}
+			}
+		}
+
+		if (reduce) {
+			inverse_selection();
+			steps = -steps;
+		}
+
+		invalidateOpenGLBuffers();
+		itemChanged();
+	}
 }
 /******************************************************/
 
@@ -2377,8 +2416,8 @@ public:
 	double y;
 	double z;
 	Mypoint() {}
-	Mypoint(double a, double b, double c) :x(a), y(b), z(c) {}
-	~Mypoint() { }
+	Mypoint(double a, double b, double c):x(a), y(b), z(c) {}
+	~Mypoint(){ }
 
 	void operator+=(Mypoint& p) {
 		x += p.x; y += p.y; z += p.z;
@@ -2395,18 +2434,18 @@ public:
 	}
 	bool illegal() {
 		return isnan(x) || isnan(y) || isnan(z) || isinf(x) || isinf(y) || isinf(z) ||
-			isnan(-x) || isnan(-y) || isnan(-z) || isinf(-x) || isinf(-y) || isinf(-z) ||
-			x > 1e100 || y > 1e100 || z > 1e100 ||
-			-x > 1e100 || -y > 1e100 || -z > 1e100;
+			isnan(-x) || isnan(-y) || isnan(-z) || isinf(-x) || isinf(-y) || isinf(-z)||
+			x>1e100 || y > 1e100 || z > 1e100 || 
+			-x > 1e100 || -y > 1e100 || -z > 1e100 ;
 	}
 };
 
 void Scene_polyhedron_selection_item::doubleSelect(const std::set<fg_face_descriptor>& front_sel, const  std::set<fg_face_descriptor>& back_sel) {
-
+	
 	std::map<fg_face_descriptor, Mypoint> interoirs;
 	BOOST_FOREACH(fg_face_descriptor fd, poly_item->segments[edited_segment].faces_included) {
 		Mypoint inter = Mypoint(0.0, 0.0, 0.0);
-		BOOST_FOREACH(fg_vertex_descriptor v, CGAL::vertices_around_face(halfedge(fd, *poly_item->polyhedron()), *poly_item->polyhedron())) {
+		BOOST_FOREACH(fg_vertex_descriptor v, CGAL::vertices_around_face(halfedge(fd, *poly_item->polyhedron()), *poly_item->polyhedron())){
 			Point_3 temp = poly_item->polyhedron()->point(v);
 			//std::cout<<temp[0]<<' '<< temp[1] <<' '<< temp[2] << std::endl;
 			Mypoint tep(temp[0], temp[1], temp[2]);
@@ -2422,7 +2461,7 @@ void Scene_polyhedron_selection_item::doubleSelect(const std::set<fg_face_descri
 	std::set<fg_face_descriptor> front;
 	std::set<fg_face_descriptor> back;
 
-	BOOST_FOREACH(fg_face_descriptor fd, front_sel)
+	BOOST_FOREACH(fg_face_descriptor fd, front_sel) 
 		front.insert(fd);
 	BOOST_FOREACH(fg_face_descriptor fd, back_sel)
 		back.insert(fd);
@@ -2458,7 +2497,7 @@ void Scene_polyhedron_selection_item::doubleSelect(const std::set<fg_face_descri
 		std::cout << front_center.x << ' ' << front_center.y << ' ' << front_center.z << "   " << back_center.x << ' ' << back_center.y << ' ' << back_center.z << std::endl;
 
 		BOOST_FOREACH(fg_face_descriptor fd, poly_item->segments[edited_segment].faces_included) {
-			std::cout << Mypoint::norm(interoirs[fd] - front_center) << ' ' << Mypoint::norm(interoirs[fd] - back_center) << std::endl;
+			std::cout << Mypoint::norm(interoirs[fd] - front_center) << ' ' << Mypoint::norm(interoirs[fd] - back_center)<< std::endl;
 
 			if (Mypoint::norm(interoirs[fd] - front_center) < Mypoint::norm(interoirs[fd] - back_center)) {
 				front.insert(fd);
@@ -2521,7 +2560,7 @@ void Scene_polyhedron_selection_item::init(Scene_face_graph_item* poly_item, QMa
 	connect(&k_ring_selector, SIGNAL(doubleSelect(const std::set<fg_face_descriptor>&, const std::set<fg_face_descriptor>&)),
 		this, SLOT(doubleSelect(const std::set<fg_face_descriptor>&, const std::set<fg_face_descriptor>&)));
 	/*********************/
-
+	
 	CGAL::QGLViewer* viewer = *CGAL::QGLViewer::QGLViewerPool().begin();
 	d->manipulated_frame = new ManipulatedFrame();
 	viewer->installEventFilter(this);

@@ -255,7 +255,6 @@ protected:
 
   Generator* m_generator;
   int m_index_color;
-
 //***********************Weixiao Update comment*******************************//
 public:
 	QColor add_new_label(const char* name)

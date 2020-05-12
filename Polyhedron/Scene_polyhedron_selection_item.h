@@ -460,22 +460,22 @@ public:
 		}
 	}
 	/*********************************Ziqian************************************/
-	void select_all_shown() {
-		switch (get_active_handle_type()) {
-		case Active_handle::VERTEX:
-			select_all<fg_vertex_descriptor>(); break;// haven't been implemented! just select_all
-		case Active_handle::FACET:
-		case Active_handle::CONNECTED_COMPONENT:
-			select_all_shown<fg_face_descriptor>(); break;
-		case Active_handle::EDGE:
-		case Active_handle::PATH:// haven't been implemented! just select_all
-			selected_edges.insert(edges(*polyhedron()).first, edges(*polyhedron()).second);
-			invalidateOpenGLBuffers();
-			CGAL::QGLViewer* v = *CGAL::QGLViewer::QGLViewerPool().begin();
-			v->update();
-			break;
-		}
-	}
+	//void select_all_shown() {
+	//	switch (get_active_handle_type()) {
+	//	case Active_handle::VERTEX:
+	//		select_all<fg_vertex_descriptor>(); break;// haven't been implemented! just select_all
+	//	case Active_handle::FACET:
+	//	case Active_handle::CONNECTED_COMPONENT:
+	//		select_all_shown<fg_face_descriptor>(); break;
+	//	case Active_handle::EDGE:
+	//	case Active_handle::PATH:// haven't been implemented! just select_all
+	//		selected_edges.insert(edges(*polyhedron()).first, edges(*polyhedron()).second);
+	//		invalidateOpenGLBuffers();
+	//		CGAL::QGLViewer* v = *CGAL::QGLViewer::QGLViewerPool().begin();
+	//		v->update();
+	//		break;
+	//	}
+	//}
 
 	/****************************************************************************/
 	
@@ -494,19 +494,19 @@ public:
 		Q_EMIT itemChanged();
 	}
 	/***************************************Ziqian****************************************/
-	template<class HandleType>
-	void select_all_shown() {
-		typedef Selection_traits<HandleType, Scene_polyhedron_selection_item> Tr;
-		Tr tr(this);
+	//template<class HandleType>
+	//void select_all_shown() {
+	//	typedef Selection_traits<HandleType, Scene_polyhedron_selection_item> Tr;
+	//	Tr tr(this);
 
-		for (typename Tr::Iterator it = tr.iterator_begin(); it != tr.iterator_end(); ++it) {
-			if (tr.item->poly_item->face_shown[*it]) {
-				tr.container().insert(*it);
-			}
-		}
-		invalidateOpenGLBuffers();
-		Q_EMIT itemChanged();
-	}
+	//	for (typename Tr::Iterator it = tr.iterator_begin(); it != tr.iterator_end(); ++it) {
+	//		if (tr.item->poly_item->face_shown[*it]) {
+	//			tr.container().insert(*it);
+	//		}
+	//	}
+	//	invalidateOpenGLBuffers();
+	//	Q_EMIT itemChanged();
+	//}
 
 	/*************************************************************************************/
 
@@ -868,8 +868,9 @@ public:
 		}
 		invalidateOpenGLBuffers();
 	}
-
-	void changed_with_poly_item() {
+	//********************Weixiao Update************************//
+	void changed_with_poly_item()
+	{
 		// no need to update indices
 		poly_item->invalidateOpenGLBuffers();
 		Q_EMIT poly_item->itemChanged();
@@ -884,7 +885,11 @@ public:
 
 	void selection_changed(bool b);
 
-	/***************************Ziqian****************************/
+	/***************************Ziqian && Weixiao****************************/
+	void delete_properties_of_selected_facets();
+
+	void segment_expand_or_reduce(int&);
+
 	// set face_segment_id into the same, and record the information into map
 	bool put_selected_faces_into_one_segment();
 	void extract_connected_component
@@ -898,7 +903,6 @@ public:
 	{
 		return k_ring_selector.active_handle_type;
 	}
-
 
 	std::size_t get_editing_segment() { return edited_segment; }
 	/*************************************************************/
@@ -974,13 +978,37 @@ protected:
 		}
 
 		if (!visible() || !k_ring_selector.state.shift_pressing) { return false; }
-		if (gen_event->type() == QEvent::Wheel)
+		//********************Weixiao Update************************//
+		if (gen_event->type() == QEvent::Wheel 
+			&& k_ring_selector.state.shift_pressing)
 		{
 			QWheelEvent* event = static_cast<QWheelEvent*>(gen_event);
 			int steps = event->delta() / 120;
-			expand_or_reduce(steps);
+			
+			if (wheel_count == 0)
+			{
+				this->segment_expand_or_reduce(steps);
+				++wheel_count;
+			}
+			else if (wheel_count == 1)
+			{
+				wheel_count = 0;
+			}
+
+			//this->segment_expand_or_reduce(steps);
+			//expand_or_reduce(steps);
+
 			return true;
 		}
+		//**********************************************************//
+		//if (gen_event->type() == QEvent::Wheel)
+		//{
+		//	QWheelEvent* event = static_cast<QWheelEvent*>(gen_event);
+		//	int steps = event->delta() / 120;
+
+		//	expand_or_reduce(steps);
+		//	return true;
+		//}
 		return false;
 	}
 
@@ -1103,6 +1131,9 @@ protected:
 	/****************Ziqian*******************/
 	std::size_t edited_segment;
 	/*****************************************/
+	//********************Weixiao Update************************//
+	int wheel_count = 0;
+	//**********************************************************//
 
 public:
 	// selection

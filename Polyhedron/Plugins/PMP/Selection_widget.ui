@@ -184,6 +184,28 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
+             <widget class="QPushButton" name="SelectClasses">
+              <property name="text">
+               <string>Select Semantic Class</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <item>
+               <property name="text">
+                <string>None</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="Recommendation_button">
               <property name="text">
                <string>Recommendation</string>
@@ -236,13 +258,30 @@
              <widget class="QPushButton" name="Create_selection_item_button">
               <property name="font">
                <font>
-                <weight>75</weight>
+                <weight>50</weight>
                 <italic>false</italic>
-                <bold>true</bold>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
                <string>Create Selection</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="Delete_selection_button">
+              <property name="text">
+               <string>Delete Selection</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="Select_all_button">
+              <property name="toolTip">
+               <string extracomment="Select all simplices of Selection Type"/>
+              </property>
+              <property name="text">
+               <string>Select &amp;All</string>
               </property>
              </widget>
             </item>
@@ -267,19 +306,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="Select_all_shown_button">
+             <widget class="QPushButton" name="Delete_facets_from_selection">
               <property name="text">
-               <string>Select All Shown</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="Select_all_button">
-              <property name="toolTip">
-               <string extracomment="Select all simplices of Selection Type"/>
-              </property>
-              <property name="text">
-               <string>Select &amp;All</string>
+               <string>Delete facets from selection</string>
               </property>
              </widget>
             </item>

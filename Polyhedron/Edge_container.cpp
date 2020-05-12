@@ -126,9 +126,8 @@ void Edge_container::draw(Viewer_interface* viewer,
 		getVao(viewer)->program->setUniformValue("far", (GLfloat)viewer->camera()->zFar());
 		getVao(viewer)->program->setUniformValue("width", GLfloat(5.0f));
 		getVao(viewer)->bind();
-		getVbo(Indices)->bind();
 		/*************************************************************/
-
+		getVbo(Indices)->bind();
 		viewer->glDrawElements(GL_LINES, static_cast<GLuint>(getIdxSize()),
 			GL_UNSIGNED_INT, 0);
 		getVbo(Indices)->release();
@@ -146,18 +145,17 @@ void Edge_container::draw(Viewer_interface* viewer,
 		if (getVao(viewer)->program->property("hasFMatrix").toBool())
 			getVao(viewer)->program->setUniformValue("f_matrix", getFrameMatrix());
 
+		/***************************Ziqian****************************/
 		getVao(viewer)->program->setUniformValue("width", GLfloat(3.0f));
-
+		/*************************************************************/
 		if (viewer->getShaderProgram(getProgram())->property("isInstanced").toBool())
 		{
-
 			viewer->glDrawArraysInstanced(GL_LINES, 0,
 				static_cast<GLsizei>(getFlatDataSize() / 3),
 				static_cast<GLsizei>(getCenterSize() / 3));
 		}
 		else
 		{
-
 			viewer->glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(getFlatDataSize() / 3));
 		}
 

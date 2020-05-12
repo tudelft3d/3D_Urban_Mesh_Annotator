@@ -220,6 +220,10 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 			sm_item->face_label_comment = face_label_comment;
 			sm_item->input_comments = input_comments;
 			sm_item->setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
+			if (!input_comments.empty())
+			{
+				sm_item->set_comments(input_comments);
+			}
 			//*******************************************************************//
 
 			return sm_item;

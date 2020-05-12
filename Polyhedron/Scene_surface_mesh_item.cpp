@@ -39,8 +39,8 @@
 #include <CGAL/IO/File_writer_wavefront.h>
 #include <CGAL/IO/generic_copy_OFF.h>
 #include <CGAL/IO/OBJ_reader.h>
-#include <CGAL/IO/PLY_reader.h>
-#include <CGAL/IO/PLY_writer.h>
+#include "CGAL/IO/PLY_reader.h" //#include <CGAL/IO/PLY_reader.h>
+#include "CGAL/IO/PLY_writer.h" //#include <CGAL/IO/PLY_writer.h>
 #include <CGAL/Polygon_mesh_processing/measure.h>
 #include <CGAL/statistics_helpers.h>
 
@@ -56,7 +56,7 @@
 #include <CGAL/Three/Triangle_container.h>
 #include <CGAL/Three/Edge_container.h>
 #include <CGAL/Three/Point_container.h>
-#include <CGAL/Three/Three.h>
+#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
 #include <CGAL/Buffer_for_vao.h>
 #include <QMenu>
 #include "id_printing.h"
@@ -156,6 +156,7 @@ struct Scene_surface_mesh_item_priv {
 		item->setProperty("classname", QString("surface_mesh"));
 
 		//***********************Weixiao Update texture item*******************************//
+		//pointSizeSlider = NULL;
 		texture_item = new Scene_textured_surface_mesh_item();
 		//*******************************************************************//
 	}
@@ -194,6 +195,7 @@ struct Scene_surface_mesh_item_priv {
 		item->setProperty("classname", QString("surface_mesh"));
 
 		//***********************Weixiao Update texture item*******************************//
+		//pointSizeSlider = NULL;
 		texture_item = new Scene_textured_surface_mesh_item();
 		//*******************************************************************//
 	}
@@ -202,6 +204,10 @@ struct Scene_surface_mesh_item_priv {
 	{
 		if (alphaSlider)
 			delete alphaSlider;
+		//********************Weixiao Update************************//
+		//if (pointSizeSlider)
+		//	delete pointSizeSlider;
+		//**********************************************************//
 		if (smesh_)
 		{
 			delete smesh_;
@@ -315,6 +321,7 @@ struct Scene_surface_mesh_item_priv {
 	bool self_intersect;
 	mutable QSlider* alphaSlider;
 	/*************************/
+	//mutable QSlider* pointSizeSlider;
 	std::set<std::size_t> chosen_segments;
 	/*************************/
 };
@@ -482,6 +489,16 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 		alphaSlider->setValue(120);
 		//***********************************************//
 	}
+	//********************Weixiao Update************************//
+	//if (!pointSizeSlider)
+	//{
+	//	pointSizeSlider = new QSlider(::Qt::Horizontal);
+	//	pointSizeSlider->setMinimum(0);
+	//	pointSizeSlider->setMaximum(1000);
+	//	pointSizeSlider->setValue(1);
+	//}
+	//**********************************************************//
+
 	smooth_vertices.clear();
 	smooth_normals.clear();
 	flat_vertices.clear();
@@ -567,6 +584,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 			}
 		}
 	}
+
 	if (name.testFlag(Scene_item_rendering_helper::COLORS))
 	{
 
@@ -574,44 +592,52 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 		has_fcolors = smesh_->property_map<face_descriptor, CGAL::Color >("f:color").second;
 		has_vcolors = smesh_->property_map<vertex_descriptor, CGAL::Color >("v:color").second;
 	}
+
 	if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
 	{
 		idx_edge_data_.clear();
 		idx_edge_data_.shrink_to_fit();
 		idx_edge_data_.reserve(num_edges(*smesh_) * 2);
-		/*******************************Significantly changed by Ziqian******************************/
+
+		/*******************************Significantly changed by Ziqian && Weixiao******************************/
 		idx_boundary_edge_data_.clear();
 		idx_boundary_edge_data_.shrink_to_fit();
 		idx_boundary_edge_data_.reserve(num_edges(*smesh_) * 2);
 
 		BOOST_FOREACH(edge_descriptor ed, edges(*smesh_))
 		{
-			if (item->face_segment_id.empty()) {
+			if (item->face_segment_id.empty())
+			{
 				idx_edge_data_.push_back(source(ed, *smesh_));
 				idx_edge_data_.push_back(target(ed, *smesh_));
 			}
-			else {
+			else 
+			{
 				face_descriptor fd1, fd2;
 				fd1 = face(halfedge(ed, *smesh_), *smesh_);
 				fd2 = face(opposite(halfedge(ed, *smesh_), *smesh_), *smesh_);
 
-				if (item->face_segment_id[fd1] != 0 && item->face_segment_id[fd2] != 0 && item->face_segment_id[fd1] != item->face_segment_id[fd2]) {
-					idx_boundary_edge_data_.push_back(source(ed, *smesh_));
-					idx_boundary_edge_data_.push_back(target(ed, *smesh_));
+				if (fd1.is_valid() && fd2.is_valid())
+				{
+					if (item->face_segment_id[fd1] != item->face_segment_id[fd2])
+					{
+						idx_boundary_edge_data_.push_back(source(ed, *smesh_));
+						idx_boundary_edge_data_.push_back(target(ed, *smesh_));
 
-					seg_id s1 = item->face_segment_id[fd1];
-					seg_id s2 = item->face_segment_id[fd2];
+						seg_id s1 = item->face_segment_id[fd1];
+						seg_id s2 = item->face_segment_id[fd2];
 
-					item->boundary_info[ed].set_adjecent_segs(&(item->segments[s1]),
-						&(item->segments[s2]));
-				}
-				else {
-					idx_edge_data_.push_back(source(ed, *smesh_));
-					idx_edge_data_.push_back(target(ed, *smesh_));
+						item->boundary_info[ed].set_adjecent_segs(&(item->segments[s1]),
+							&(item->segments[s2]));
+					}
+					else
+					{
+						idx_edge_data_.push_back(source(ed, *smesh_));
+						idx_edge_data_.push_back(target(ed, *smesh_));
+					}
 				}
 			}
-			if (has_feature_edges &&
-				get(e_is_feature_map, ed))
+			if (has_feature_edges && get(e_is_feature_map, ed))
 			{
 				idx_feature_edge_data_.push_back(source(ed, *smesh_));
 				idx_feature_edge_data_.push_back(target(ed, *smesh_));
@@ -640,13 +666,12 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 
 	BOOST_FOREACH(face_descriptor fd, faces(*smesh_))
 	{
-		if (is_triangle(halfedge(fd, *smesh_), *smesh_))
+		if (is_triangle(halfedge(fd, *smesh_), *smesh_) && fd.is_valid())
 		{
 			BOOST_FOREACH(halfedge_descriptor hd, halfedges_around_face(halfedge(fd, *smesh_), *smesh_))
 			{
 				if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
 				{
-
 					Point p = positions[source(hd, *smesh_)] + offset;
 					if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
 						CPF::add_point_in_buffer(p, selected_flat_vertices);
@@ -813,6 +838,8 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 			}
 		}
 	}
+
+
 	if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
 	{
 
@@ -857,6 +884,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 			static_cast<int>(selected_flat_vertices.size() * sizeof(cgal_gl_data)));
 
 	}
+
 	if (name.testFlag(Scene_item_rendering_helper::NORMALS))
 	{
 
@@ -867,6 +895,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 		item->getTriangleContainer(0)->allocate(Tri::Smooth_normals, smooth_normals.data(),
 			static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
 	}
+
 	if (name.testFlag(Scene_item_rendering_helper::COLORS))
 	{
 		if (!f_colors.empty())
@@ -892,7 +921,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 	QApplication::restoreOverrideCursor();
 }
 
-/*************************Ziqian***************************/
+/*************************Ziqian && Weixiao***************************/
 void Scene_surface_mesh_item_priv::computeSegmentBoundary() {
 	//only used in the init process
 	typedef boost::graph_traits<SMesh>::halfedge_descriptor halfedge_descriptor;
@@ -912,19 +941,23 @@ void Scene_surface_mesh_item_priv::computeSegmentBoundary() {
 		fd1 = face(halfedge(ed, *smesh_), *smesh_);
 		fd2 = face(opposite(halfedge(ed, *smesh_), *smesh_), *smesh_);
 
-		if (item->face_segment_id[fd1] != item->face_segment_id[fd2]) {
-			idx_boundary_edge_data_.push_back(source(ed, *smesh_));
-			idx_boundary_edge_data_.push_back(target(ed, *smesh_));
-			seg_id s1 = item->face_segment_id[fd1];
-			seg_id s2 = item->face_segment_id[fd2];
+		if (fd1.is_valid() && fd2.is_valid())
+		{
+			if (item->face_segment_id[fd1] != item->face_segment_id[fd2])
+			{
+				idx_boundary_edge_data_.push_back(source(ed, *smesh_));
+				idx_boundary_edge_data_.push_back(target(ed, *smesh_));
+				seg_id s1 = item->face_segment_id[fd1];
+				seg_id s2 = item->face_segment_id[fd2];
 
-			item->boundary_info[ed].set_adjecent_segs(&(item->segments[s1]),
-				&(item->segments[s2]));
-		}
-
-		else {
-			idx_edge_data_.push_back(source(ed, *smesh_));
-			idx_edge_data_.push_back(target(ed, *smesh_));
+				item->boundary_info[ed].set_adjecent_segs(&(item->segments[s1]),
+					&(item->segments[s2]));
+			}
+			else
+			{
+				idx_edge_data_.push_back(source(ed, *smesh_));
+				idx_edge_data_.push_back(target(ed, *smesh_));
+			}
 		}
 	}
 
@@ -946,19 +979,29 @@ void Scene_surface_mesh_item_priv::computeSegmentBoundary() {
 	item->getEdgeContainer(2)->allocate(Ed::Vertices, smooth_vertices.data(),
 		static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
 }
-void Scene_surface_mesh_item::computeSegmentBoundary() {
+
+void Scene_surface_mesh_item::computeSegmentBoundary() 
+{
 	computeSegments();
 	d->computeSegmentBoundary();
 }
-void Scene_surface_mesh_item::computeSegments() {
-	for (std::map<face_descriptor, int>::iterator p = face_segment_id.begin(); p != face_segment_id.end(); p++) {
-		segments[p->second].faces_included.insert(p->first);
+
+void Scene_surface_mesh_item::computeSegments() 
+{
+	for (std::map<face_descriptor, int>::iterator p = face_segment_id.begin(); p != face_segment_id.end(); p++)
+	{
+		if (p->first.is_valid())
+		{
+			segments[p->second].faces_included.insert(p->first);
+		}
 	}
 
-	for (std::map<seg_id, Segment>::iterator p = segments.begin(); p != segments.end(); p++) {
+	for (std::map<seg_id, Segment>::iterator p = segments.begin(); p != segments.end(); p++)
+	{
 		p->second.id = p->first;
 	}
 }
+
 void Scene_surface_mesh_item::get_connected_faces(face_descriptor fd, std::vector<face_descriptor>& connected_faces)
 {
 	connected_faces.clear();
@@ -972,6 +1015,8 @@ void Scene_surface_mesh_item::get_connected_faces(face_descriptor fd, std::vecto
 			break;
 	}
 }
+
+
 //**************************Zi qian && Weixiao****************************//
 void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 	m_RMode = renderingMode();
@@ -986,7 +1031,10 @@ void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 	invalidateOpenGLBuffers();
 	Q_EMIT redraw();
 }
-void Scene_surface_mesh_item::unemphasize() {
+
+
+void Scene_surface_mesh_item::unemphasize()
+{
 	//setRenderingMode(m_RMode);
 	if (tmp_default_renderingmode >= 0 && tmp_default_renderingmode < NumberOfRenderingMode)
 		CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(tmp_default_renderingmode);
@@ -999,7 +1047,8 @@ void Scene_surface_mesh_item::unemphasize() {
 	Q_EMIT redraw();
 }
 
-void Scene_surface_mesh_item::addChosenSegment(seg_id id) {
+void Scene_surface_mesh_item::addChosenSegment(seg_id id) 
+{
 	d->chosen_segments.insert(id);
 }
 
@@ -1007,16 +1056,18 @@ void Scene_surface_mesh_item::addChosenSegment(seg_id id) {
 int Scene_surface_mesh_item::updateSegmentId(std::map<face_descriptor, bool> &face_visited_check)
 {
 	std::vector<std::vector<face_descriptor>> all_regions;
+	std::map<face_descriptor, int> face_segment_id_clone = face_segment_id;
+	std::map<face_descriptor, bool> face_visited_check_clone = face_visited_check;
 	BOOST_FOREACH(face_descriptor fd, faces(*(polyhedron())))
 	{
-		if (face_visited_check[fd] || !fd.is_valid())
+		if (face_visited_check_clone[fd] || !fd.is_valid())
 			continue;
 
 		std::vector<face_descriptor> current_region, current_seeds;
-		face_visited_check[fd] = true;
+		face_visited_check_clone[fd] = true;
 		current_seeds.emplace_back(fd);
 		current_region.emplace_back(fd);
-		int seed_id = face_segment_id[fd];
+		int seed_id = face_segment_id_clone[fd];
 		int new_id = 0;
 		for (int i = 0; i < current_seeds.size(); ++i)
 		{
@@ -1029,12 +1080,12 @@ int Scene_surface_mesh_item::updateSegmentId(std::map<face_descriptor, bool> &fa
 				halfedge_descriptor op = opposite(hd, *d->smesh_);
 				face_descriptor f_neg = face(op, *d->smesh_);
 
-				if (seed_id == face_segment_id[f_neg])
+				if (seed_id == face_segment_id_clone[f_neg])
 				{
-					if (!face_visited_check[f_neg]
+					if (!face_visited_check_clone[f_neg]
 						&& f_neg.is_valid())
 					{
-						face_visited_check[f_neg] = true;
+						face_visited_check_clone[f_neg] = true;
 						current_region.emplace_back(f_neg);
 						current_seeds.emplace_back(f_neg);
 					}
@@ -1143,7 +1194,7 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 		getTriangleContainer(0)->setAlpha(alpha());
 		getTriangleContainer(0)->draw(viewer, !d->has_vcolors);
 
-		this->drawEdges(viewer);
+		//this->drawEdges(viewer);
 
 	}
 	//***********************Weixiao Update texturemode*******************************//
@@ -1391,6 +1442,11 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 		getTriangleContainer(1)->draw(viewer, !d->has_fcolors);
 	}
 
+	//********************Weixiao Update************************//
+		//depends on the checkbox
+		this->drawPoints(viewer);
+		this->drawEdges(viewer);
+	//**********************************************************//
 }
 
 void Scene_surface_mesh_item::drawEdges(CGAL::Three::Viewer_interface* viewer) const
@@ -1404,19 +1460,25 @@ void Scene_surface_mesh_item::drawEdges(CGAL::Three::Viewer_interface* viewer) c
 		setBuffersInit(viewer, true);
 	}
 
-	getEdgeContainer(0)->setSelected(is_selected);
-	getEdgeContainer(0)->setColor(color().lighter(50));
-	getEdgeContainer(0)->draw(viewer, true);
-	/*************************Ziqian****************************/
-	if (segmentBoundryShow) {
+	/*************************Ziqian && Weixiao****************************/
+	if (edgesShow)
+	{
+		getEdgeContainer(0)->setSelected(is_selected);
+		getEdgeContainer(0)->setColor(color().lighter(50));
+		getEdgeContainer(0)->draw(viewer, true);
+	}
+
+	if (segmentBoundryShow)
+	{
 		getEdgeContainer(2)->setSelected(false);
 		getEdgeContainer(2)->setColor(QColor(Qt::blue));
 		getEdgeContainer(2)->draw(viewer, true);
 	}
-	else {
-		getEdgeContainer(2)->setSelected(false);
-		getEdgeContainer(2)->setColor(color().lighter(50));
-		getEdgeContainer(2)->draw(viewer, true);
+	else
+	{
+		//getEdgeContainer(2)->setSelected(false);
+		//getEdgeContainer(2)->setColor(color().lighter(50));
+		//getEdgeContainer(2)->draw(viewer, true);
 	}
 	/***********************************************************/
 	if (d->has_feature_edges)
@@ -1429,17 +1491,24 @@ void Scene_surface_mesh_item::drawEdges(CGAL::Three::Viewer_interface* viewer) c
 
 void Scene_surface_mesh_item::drawPoints(CGAL::Three::Viewer_interface* viewer) const
 {
-	if (!isInit())
-		initGL();
-	if (getBuffersFilled() &&
-		!getBuffersInit(viewer))
+	if (pointShow)
 	{
-		d->initializeBuffers(viewer);
-		setBuffersInit(viewer, true);
+		if (!isInit())
+			initGL();
+		if (getBuffersFilled() &&
+			!getBuffersInit(viewer))
+		{
+			d->initializeBuffers(viewer);
+			setBuffersInit(viewer, true);
+		}
+		getPointContainer(0)->setSelected(is_selected);
+		getPointContainer(0)->setColor(color());
+		//********************Weixiao Update************************//
+		//CGAL::Three::Three::setDefaultPointSize(PointSize());
+		//getPointContainer(0)->setColor(color().lighter(PointSize()));
+		//**********************************************************//
+		getPointContainer(0)->draw(viewer, true);
 	}
-	getPointContainer(0)->setSelected(is_selected);
-	getPointContainer(0)->setColor(color());
-	getPointContainer(0)->draw(viewer, true);
 }
 
 void Scene_surface_mesh_item::selection_changed(bool p_is_selected)
@@ -1794,6 +1863,7 @@ Scene_surface_mesh_item::select(double orig_x,
 	std::size_t vertex_to_emit = 0;
 	typedef Input_facets_AABB_tree Tree;
 	typedef Tree::Intersection_and_primitive_id<EPICK::Ray_3>::Type Object_and_primitive_id;
+	int selected_facet_num = 0, selected_vertex_num = 0, selected_edge_num = 0;
 
 	Tree* aabb_tree = static_cast<Tree*>(d->get_aabb_tree());
 	if (aabb_tree)
@@ -1898,6 +1968,56 @@ Scene_surface_mesh_item::select(double orig_x,
 	Scene_item::select(orig_x, orig_y, orig_z, dir_x, dir_y, dir_z);
 	Q_EMIT selection_done();
 }
+//********************Weixiao Update************************//
+//swap the facet properties according to the 'Surface_mesh.h' erase procedure
+void  Scene_surface_mesh_item::map_garbage_properties
+(
+	std::map<face_descriptor, face_descriptor> &removed_unremoved
+)
+{
+	if (!removed_unremoved.empty())
+	{
+		std::map<face_descriptor, int> face_label_update;
+		std::map<face_descriptor, QColor> face_color_update;
+		std::map<face_descriptor, std::vector<float>> face_texcoord_update;
+		std::map<face_descriptor, int> face_textureid_update;
+		std::map<face_descriptor, float> face_prob_update;
+		std::map<face_descriptor, int> face_segment_id_update;
+		BOOST_FOREACH(face_descriptor fd, faces(*polyhedron()))
+		{
+			std::map<face_descriptor, face_descriptor>::iterator it = removed_unremoved.find(fd);
+			if (it != removed_unremoved.end())
+			{
+				face_descriptor swaped_fd = removed_unremoved[fd];
+				face_label_update[fd] = face_label[swaped_fd];
+				face_color_update[fd] = face_color[swaped_fd];
+				face_texcoord_update[fd] = face_texcoord[swaped_fd];
+				face_textureid_update[fd] = face_textureid[swaped_fd];
+				face_prob_update[fd] = label_probabilities[swaped_fd];
+				face_segment_id_update[fd] = face_segment_id[swaped_fd];
+			}
+			else
+			{
+				face_label_update[fd] = face_label[fd];
+				face_color_update[fd] = face_color[fd];
+				face_texcoord_update[fd] = face_texcoord[fd];
+				face_textureid_update[fd] = face_textureid[fd];
+				face_prob_update[fd] = label_probabilities[fd];
+				face_segment_id_update[fd] = face_segment_id[fd];
+			}
+		}
+		face_label.clear(); face_label = face_label_update;
+		face_color.clear(); face_color = face_color_update;
+		face_texcoord.clear(); face_texcoord = face_texcoord_update;
+		face_textureid.clear(); face_textureid = face_textureid_update;
+		label_probabilities.clear();  label_probabilities = face_prob_update;
+		face_segment_id.clear();  face_segment_id = face_segment_id_update;
+
+		segments.clear();
+		computeSegmentBoundary();
+	}
+}
+//**********************************************************//
 
 void Scene_surface_mesh_item::invalidateOpenGLBuffers() {
 	invalidate(ALL);
@@ -1906,13 +2026,21 @@ void Scene_surface_mesh_item::invalidateOpenGLBuffers() {
 void Scene_surface_mesh_item::invalidate(Gl_data_names name)
 {
 	Q_EMIT item_is_about_to_be_changed();
+
 	if (name.testFlag(GEOMETRY))
 	{
 		is_bbox_computed = false;
 		delete_aabb_tree(this);
-		d->smesh_->collect_garbage();
+		//********************Weixiao Update************************//
+		//d->smesh_->collect_garbage();
+		std::map<face_descriptor, face_descriptor> removed_unremoved;
+		d->smesh_->collect_garbage(removed_unremoved);
+		map_garbage_properties(removed_unremoved);
+		//**********************************************************//
+
 		d->invalidate_stats();
 	}
+
 	setBuffersFilled(false);
 	Q_FOREACH(CGAL::QGLViewer * v, CGAL::QGLViewer::QGLViewerPool())
 	{
@@ -1932,10 +2060,12 @@ void Scene_surface_mesh_item::invalidate(Gl_data_names name)
 	getEdgeContainer(2)->reset_vbos(name);
 	/**/
 	getPointContainer(0)->reset_vbos(name);
+
 	if (isInit())
 		processData(name);
 	else
 		initGL();
+
 	if (!d->all_displayed)
 		d->killIds();
 	else
@@ -2129,7 +2259,7 @@ bool Scene_surface_mesh_item::write_ply_mesh(std::ostream& stream, bool binary) 
 
 	if (binary)
 		CGAL::set_binary_mode(stream);
-
+	
 	//if the user do not start 3D Annotation, the comments keep same as input
 	bool used_old_comments = false;
 	if (d->m_comments.empty())
@@ -2153,6 +2283,11 @@ std::string& Scene_surface_mesh_item::comments()
 const std::string& Scene_surface_mesh_item::comments() const
 {
 	return d->m_comments;
+}
+
+void Scene_surface_mesh_item::set_comments(std::string comment_in)
+{
+	d->m_comments = comment_in;
 }
 
 //*******************************************************************//
@@ -2574,25 +2709,26 @@ void Scene_surface_mesh_item::resetColors()
 QMenu* Scene_surface_mesh_item::contextMenu()
 {
 	QMenu* menu = Scene_item::contextMenu();
+	//********************Weixiao Update************************//
+	//QAction* actionResetColor =
+	//	menu->findChild<QAction*>(tr("actionResetColor"));
 
-	QAction* actionResetColor =
-		menu->findChild<QAction*>(tr("actionResetColor"));
-
-	if (isItemMulticolor() || d->has_fpatch_id)
-	{
-		if (!actionResetColor)
-		{
-			actionResetColor = menu->addAction(tr("Reset Colors"));
-			actionResetColor->setObjectName("actionResetColor");
-		}
-		connect(actionResetColor, SIGNAL(triggered()),
-			this, SLOT(resetColors()));
-	}
-	else if (actionResetColor)
-	{
-		menu->removeAction(actionResetColor);
-		actionResetColor->deleteLater();
-	}
+	//if (isItemMulticolor() || d->has_fpatch_id)
+	//{
+	//	if (!actionResetColor)
+	//	{
+	//		actionResetColor = menu->addAction(tr("Reset Colors"));
+	//		actionResetColor->setObjectName("actionResetColor");
+	//	}
+	//	connect(actionResetColor, SIGNAL(triggered()),
+	//		this, SLOT(resetColors()));
+	//}
+	//else if (actionResetColor)
+	//{
+	//	menu->removeAction(actionResetColor);
+	//	actionResetColor->deleteLater();
+	//}
+	//**********************************************************//
 	const char* prop_name = "Menu modified by Scene_surface_mesh_item.";
 	bool menuChanged = menu->property(prop_name).toBool();
 
@@ -2605,9 +2741,55 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 			[this]() {redraw(); });
 		container->addAction(sliderAction);
 		menu->addMenu(container);
+		//********************Weixiao Update************************//
+		//QMenu* point_size_containter = new QMenu(tr("Point size"));
+		//point_size_containter->menuAction()->setProperty("is_groupable", true);
+		//QWidgetAction* sliderAction2 = new QWidgetAction(0);
+		//sliderAction2->setDefaultWidget(d->pointSizeSlider);
+		//connect(d->pointSizeSlider, &QSlider::valueChanged,
+		//	this, [this]() {redraw(); });
+
+		//point_size_containter->addAction(sliderAction2);
+		//menu->addMenu(point_size_containter);
+		//**********************************************************//
+
 		menu->addSeparator();
+		//********************Weixiao Update************************//
+		QAction* actionDisplayTriangleVertices =
+			menu->addAction(tr("Display Triangle Vertices"));
+
+		actionDisplayTriangleVertices->setCheckable(true);
+		actionDisplayTriangleVertices->setChecked(false);
+		actionDisplayTriangleVertices->setObjectName("actionDisplayTriangleVertices");
+		connect(actionDisplayTriangleVertices, SIGNAL(triggered(bool)),
+			this, SLOT(showFacetVertices(bool)));
+		//
+		QAction* actionDisplayTriangleEdges =
+			menu->addAction(tr("Display Triangle Edges"));
+
+		actionDisplayTriangleEdges->setCheckable(true);
+		actionDisplayTriangleEdges->setChecked(true);
+		actionDisplayTriangleEdges->setObjectName("actionDisplayTriangleEdges");
+		connect(actionDisplayTriangleEdges, SIGNAL(triggered(bool)),
+			this, SLOT(showFacetEdges(bool)));
+		//
+		QAction* actionDisplaySegmentBorder =
+			menu->addAction(tr("Display Segment Border"));
+
+		actionDisplaySegmentBorder->setCheckable(true);
+		actionDisplaySegmentBorder->setChecked(true);
+		actionDisplaySegmentBorder->setObjectName("actionDisplaySegmentBorder");
+		connect(actionDisplaySegmentBorder, SIGNAL(triggered(bool)),
+			this, SLOT(showSegmentBorders(bool)));
+
+		//**********************************************************//
+
 		QAction* actionPrintVertices =
 			menu->addAction(tr("Display Vertices Ids"));
+		//********************Weixiao Update************************//
+		actionPrintVertices->setEnabled(false);
+		actionPrintVertices->setVisible(false);
+		//**********************************************************//
 		actionPrintVertices->setCheckable(true);
 		actionPrintVertices->setObjectName("actionPrintVertices");
 		connect(actionPrintVertices, SIGNAL(triggered(bool)),
@@ -2615,6 +2797,10 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 
 		QAction* actionPrintEdges =
 			menu->addAction(tr("Display Edges Ids"));
+		//********************Weixiao Update************************//
+		actionPrintEdges->setEnabled(false);
+		actionPrintEdges->setVisible(false);
+		//**********************************************************//
 		actionPrintEdges->setCheckable(true);
 		actionPrintEdges->setObjectName("actionPrintEdges");
 		connect(actionPrintEdges, SIGNAL(triggered(bool)),
@@ -2622,11 +2808,14 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 
 		QAction* actionPrintFaces =
 			menu->addAction(tr("Display Faces Ids"));
+		//********************Weixiao Update************************//
+		actionPrintFaces->setEnabled(false);
+		actionPrintFaces->setVisible(false);
+		//**********************************************************//
 		actionPrintFaces->setCheckable(true);
 		actionPrintFaces->setObjectName("actionPrintFaces");
 		connect(actionPrintFaces, SIGNAL(triggered(bool)),
 			this, SLOT(showFaces(bool)));
-
 
 		QAction* actionZoomToId =
 			menu->addAction(tr("Zoom to Index"));
@@ -2779,6 +2968,121 @@ bool Scene_surface_mesh_item::testDisplayId(double x, double y, double z, CGAL::
 	return !static_cast<Input_facets_AABB_tree*>(d->get_aabb_tree())->do_intersect(query);
 }
 
+//********************Weixiao Update************************//
+void Scene_surface_mesh_item::update_labels_for_selection()
+{
+	semantic_facet_map.clear();
+	int label_size = 0;
+	std::string comments;
+	comments = this->comments();
+	std::istringstream iss(comments);
+	std::string line, word;
+	while (getline(iss, line))
+	{
+		if (line != "Generated by the CGAL library")
+		{
+			std::istringstream temp_stream(line);
+			bool is_texture = false;
+			while (temp_stream >> word)
+			{
+				if (word == "TextureFile") 
+					is_texture = true;
+			}
+			if (is_texture)
+				continue;
+			else
+				++label_size;
+		}
+	}
+
+	for (std::size_t i = 0; i < label_size; ++i)
+	{
+		semantic_facet_map[i] = std::vector<face_descriptor>();
+	}
+
+	if (label_size > 0)
+	{
+		for (std::map<face_descriptor, int>::iterator p = face_label.begin(); p != face_label.end(); p++)
+		{
+			if (p->first.is_valid())
+			{
+				semantic_facet_map[p->second].emplace_back(p->first);
+			}
+		}
+	} 
+}
+
+void Scene_surface_mesh_item::fill_classes_combo_box(QComboBox* cb)
+{
+	std::string comments;
+	comments = this->comments();
+	std::istringstream iss(comments);
+	std::string line, word;
+	std::vector<std::string> face_label_comment_tmp;
+	while (getline(iss, line))
+	{
+		if (line != "Generated by the CGAL library") // Avoid repeating the line if multiple savings
+		{
+			std::istringstream temp_stream(line);
+			int space_count = 0;
+			bool is_label = false, is_texture_name = false;
+			while (temp_stream >> word)
+			{
+				if (word == "label" && is_label == false)
+					is_label = true;
+
+				++space_count;
+				if (space_count == 3 && is_label == true)
+				{
+					//Notice the class name must be one word or words connect with underscore "_"
+					face_label_comment_tmp.push_back(word);
+				}
+			}
+		}
+	}
+
+	cb->clear();
+	cb->addItem("None");
+	cb->addItem("unlabelled");
+	for (std::size_t i = 0; i < face_label_comment_tmp.size(); ++i)
+	{
+		std::ostringstream oss;
+		oss << face_label_comment_tmp[i].c_str();
+		cb->addItem(oss.str().c_str());
+	}
+
+	if (this->label_selection_combox_tmp == NULL)
+		this->label_selection_combox_tmp = cb;
+}
+
+
+void Scene_surface_mesh_item::showSegmentBorders(bool b)
+{
+	CGAL::Three::Viewer_interface* viewer =
+		qobject_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first());
+	segmentBoundryShow = b;
+	viewer->update();
+}
+
+void Scene_surface_mesh_item::showFacetEdges(bool b)
+{
+	CGAL::Three::Viewer_interface* viewer =
+		qobject_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first());
+	edgesShow = b;
+	viewer->update();
+}
+
+void Scene_surface_mesh_item::showFacetVertices(bool b)
+{
+	CGAL::Three::Viewer_interface* viewer =
+		qobject_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first());
+	pointShow = b;
+	if (pointShow)
+		this->drawPoints(viewer);
+	viewer->update();
+}
+//**********************************************************//
+
 void Scene_surface_mesh_item::showVertices(bool b)
 {
 	CGAL::Three::Viewer_interface* viewer =
@@ -2915,6 +3219,15 @@ void Scene_surface_mesh_item::setAlpha(int alpha)
 }
 
 QSlider* Scene_surface_mesh_item::alphaSlider() { return d->alphaSlider; }
+
+//********************Weixiao Update************************//
+//int Scene_surface_mesh_item::PointSize() const
+//{
+//	if (!d->pointSizeSlider)
+//		return 1;
+//	return (int)d->pointSizeSlider->value();
+//}
+//**********************************************************//
 
 void Scene_surface_mesh_item::computeElements()const
 {

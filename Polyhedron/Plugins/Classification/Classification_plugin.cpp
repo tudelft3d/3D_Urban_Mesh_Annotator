@@ -154,17 +154,23 @@ public:
 		dock_widget = new QDockWidget("3D Annotation", mw);
 		//********************************************************************//
 		dock_widget->setVisible(false);
+
 		//***********************Weixiao Update menu name*******************************//
 		//dock_widget_adv = new QDockWidget("Classification (Advanced)", mw);
 		dock_widget_adv = new QDockWidget("3D Annotation (Advanced)", mw);
+		//***********************Weixiao Update menu name*********************//
+		dock_widget_adv->setDisabled(true);
+		dock_widget_adv->setVisible(false);
 		//********************************************************************//
-		dock_widget_adv->setVisible(true);
+		//********************************************************************//
 
 		label_button = new QPushButton(QIcon(QString(":/cgal/icons/plus")), "", dock_widget);
-
+		//***********************Weixiao Update menu name*********************//
+		label_button->setDisabled(true);
+		label_button->setVisible(false);
+		//********************************************************************//
 		QMenu* label_menu = new QMenu("Label Menu", label_button);
 		label_button->setMenu(label_menu);
-
 		QAction* add_new_label = label_menu->addAction("Add new label(s)");
 		connect(add_new_label, SIGNAL(triggered()), this,
 			SLOT(on_add_new_label_clicked()));
@@ -172,12 +178,24 @@ public:
 		label_menu->addSeparator();
 
 		QAction* use_config_building = label_menu->addAction("Use configuration ground/vegetation/building");
+		//***********************Weixiao Update menu name*********************//
+		use_config_building->setDisabled(true);
+		use_config_building->setVisible(false);
+		//********************************************************************//
 		connect(use_config_building, SIGNAL(triggered()), this,
 			SLOT(on_use_config_building_clicked()));
 		QAction* use_config_roof = label_menu->addAction("Use configuration ground/vegetation/roof/facade");
+		//***********************Weixiao Update menu name*********************//
+		use_config_roof->setDisabled(true);
+		use_config_roof->setVisible(false);
+		//********************************************************************//
 		connect(use_config_roof, SIGNAL(triggered()), this,
 			SLOT(on_use_config_roof_clicked()));
 		QAction* use_config_las = label_menu->addAction("Use LAS standard configuration");
+		//***********************Weixiao Update menu name*********************//
+		use_config_las->setDisabled(true);
+		use_config_las->setVisible(false);
+		//********************************************************************//
 		connect(use_config_las, SIGNAL(triggered()), this,
 			SLOT(on_use_las_config_clicked()));
 
@@ -185,12 +203,20 @@ public:
 
 
 		QAction* generate = label_menu->addAction("Create one point set item per label");
+		//***********************Weixiao Update menu name*********************//
+		generate->setDisabled(true);
+		generate->setVisible(false);
+		//********************************************************************//
 		connect(generate, SIGNAL(triggered()), this,
 			SLOT(on_generate_items_button_clicked()));
 
 		label_menu->addSeparator();
 
 		QAction* clear_labels = label_menu->addAction("Clear labels");
+		//***********************Weixiao Update menu name*********************//
+		clear_labels->setDisabled(true);
+		clear_labels->setVisible(false);
+		//********************************************************************//
 		connect(clear_labels, SIGNAL(triggered()), this,
 			SLOT(on_clear_labels_clicked()));
 
@@ -291,7 +317,6 @@ public:
 		//********************************************************************//
 
 		//*******************************Weixiao **************************************//
-
 		//connect(ui_widget.lineEdit, SIGNAL(triggered()), this, SLOT(show_total_lables(int))); //Total
 		//connect(ui_widget.lineEdit_2, SIGNAL(on_add_selection_to_training_set_clicked()), this, SLOT(get_unlabelled_number_facets())); //Finished
 		//connect(ui_widget.progressBar, SIGNAL(currentIndexChanged(int)), this, SLOT(show_progress_bar(int)));
@@ -481,6 +506,7 @@ public Q_SLOTS:
 			ui_widget.display->clear();
 			ui_widget.display->addItem("Real colors");
 			ui_widget.display->addItem("Editing");
+			ui_widget.display->addItem("Unlabelled");
 			ui_widget.display->setCurrentIndex(1);
 			ui_widget_adv.selected_feature->clear();
 			classif->fill_display_combo_box(ui_widget.display, ui_widget_adv.selected_feature);
@@ -499,6 +525,15 @@ public Q_SLOTS:
 			//**************************************************************//
 
 			ui_widget_adv.selected_feature->setCurrentIndex(0);
+			//********************Weixiao Update************************//
+			Scene_polyhedron_selection_item* selection_item
+				= qobject_cast<Scene_polyhedron_selection_item*>(scene->item(scene->mainSelectionIndex()));
+			if (selection_item && selection_item->polyhedron_item()->label_selection_combox_tmp != NULL)
+			{
+				selection_item->polyhedron_item()->fill_classes_combo_box(selection_item->polyhedron_item()->label_selection_combox_tmp);
+				selection_item->polyhedron_item()->update_labels_for_selection();
+			}
+			//**********************************************************//
 		}
 	}
 
@@ -650,6 +685,7 @@ public Q_SLOTS:
 				"In order to annotate the data, you might need to use the following shortcuts:\n"
 				"[Most used]\n"
 				"Shift + Left Button: Selection\n"
+				"Shift + Wheel(Forward/Backward): Expand/Reduce selected area\n"
 				"Shift + D + Left Button: Deselection\n"
 				"Shift + [Capital letter of labels in the bracket(?)] : Add selection to the label category\n"
 				"Ctrl + 1: Switch on/off Texture rendering mode\n"
@@ -1505,26 +1541,46 @@ public Q_SLOTS:
 			SLOT(on_add_selection_to_training_set_clicked()));
 
 		QAction* reset = label_buttons.back().menu->addAction("Reset training set");
+		//***********************Weixiao Update menu name*********************//
+		reset->setDisabled(true);
+		reset->setVisible(false);
+		//********************************************************************//
 		connect(reset, SIGNAL(triggered()), this,
 			SLOT(on_reset_training_set_clicked()));
 
 		label_buttons.back().menu->addSeparator();
 
 		QAction* change_color = label_buttons.back().menu->addAction("Change color");
+		//***********************Weixiao Update menu name*********************//
+		change_color->setDisabled(true);
+		change_color->setVisible(false);
+		//********************************************************************//
 		connect(change_color, SIGNAL(triggered()), this,
 			SLOT(on_color_changed_clicked()));
 
 		QAction* change_name = label_buttons.back().menu->addAction("Change name");
+		//***********************Weixiao Update menu name*********************//
+		change_name->setDisabled(true);
+		change_name->setVisible(false);
+		//********************************************************************//
 		connect(change_name, SIGNAL(triggered()), this,
 			SLOT(on_name_changed_clicked()));
 
 		QAction* create = label_buttons.back().menu->addAction("Create point set item from labeled points");
+		//***********************Weixiao Update menu name*********************//
+		create->setDisabled(true);
+		create->setVisible(false);
+		//********************************************************************//
 		connect(create, SIGNAL(triggered()), this,
 			SLOT(on_create_point_set_item()));
 
 		label_buttons.back().menu->addSeparator();
 
 		QAction* remove_label = label_buttons.back().menu->addAction("Remove label");
+		//***********************Weixiao Update menu name*********************//
+		remove_label->setDisabled(true);
+		remove_label->setVisible(false);
+		//********************************************************************//
 		connect(remove_label, SIGNAL(triggered()), this,
 			SLOT(on_remove_label_clicked()));
 
@@ -1708,6 +1764,12 @@ public Q_SLOTS:
 			float labeling_progress = 1.0f - float(unlabelled_num) / float(total_facet_num);
 			labeling_progress = total_facet_num == unlabelled_num ? 0.0f : labeling_progress * 100.0f;
 			ui_widget.progressBar->setValue(labeling_progress);
+
+			Scene_polyhedron_selection_item* selection_item
+				= qobject_cast<Scene_polyhedron_selection_item*>(scene->item(scene->mainSelectionIndex()));
+			if (selection_item)
+				selection_item->polyhedron_item()->update_labels_for_selection();
+			//**********************************************************//
 			//**********************************************************//
 		}
 		item_changed(classif->item());

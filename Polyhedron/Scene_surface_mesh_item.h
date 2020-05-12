@@ -12,7 +12,7 @@
 
 //***********************Weixiao Update*******************************//
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
-#include <CGAL/IO/PLY_reader.h>
+#include "CGAL/IO/PLY_reader.h" //#include <CGAL/IO/PLY_reader.h>
 #include "Scene_textured_surface_mesh_item.h"
 //*******************************************************************//	
 
@@ -20,7 +20,7 @@
 #include "SMesh_type.h"
 #endif
 
-#include <CGAL/Three/Scene_item.h>
+#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_item_rendering_helper.h>
 #include <CGAL/Three/Viewer_interface.h>
 
@@ -148,7 +148,6 @@ public:
 	std::string& comments();
 	const std::string& comments() const;
 
-
 	std::map<vertex_descriptor, QColor> vertex_color;
 	std::map<face_descriptor, int> face_label;
 	std::map<face_descriptor, QColor> face_color;
@@ -160,6 +159,7 @@ public:
 	std::map<face_descriptor, int> face_segment_id;
 	std::string input_comments;
 	std::string file_path;
+	std::map<int, std::vector<face_descriptor>> semantic_facet_map;
 	//*******************************************************************//	
 	//***********************Ziqian && Weixiao*******************************//
 	std::map<face_descriptor, bool> face_shown;
@@ -174,7 +174,10 @@ public:
 	// this process is finished in PLY reading only, after the scene_surface_mesh is built.
 	void computeSegments();
 	bool segmentBoundryShow = true;
+	bool edgesShow = true;
+	bool pointShow = false;
 	RenderingMode m_RMode, tmp_default_renderingmode;
+	QComboBox* label_selection_combox_tmp = NULL;
 	//************************************************************//
 	//statistics
 	enum STATS
@@ -228,10 +231,19 @@ public:
 	QSlider* alphaSlider();
 	void computeElements() const Q_DECL_OVERRIDE;
 	/************************Ziqian && Weixiao ************************/
-	// Go through all the edges, and pick out all the boundary edge based on the infomations
-	// in face_segment_id
+	//int PointSize() const;
+
+	void set_comments(std::string);
+
+	void update_labels_for_selection();
+
+	void fill_classes_combo_box(QComboBox*);
+
 	int updateSegmentId(std::map<face_descriptor, bool> &);
 
+	void map_garbage_properties(std::map<face_descriptor, face_descriptor> &);
+
+	// Go through all the edges, and pick out all the boundary edge based on the informations
 	void computeSegmentBoundary();
 
 	void get_connected_faces(face_descriptor fd, std::vector<face_descriptor>& connected_faces);
@@ -274,6 +286,11 @@ public Q_SLOTS:
 		double dir_z,
 		const face_descriptor &f);
 	void resetColors();
+	//********************Weixiao Update************************//
+	void showSegmentBorders(bool);
+	void showFacetEdges(bool);
+	void showFacetVertices(bool);
+	//**********************************************************//
 	void showVertices(bool);
 	void showEdges(bool);
 	void showFaces(bool);

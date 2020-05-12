@@ -219,7 +219,7 @@ void Surface_mesh_item_classification::change_color(int index, float* vmin, floa
 			std::size_t c2 = m_classif[fd];
 			//***********************Weixiao Update view editing*******************************//
 			float div = 1;
-			if (c < std::size_t(100))//c != std::size_t(-1) && 
+			if (c != std::size_t(-1) && c < std::size_t(100))// 
 			{
 				m_mesh->face_label[fd] = c;
 				color = m_label_colors[c];
@@ -235,12 +235,14 @@ void Surface_mesh_item_classification::change_color(int index, float* vmin, floa
 			}
 			else
 			{
+				QColor color_unlabelled(200, 200, 255, 120);
 				m_mesh->face_label[fd] = -1;
-				m_mesh->face_color[fd] = m_label_colors[0];
+				m_mesh->face_color[fd] = color_unlabelled;
 
-				m_color[fd] = CGAL::Color(m_label_colors[0].red(),
-					m_label_colors[0].green(),
-					m_label_colors[0].blue());
+				m_color[fd] = CGAL::Color(color_unlabelled.red(),
+					color_unlabelled.green(),
+					color_unlabelled.blue(),
+					color_unlabelled.alpha());
 			}
 
 			//*******************************************************************//
@@ -260,13 +262,10 @@ void Surface_mesh_item_classification::change_color(int index, float* vmin, floa
 	else
 	{
 		//***********************Weixiao Update view labels*******************************//
-		//std::size_t corrected_index = index_color - 3;
-		std::size_t corrected_index = index_color - 2;
+		std::size_t corrected_index = index_color - 3;
 		BOOST_FOREACH(face_descriptor fd, faces(*(m_mesh->polyhedron())))
 		{
-			if ((m_training[fd] != corrected_index
-				|| m_classif[fd] != corrected_index)
-				&& m_training[fd] != -1)
+			if (m_training[fd] != corrected_index || m_classif[fd] != corrected_index)
 			{
 				m_color[fd] = CGAL::Color((unsigned char)(255),
 					(unsigned char)(255),
@@ -278,7 +277,7 @@ void Surface_mesh_item_classification::change_color(int index, float* vmin, floa
 				QColor color(0, 0, 0);
 				std::size_t c = m_training[fd];
 
-				if (c < std::size_t(100))//c != std::size_t(-1) && 
+				if (c != std::size_t(-1) && c < std::size_t(100))//
 				{
 					color = m_label_colors[c];
 					m_mesh->face_color[fd] = color;
@@ -293,12 +292,14 @@ void Surface_mesh_item_classification::change_color(int index, float* vmin, floa
 				}
 				else
 				{
+					QColor color_unlabelled(200, 200, 255, 120);
 					m_mesh->face_label[fd] = -1;
-					m_mesh->face_color[fd] = m_label_colors[0];
+					m_mesh->face_color[fd] = color_unlabelled;
 
-					m_color[fd] = CGAL::Color(m_label_colors[0].red(),
-						m_label_colors[0].green(),
-						m_label_colors[0].blue());
+					m_color[fd] = CGAL::Color(color_unlabelled.red(),
+						color_unlabelled.green(),
+						color_unlabelled.blue(),
+						color_unlabelled.alpha());
 				}
 			}
 		}
@@ -424,7 +425,7 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 				(below && prob_of_face <= threshold) ||
 				(!below && prob_of_face >= threshold)) 
 			{
-				if (c < std::size_t(100))//c != std::size_t(-1) && 
+				if (c != std::size_t(-1) && c < std::size_t(100))//c != std::size_t(-1) && 
 				{
 					m_mesh->face_label[fd] = c;
 					color = m_label_colors[c];
@@ -437,17 +438,19 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 				}
 				else
 				{
+					QColor color_unlabelled(200, 200, 255, 120);
 					m_mesh->face_label[fd] = -1;
-					m_mesh->face_color[fd] = m_label_colors[0];
+					m_mesh->face_color[fd] = color_unlabelled;
 
-					m_color[fd] = CGAL::Color(m_label_colors[0].red(),
-						m_label_colors[0].green(),
-						m_label_colors[0].blue());
+					m_color[fd] = CGAL::Color(color_unlabelled.red(),
+						color_unlabelled.green(),
+						color_unlabelled.blue(),
+						color_unlabelled.alpha());
 
 				}
 				m_mesh->face_shown[fd] = true;
 			}
-			else 
+			else
 			{
 				m_color[fd] = CGAL::Color((unsigned char)(255), (unsigned char)(255), (unsigned char)(255), (unsigned char)(0));
 				m_mesh->face_shown[fd] = false;
@@ -470,13 +473,10 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 	else
 	{
 		//***********************Weixiao Update view labels*******************************//
-		//std::size_t corrected_index = index_color - 3;
-		std::size_t corrected_index = index_color - 2;
+		std::size_t corrected_index = index_color - 3;
 		BOOST_FOREACH(face_descriptor fd, faces(*(m_mesh->polyhedron())))
 		{
-			if ((m_training[fd] != corrected_index
-				|| m_classif[fd] != corrected_index)
-				&& m_training[fd] != -1)
+			if (m_training[fd] != corrected_index || m_classif[fd] != corrected_index)
 			{
 				m_color[fd] = CGAL::Color((unsigned char)(255),
 					(unsigned char)(255),
@@ -501,7 +501,7 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 					(!below && prob_of_face >= threshold))
 				{
 					//show them!
-					if (c < std::size_t(100))//c != std::size_t(-1) && 
+					if (c != std::size_t(-1) && c < std::size_t(100))//c != std::size_t(-1) && 
 					{
 						color = m_label_colors[c];
 						m_mesh->face_color[fd] = color;
@@ -509,11 +509,14 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 					}
 					else
 					{
+						QColor color_unlabelled(200, 200, 255, 120);
 						m_mesh->face_label[fd] = -1;
-						m_mesh->face_color[fd] = m_label_colors[0];
-						m_color[fd] = CGAL::Color(m_label_colors[0].red(),
-							m_label_colors[0].green(),
-							m_label_colors[0].blue());
+						m_mesh->face_color[fd] = color_unlabelled;
+
+						m_color[fd] = CGAL::Color(color_unlabelled.red(), 
+							color_unlabelled.green(),
+							color_unlabelled.blue(),
+							color_unlabelled.alpha());
 					}
 					m_mesh->face_shown[fd] = true;
 				}
