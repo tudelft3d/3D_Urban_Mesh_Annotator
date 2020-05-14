@@ -26,7 +26,6 @@
 #include <QMimeData>
 #include <QOpenGLFramebufferObject>
 
-
 Scene::Scene(QObject* parent)
 	: QStandardItemModel(parent),
 	selected_item(-1),
@@ -509,7 +508,7 @@ bool item_should_be_skipped_in_draw(Scene_item* item) {
 void Scene::SwitchRenderingMode(CGAL::Three::Viewer_interface *, const int rendering_num)
 {
 	Scene_item* it;
-	if (selected_item != 0 && selected_item !=-1)
+	if (selected_item != 0 && selected_item != -1)
 		it = item(Scene::Item_id(selected_item - 1));
 	else
 		it = item(Scene::Item_id(0));
@@ -563,7 +562,6 @@ void Scene::renderScene(const QList<Scene_interface::Item_id>& items,
 	bool writing_depth,
 	QOpenGLFramebufferObject* fbo)
 {
-
 	viewer->setCurrentPass(pass);
 	viewer->setDepthWriting(writing_depth);
 	viewer->setDepthPeelingFbo(fbo);
@@ -585,9 +583,9 @@ void Scene::renderScene(const QList<Scene_interface::Item_id>& items,
 		{
 			if (group || item.renderingMode() == Flat || item.renderingMode() == FlatPlusEdges || item.renderingMode() == Gouraud
 				//***********************Weixiao Update add rendering mode*******************************//
-				|| item.renderingMode() == TextureMode || item.renderingMode() == TextureModePlusFlatEdges 
+				|| item.renderingMode() == TextureMode || item.renderingMode() == TextureModePlusFlatEdges
 				//*****************************Ziqian********************************//
-				|| item.renderingMode() == Emphasizing )
+				|| item.renderingMode() == Emphasizing)
 				/*********************************************************************/
 			{
 				if (with_names) {
@@ -605,6 +603,12 @@ void Scene::renderScene(const QList<Scene_interface::Item_id>& items,
 					{
 						//add object to list of picked objects;
 						picked_item_IDs[depth] = index;
+						//********************Weixiao Update************************//
+						bool found_tmp = false;
+						CGAL::qglviewer::Vec point = viewer->camera()->pointUnderPixel(picked_pixel, found_tmp) - viewer->offset();
+						first_layer_picked_point.clear();
+						first_layer_picked_point[index] = point;
+						//**********************************************************//
 					}
 				}
 			}
@@ -756,6 +760,17 @@ Scene::draw_aux(bool with_names, CGAL::Three::Viewer_interface* viewer)
 		if (has_alpha()) {
 			bool found = false;
 			CGAL::qglviewer::Vec point = viewer->camera()->pointUnderPixel(picked_pixel, found) - viewer->offset();
+			//********************Weixiao Update************************//
+			if (!found)
+			{
+				if (!first_layer_picked_point.empty())
+				{
+					point = first_layer_picked_point[0];
+					found = true;
+				}
+			}
+			//**********************************************************//
+
 			if (found) {
 				QList<QVariant> picked_point;
 				picked_point << point.x

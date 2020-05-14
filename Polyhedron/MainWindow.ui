@@ -346,7 +346,7 @@
     <string>Save &amp;as...</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+S</string>
+    <string notr="true"/>
    </property>
   </action>
   <action name="actionShowHide">

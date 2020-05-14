@@ -125,7 +125,9 @@ if(CGAL_Qt5_FOUND AND Qt5_FOUND AND OPENGL_FOUND )
   #if(CGAL_THREE_HEADERS_PATH)
     qt5_generate_moc( "${CGAL_DIR}/include/CGAL/Three/Viewer_interface.h"
       "${CMAKE_CURRENT_BINARY_DIR}/Viewer_interface_moc.cpp" )
-    qt5_generate_moc( "${CGAL_DIR}/include/CGAL/Three/Scene_item.h"
+    #qt5_generate_moc( "${CGAL_DIR}/include/CGAL/Three/Scene_item.h"
+      #"${CMAKE_CURRENT_BINARY_DIR}/Scene_item_moc.cpp" )
+	qt5_generate_moc( "../CGAL/Three/Scene_item.h"
       "${CMAKE_CURRENT_BINARY_DIR}/Scene_item_moc.cpp" )
     qt5_generate_moc( "${CGAL_DIR}/include/CGAL/Three/Scene_group_item.h"
       "${CMAKE_CURRENT_BINARY_DIR}/Scene_group_item_moc.cpp" )

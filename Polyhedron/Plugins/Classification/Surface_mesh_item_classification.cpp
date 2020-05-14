@@ -58,7 +58,7 @@ Surface_mesh_item_classification::Surface_mesh_item_classification(Scene_surface
 			m_color[fd] = CGAL::Color(m_mesh->face_color[fd].red(),
 				m_mesh->face_color[fd].green(),
 				m_mesh->face_color[fd].blue());
-			
+
 			m_mesh->face_shown[fd] = true;
 			if (!m_mesh->label_probabilities.empty())
 				m_label_prob[fd] = m_mesh->label_probabilities[fd];
@@ -235,7 +235,7 @@ void Surface_mesh_item_classification::change_color(int index, float* vmin, floa
 			}
 			else
 			{
-				QColor color_unlabelled(200, 200, 255, 120);
+				QColor color_unlabelled(128, 0, 0, 120);
 				m_mesh->face_label[fd] = -1;
 				m_mesh->face_color[fd] = color_unlabelled;
 
@@ -292,7 +292,7 @@ void Surface_mesh_item_classification::change_color(int index, float* vmin, floa
 				}
 				else
 				{
-					QColor color_unlabelled(200, 200, 255, 120);
+					QColor color_unlabelled(128, 0, 0, 120);
 					m_mesh->face_label[fd] = -1;
 					m_mesh->face_color[fd] = color_unlabelled;
 
@@ -423,7 +423,7 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 
 			if (m_mesh->label_probabilities.empty() ||
 				(below && prob_of_face <= threshold) ||
-				(!below && prob_of_face >= threshold)) 
+				(!below && prob_of_face >= threshold))
 			{
 				if (c != std::size_t(-1) && c < std::size_t(100))//c != std::size_t(-1) && 
 				{
@@ -438,7 +438,7 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 				}
 				else
 				{
-					QColor color_unlabelled(200, 200, 255, 120);
+					QColor color_unlabelled(128, 0, 0, 120);
 					m_mesh->face_label[fd] = -1;
 					m_mesh->face_color[fd] = color_unlabelled;
 
@@ -497,7 +497,7 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 				}
 
 				if (m_mesh->label_probabilities.empty() ||
-					(below && prob_of_face <= threshold) || 
+					(below && prob_of_face <= threshold) ||
 					(!below && prob_of_face >= threshold))
 				{
 					//show them!
@@ -509,18 +509,18 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 					}
 					else
 					{
-						QColor color_unlabelled(200, 200, 255, 120);
+						QColor color_unlabelled(128, 0, 0, 120);
 						m_mesh->face_label[fd] = -1;
 						m_mesh->face_color[fd] = color_unlabelled;
 
-						m_color[fd] = CGAL::Color(color_unlabelled.red(), 
+						m_color[fd] = CGAL::Color(color_unlabelled.red(),
 							color_unlabelled.green(),
 							color_unlabelled.blue(),
 							color_unlabelled.alpha());
 					}
 					m_mesh->face_shown[fd] = true;
 				}
-				else 
+				else
 				{
 					m_color[fd] = CGAL::Color((unsigned char)(255), (unsigned char)(255), (unsigned char)(255), (unsigned char)(0));
 					m_mesh->face_shown[fd] = false;
@@ -532,7 +532,7 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 
 bool Surface_mesh_item_classification::can_show_probability()
 {
-	if (m_mesh->label_probabilities.empty()) 
+	if (m_mesh->label_probabilities.empty())
 	{
 		return false;
 	}
@@ -607,7 +607,7 @@ bool Surface_mesh_item_classification::can_show_probability()
 
 //***********************Weixiao*******************************//
 int Surface_mesh_item_classification::get_total_number_facets()
-{ 
+{
 	return m_mesh->polyhedron()->faces().size();
 };
 

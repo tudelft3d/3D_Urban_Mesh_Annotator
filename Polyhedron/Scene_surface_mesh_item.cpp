@@ -611,7 +611,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 				idx_edge_data_.push_back(source(ed, *smesh_));
 				idx_edge_data_.push_back(target(ed, *smesh_));
 			}
-			else 
+			else
 			{
 				face_descriptor fd1, fd2;
 				fd1 = face(halfedge(ed, *smesh_), *smesh_);
@@ -980,13 +980,13 @@ void Scene_surface_mesh_item_priv::computeSegmentBoundary() {
 		static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
 }
 
-void Scene_surface_mesh_item::computeSegmentBoundary() 
+void Scene_surface_mesh_item::computeSegmentBoundary()
 {
 	computeSegments();
 	d->computeSegmentBoundary();
 }
 
-void Scene_surface_mesh_item::computeSegments() 
+void Scene_surface_mesh_item::computeSegments()
 {
 	for (std::map<face_descriptor, int>::iterator p = face_segment_id.begin(); p != face_segment_id.end(); p++)
 	{
@@ -1047,7 +1047,7 @@ void Scene_surface_mesh_item::unemphasize()
 	Q_EMIT redraw();
 }
 
-void Scene_surface_mesh_item::addChosenSegment(seg_id id) 
+void Scene_surface_mesh_item::addChosenSegment(seg_id id)
 {
 	d->chosen_segments.insert(id);
 }
@@ -1444,8 +1444,8 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 
 	//********************Weixiao Update************************//
 		//depends on the checkbox
-		this->drawPoints(viewer);
-		this->drawEdges(viewer);
+	this->drawPoints(viewer);
+	this->drawEdges(viewer);
 	//**********************************************************//
 }
 
@@ -2259,7 +2259,7 @@ bool Scene_surface_mesh_item::write_ply_mesh(std::ostream& stream, bool binary) 
 
 	if (binary)
 		CGAL::set_binary_mode(stream);
-	
+
 	//if the user do not start 3D Annotation, the comments keep same as input
 	bool used_old_comments = false;
 	if (d->m_comments.empty())
@@ -2783,12 +2783,15 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 			this, SLOT(showSegmentBorders(bool)));
 
 		//**********************************************************//
+		//********************Weixiao Update************************//
+		menu->addSeparator();
+		//**********************************************************//
 
 		QAction* actionPrintVertices =
 			menu->addAction(tr("Display Vertices Ids"));
 		//********************Weixiao Update************************//
-		actionPrintVertices->setEnabled(false);
-		actionPrintVertices->setVisible(false);
+		//actionPrintVertices->setEnabled(false);
+		//actionPrintVertices->setVisible(false);
 		//**********************************************************//
 		actionPrintVertices->setCheckable(true);
 		actionPrintVertices->setObjectName("actionPrintVertices");
@@ -2798,8 +2801,8 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 		QAction* actionPrintEdges =
 			menu->addAction(tr("Display Edges Ids"));
 		//********************Weixiao Update************************//
-		actionPrintEdges->setEnabled(false);
-		actionPrintEdges->setVisible(false);
+		//actionPrintEdges->setEnabled(false);
+		//actionPrintEdges->setVisible(false);
 		//**********************************************************//
 		actionPrintEdges->setCheckable(true);
 		actionPrintEdges->setObjectName("actionPrintEdges");
@@ -2809,8 +2812,8 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 		QAction* actionPrintFaces =
 			menu->addAction(tr("Display Faces Ids"));
 		//********************Weixiao Update************************//
-		actionPrintFaces->setEnabled(false);
-		actionPrintFaces->setVisible(false);
+		//actionPrintFaces->setEnabled(false);
+		//actionPrintFaces->setVisible(false);
 		//**********************************************************//
 		actionPrintFaces->setCheckable(true);
 		actionPrintFaces->setObjectName("actionPrintFaces");
@@ -2985,7 +2988,7 @@ void Scene_surface_mesh_item::update_labels_for_selection()
 			bool is_texture = false;
 			while (temp_stream >> word)
 			{
-				if (word == "TextureFile") 
+				if (word == "TextureFile")
 					is_texture = true;
 			}
 			if (is_texture)
@@ -3009,7 +3012,7 @@ void Scene_surface_mesh_item::update_labels_for_selection()
 				semantic_facet_map[p->second].emplace_back(p->first);
 			}
 		}
-	} 
+	}
 }
 
 void Scene_surface_mesh_item::fill_classes_combo_box(QComboBox* cb)

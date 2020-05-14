@@ -680,7 +680,7 @@ public Q_SLOTS:
 				"before using the plugin.\n"
 				"\n"
 				"[QUICK INTRODUCTION]\n"
-				"You need to click the 'selection' layer in 'Geometric Objects' to start annotation process. After you finished, you have to click the first(top) layer then saving your work.\n" 
+				"You need to click the 'selection' layer in 'Geometric Objects' to start annotation process. After you finished, do not forget to save your work.\n"
 				"\n"
 				"In order to annotate the data, you might need to use the following shortcuts:\n"
 				"[Most used]\n"
@@ -690,7 +690,7 @@ public Q_SLOTS:
 				"Shift + [Capital letter of labels in the bracket(?)] : Add selection to the label category\n"
 				"Ctrl + 1: Switch on/off Texture rendering mode\n"
 				"Ctrl + 2: Switch on/off Flat rendering mode\n"
-				"Ctrl + Left Button: Update to the new view center (Validate: data(top) layer; in selected area of selection layer;) \n"
+				"Ctrl + Left Button: Update to the new view center\n"
 				"Ctrl + S: Save data\n"
 				"Z + Mouse Left Button: Zoom into the position\n"
 				"[Additional used]\n"
@@ -702,7 +702,7 @@ public Q_SLOTS:
 				"Ctrl + F1: Save snapshot and camera parameters\n"
 				"Ctrl + F2: Load camera parameter and move to the view\n"
 				"D + Mouse Left Button 1st && 2nd: Measure euclidean distance between 1st and 2nd point\n"
-				));
+			));
 	}
 
 	void on_compute_features_button_clicked()
@@ -1893,7 +1893,7 @@ public Q_SLOTS:
 		return true;
 	}
 
-	void disable_probability_enable_progressbar() 
+	void disable_probability_enable_progressbar()
 	{
 		//probability slider
 		ui_widget.ProbSlider->setEnabled(false);
@@ -1910,7 +1910,7 @@ public Q_SLOTS:
 		ui_widget.progressBar->setEnabled(true);
 	}
 
-	void enable_probability_disable_progressbar() 
+	void enable_probability_disable_progressbar()
 	{
 		//probability slider
 		ui_widget.ProbSlider->setEnabled(true);
