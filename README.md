@@ -1,5 +1,5 @@
 # 3D_Annotator_for_public
-	3D Annotator for mesh and point cloud  
+	3D Annotator for mesh
   
 # Main entry point  
 	Polyhedron_3  
@@ -15,7 +15,6 @@
 	Qt5.9  
 	Eigen  
 	Boost  
-	zlib  
   
 # Required sub-modules:  
 	QT:  
@@ -28,20 +27,6 @@
 		Qt5Script  
 		imageformats/qjpeg  
 		platforms/qwindows  
-
-	boost:  
-		boost_serialization  
-		boost_iostreams  
-		boost_zlib  
-		boost_bzip2  
   
-# Modified CGAL files:  
-	.\CGAL-4.14\include\CGAL\IO\PLY_reader.h
-	.\CGAL-4.14\include\CGAL\IO\PLY_writer.h
-	.\CGAL-4.14\include\CGAL\IO\read_ply_points.h
-	.\CGAL-4.14\include\CGAL\IO\write_ply_points.h
-	.\CGAL-4.14\include\CGAL\Three\Three.h
-	.\CGAL-4.14\include\CGAL\Three\Scene_item.h
-	.\CGAL-4.14\include\CGAL\Three\Scene_interface.h
-	.\CGAL-4.14\include\CGAL\Three\Scene_draw_interface.h
-	.\CGAL-4.14\include\CGAL\Qt\camera_impl.h
+# You need to change 'CGAL' path with given folder.  
+	

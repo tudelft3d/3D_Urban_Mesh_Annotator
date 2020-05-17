@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QMetaObject>
-#include "CGAL/Three/Scene_item.h" //#include  <CGAL/Three/Scene_item.h> // required, to have &Scene_item::name
+#include <CGAL/Three/Scene_item.h> // required, to have &Scene_item::name
 #include "Scene_config.h"
 
 class Scene_interface;

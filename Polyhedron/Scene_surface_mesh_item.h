@@ -12,7 +12,7 @@
 
 //***********************Weixiao Update*******************************//
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
-#include "CGAL/IO/PLY_reader.h" //#include <CGAL/IO/PLY_reader.h>
+#include <CGAL/IO/PLY_reader.h>
 #include "Scene_textured_surface_mesh_item.h"
 //*******************************************************************//	
 
@@ -20,7 +20,7 @@
 #include "SMesh_type.h"
 #endif
 
-#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
+#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_item_rendering_helper.h>
 #include <CGAL/Three/Viewer_interface.h>
 
@@ -31,7 +31,9 @@
 #endif
 
 #include <QColor>
-
+//***********************Weixiao Update*******************************//
+#include <QComboBox>
+//*******************************************************************//	
 #include "properties.h"
 
 

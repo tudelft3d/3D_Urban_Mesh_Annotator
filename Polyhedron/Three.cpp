@@ -1,4 +1,4 @@
-#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
+#include <CGAL/Three/Three.h>
 #include <QDockWidget>
 #include <QMetaMethod>
 #include <QAction>

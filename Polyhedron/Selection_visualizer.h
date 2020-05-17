@@ -3,7 +3,7 @@
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polygon_2.h>
-#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
+#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Viewer_interface.h>
 #include <QPainter>
 

@@ -12,7 +12,6 @@
 #include <vector>
 
 struct Scene_polylines_item_private;
-class Scene_spheres_item;
 
 class SCENE_POLYLINES_ITEM_EXPORT Scene_polylines_item : public CGAL::Three::Scene_group_item
 {
@@ -61,22 +60,12 @@ public:
     void drawPoints() const{}
     void drawPoints(CGAL::Three::Viewer_interface*) const;
 
-
-    void smooth(std::vector<Point_3>& polyline);
     //When selecting a polylineitem, we don't want to select its children, so we can still apply Operations to it
     QList<Scene_interface::Item_id> getChildrenForSelection() const { return QList<Scene_interface::Item_id>(); }
     void setWidth(int i);
 
 public Q_SLOTS:
     virtual void invalidateOpenGLBuffers();
-    void change_corner_radii(double);
-    void change_corner_radii();
-    void split_at_sharp_angles();
-    void reset_spheres();
-
-    void merge(Scene_polylines_item*);
-
-    void smooth();
 public:
     Polylines_container polylines;
 protected:

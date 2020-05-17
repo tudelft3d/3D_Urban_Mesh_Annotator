@@ -39,8 +39,8 @@
 #include <CGAL/IO/File_writer_wavefront.h>
 #include <CGAL/IO/generic_copy_OFF.h>
 #include <CGAL/IO/OBJ_reader.h>
-#include "CGAL/IO/PLY_reader.h" //#include <CGAL/IO/PLY_reader.h>
-#include "CGAL/IO/PLY_writer.h" //#include <CGAL/IO/PLY_writer.h>
+#include <CGAL/IO/PLY_reader.h>
+#include <CGAL/IO/PLY_writer.h>
 #include <CGAL/Polygon_mesh_processing/measure.h>
 #include <CGAL/statistics_helpers.h>
 
@@ -56,7 +56,7 @@
 #include <CGAL/Three/Triangle_container.h>
 #include <CGAL/Three/Edge_container.h>
 #include <CGAL/Three/Point_container.h>
-#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
+#include <CGAL/Three/Three.h>
 #include <CGAL/Buffer_for_vao.h>
 #include <QMenu>
 #include "id_printing.h"

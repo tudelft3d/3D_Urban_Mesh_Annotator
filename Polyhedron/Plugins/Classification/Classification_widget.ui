@@ -24,28 +24,6 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QMenuBar" name="menubar">
-        <widget class="QMenu" name="features_menu">
-         <property name="title">
-          <string>Features</string>
-         </property>
-        </widget>
-        <widget class="QMenu" name="training_menu">
-         <property name="title">
-          <string>Training Sets</string>
-         </property>
-        </widget>
-        <widget class="QMenu" name="classifier_menu">
-         <property name="title">
-          <string>Classifier</string>
-         </property>
-        </widget>
-        <addaction name="features_menu"/>
-        <addaction name="training_menu"/>
-        <addaction name="classifier_menu"/>
-       </widget>
-      </item>
-      <item>
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

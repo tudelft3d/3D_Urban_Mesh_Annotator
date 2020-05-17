@@ -1,10 +1,10 @@
 //! \file Viewer.h
-
+//#define CGAL_HEADER_ONLY
 #ifndef VIEWER_H
 #define VIEWER_H
 
 #include <CGAL/Three/Viewer_config.h>
-#include "CGAL/Three/Scene_interface.h" //#include <CGAL/Three/Scene_interface.h>
+#include <CGAL/Three/Scene_interface.h>
 #include <QOpenGLBuffer>
 #include <QOpenGLDebugMessage>
 #include <QOpenGLVertexArrayObject>
@@ -14,6 +14,7 @@
 #include <QFont>
 #include <QOpenGLFramebufferObject>
 #include <CGAL/Three/TextRenderer.h>
+
 // forward declarations
 class QWidget;
 namespace CGAL {

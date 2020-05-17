@@ -5,7 +5,7 @@
 
 #include <QtOpenGL/qgl.h>
 #include <CGAL/Qt/DemosMainWindow.h>
-#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
+#include <CGAL/Three/Three.h>
 
 #include <QScriptEngine>
 #include <QScriptable>
@@ -353,11 +353,7 @@ protected Q_SLOTS:
 	void setBackgroundColor();
 	//!Opens a Dialog to change the lighting settings
 	void setLighting_triggered();
-	/*! Opens a Dialog to enter coordinates of the new center point and sets it
-	 * with viewerShow.
-	 *@see viewerShow(float, float, float, float, float, float)
-	 */
-	void on_actionLookAt_triggered();
+
 	//!Returns the position and orientation of the current camera frame.
 	QString cameraString() const;
 	/*! Prints the position and orientation of the current camera frame.

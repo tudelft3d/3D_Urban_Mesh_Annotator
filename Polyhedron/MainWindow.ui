@@ -90,7 +90,6 @@
      <addaction name="actionPasteCamera"/>
     </widget>
     <addaction name="actionRecenterScene"/>
-    <addaction name="actionLookAt"/>
     <addaction name="actionSwitchProjection"/>
     <addaction name="menuDockWindows"/>
     <addaction name="menuCamera"/>
@@ -384,11 +383,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
-   </property>
-  </action>
-  <action name="actionLookAt">
-   <property name="text">
-    <string>&amp;Look at...</string>
    </property>
   </action>
   <action name="actionSaveSnapshot">

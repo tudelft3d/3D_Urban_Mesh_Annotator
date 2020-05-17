@@ -3,7 +3,7 @@
 #include "config.h"
 #include "MainWindow.h"
 #include "Scene.h"
-#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
+#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/TextRenderer.h>
 #include <CGAL/Three/exceptions.h>
 #include <CGAL/Qt/debug.h>
@@ -48,7 +48,7 @@
 #  endif
 #endif
 
-#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
+#include <CGAL/Three/Three.h>
 #include <CGAL/Three/Polyhedron_demo_plugin_interface.h>
 #include <CGAL/Three/Polyhedron_demo_io_plugin_interface.h>
 #include <CGAL/Three/Scene_item_with_properties.h>
@@ -56,7 +56,6 @@
 #include "ui_Preferences.h"
 #include "ui_Details.h"
 #include "ui_Statistics_on_item_dialog.h"
-#include "Show_point_dialog.h"
 #include "File_loader_dialog.h"
 
 #include <CGAL/Qt/manipulatedCameraFrame.h>
@@ -931,8 +930,6 @@ void MainWindow::viewerShow(float xmin,
 }
 
 void MainWindow::viewerShow(float x, float y, float z) {
-	// viewer->camera()->lookAt(CGAL::qglviewer::Vec(x, y, z));
-
 	CGAL::qglviewer::ManipulatedCameraFrame backup_frame(*viewer->camera()->frame());
 	viewer->camera()->fitSphere(CGAL::qglviewer::Vec(x, y, z),
 		viewer->camera()->sceneRadius() / 100);
@@ -2339,22 +2336,6 @@ void MainWindow::setBackgroundColor()
 void MainWindow::setLighting_triggered()
 {
 	viewer->setLighting();
-}
-
-void MainWindow::on_actionLookAt_triggered()
-{
-	Show_point_dialog dialog(this);
-	dialog.setWindowTitle(tr("Look at..."));
-	int i = dialog.exec();
-	if (i == QDialog::Accepted &&
-		dialog.has_correct_coordinates())
-	{
-		if (viewer->camera()->frame()->isSpinning())
-			viewer->camera()->frame()->stopSpinning();
-		viewerShow((float)dialog.get_x() + viewer->offset().x,
-			(float)dialog.get_y() + viewer->offset().y,
-			(float)dialog.get_z() + viewer->offset().z);
-	}
 }
 
 void MainWindow::viewerShowObject()

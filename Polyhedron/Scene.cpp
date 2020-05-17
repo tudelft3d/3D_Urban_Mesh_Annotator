@@ -2,9 +2,9 @@
 #include "Scene.h"
 
 //********************Weixiao Update************************//
-#include "CGAL/Three/Three.h" //#include <CGAL/Three/Three.h>
+#include <CGAL/Three/Three.h>
 //**********************************************************//
-#include "CGAL/Three/Scene_item.h" //#include <CGAL/Three/Scene_item.h>
+#include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_print_item_interface.h>
 #include <CGAL/Three/Scene_transparent_interface.h>
 #include <CGAL/Three/Scene_zoomable_item_interface.h>
