@@ -101,9 +101,9 @@ ipch/
 #*.cmake
 *.exe
 *.cpp_parameters
-*.dll
+#*.dll
 *.exp
-*.lib
+#*.lib
 *.bin
 *.obj
 *.list
