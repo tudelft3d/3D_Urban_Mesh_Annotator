@@ -1,0 +1,41 @@
+.\CGAL-4.14\include\CGAL\IO\PLY_reader.h
+.\CGAL-4.14\include\CGAL\IO\PLY_writer.h
+.\CGAL-4.14\include\CGAL\IO\read_ply_points.h
+.\CGAL-4.14\include\CGAL\IO\write_ply_points.h
+
+.\CGAL-4.14\include\CGAL\Three\Three.h
+.\CGAL-4.14\include\CGAL\Three\Scene_item.h
+.\CGAL-4.14\include\CGAL\Three\Scene_interface.h
+.\CGAL-4.14\include\CGAL\Three\Scene_draw_interface.h
+
+.\CGAL-4.14\include\CGAL\Qt\camera_impl.h
+
+///////////////////////////////////////////////////////
+#include "../CGAL/IO/PLY_reader.h" //
+#include "../CGAL/IO/PLY_writer.h" //
+#include "../CGAL/IO/read_ply_points.h" //
+#include "../CGAL/IO/write_ply_points.h" //
+          ../
+#include "../CGAL/Three/Three.h" //
+#include "../CGAL/Three/Scene_item.h" //
+#include "../CGAL/Three/Scene_interface.h" //
+#include "../CGAL/Three/Scene_draw_interface.h" //
+          ../
+#include "../CGAL/Qt/camera_impl.h" //
+
+--------------------------------------------------------
+	scene_callback_signaler.dll                 -no-cgal
+    scene_color_ramp.dll                        -no-cgal
+        demo_framework.dll
+        polyhedron_demo.dll
+        camera_positions_plugin.dll
+        scene_polylines_item.dll
+        scene_textured_item.dll
+        	scene_surface_mesh_item.dll
+        		scene_polygon_soup_item.dll
+        			ply_plugin.dll
+        		scene_item_decorator.dll
+        		scene_k_ring_selection.dll
+        			scene_selection_item.dll
+        				selection_plugin.dll
+        			classification_plugin.dll

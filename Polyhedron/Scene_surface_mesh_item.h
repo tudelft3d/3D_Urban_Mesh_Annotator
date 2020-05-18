@@ -97,9 +97,6 @@ public:
 	Scene_surface_mesh_item* clone() const Q_DECL_OVERRIDE;
 	void draw(CGAL::Three::Viewer_interface *) const Q_DECL_OVERRIDE;
 	void drawEdges(CGAL::Three::Viewer_interface *) const Q_DECL_OVERRIDE;
-	/******************************Ziqian*********************************/
-	void Scene_surface_mesh_item::drawEdgesShowingSegBoundary(CGAL::Three::Viewer_interface* viewer) const;
-	/*********************************************************************/
 	void drawPoints(CGAL::Three::Viewer_interface *) const Q_DECL_OVERRIDE;
 
 	bool supportsRenderingMode(RenderingMode m) const Q_DECL_OVERRIDE;

@@ -2419,22 +2419,22 @@ public:
 	Mypoint(double a, double b, double c):x(a), y(b), z(c) {}
 	~Mypoint(){ }
 
-	void operator+=(Mypoint& p) {
+	void operator+=(Mypoint p) {
 		x += p.x; y += p.y; z += p.z;
 	}
 	void operator/=(double a) {
 		x /= a; y /= a; z /= a;
 	}
-	Mypoint operator-(Mypoint& p) {
+	Mypoint operator-(Mypoint p) {
 		return Mypoint(x - p.x, y - p.y, z - p.z);
 	}
 
-	static double norm(Mypoint& p) {
+	static double norm(Mypoint p) {
 		return p.x * p.x + p.y * p.y + p.z * p.z;
 	}
 	bool illegal() {
-		return isnan(x) || isnan(y) || isnan(z) || isinf(x) || isinf(y) || isinf(z) ||
-			isnan(-x) || isnan(-y) || isnan(-z) || isinf(-x) || isinf(-y) || isinf(-z)||
+		return std::isnan(x) || std::isnan(y) || std::isnan(z) || std::isinf(x) || std::isinf(y) || std::isinf(z) ||
+			std::isnan(-x) || std::isnan(-y) || std::isnan(-z) || std::isinf(-x) || std::isinf(-y) || std::isinf(-z)||
 			x>1e100 || y > 1e100 || z > 1e100 || 
 			-x > 1e100 || -y > 1e100 || -z > 1e100 ;
 	}
