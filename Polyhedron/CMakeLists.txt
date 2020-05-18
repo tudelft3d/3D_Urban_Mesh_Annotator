@@ -60,7 +60,8 @@ option( POLYHEDRON_QTSCRIPT_DEBUGGER
 # Find Qt5 itself
 find_package(CGAL COMPONENTS Qt5 ImageIO)
 include(${CGAL_USE_FILE})
-#message("Found +++++++++++++++ " ${CGAL_DIR})
+
+SET(CGAL_INCLUDE_DIR ../CGAL/include)
 
 find_package(Qt5
              QUIET
@@ -119,15 +120,15 @@ if(CGAL_Qt5_FOUND AND Qt5_FOUND AND OPENGL_FOUND )
   #message("++++++++++++++++find " ${CGAL_THREE_HEADERS_PATH})
   
   #if(CGAL_THREE_HEADERS_PATH)
-    qt5_generate_moc( "${CGAL_DIR}/include/CGAL/Three/Viewer_interface.h"
+    qt5_generate_moc( "${CGAL_INCLUDE_DIR}/CGAL/Three/Viewer_interface.h"
       "${CMAKE_CURRENT_BINARY_DIR}/Viewer_interface_moc.cpp" )
-    qt5_generate_moc( "${CGAL_DIR}/include/CGAL/Three/Scene_item.h"
+    qt5_generate_moc( "${CGAL_INCLUDE_DIR}/CGAL/Three/Scene_item.h"
       "${CMAKE_CURRENT_BINARY_DIR}/Scene_item_moc.cpp" )
-    qt5_generate_moc( "${CGAL_DIR}/include/CGAL/Three/Scene_group_item.h"
+    qt5_generate_moc( "${CGAL_INCLUDE_DIR}/CGAL/Three/Scene_group_item.h"
       "${CMAKE_CURRENT_BINARY_DIR}/Scene_group_item_moc.cpp" )
-    qt5_generate_moc( "${CGAL_DIR}/include/CGAL/Three/Scene_item_rendering_helper.h"
+    qt5_generate_moc( "${CGAL_INCLUDE_DIR}/CGAL/Three/Scene_item_rendering_helper.h"
          "${CMAKE_CURRENT_BINARY_DIR}/Scene_item_rendering_helper_moc.cpp" )
-    qt5_generate_moc( "${CGAL_DIR}/include/CGAL/Three/TextRenderer.h"
+    qt5_generate_moc( "${CGAL_INCLUDE_DIR}/CGAL/Three/TextRenderer.h"
       "${CMAKE_CURRENT_BINARY_DIR}/TextRenderer_moc.cpp" )
   #else()
   #  message(FATAL_ERROR "Cannot find <CGAL/Three/Viewer_interface.h>")
