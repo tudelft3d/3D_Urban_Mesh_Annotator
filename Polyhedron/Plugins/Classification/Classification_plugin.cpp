@@ -573,8 +573,8 @@ public Q_SLOTS:
 
 		QAction* change_color = label_buttons.back().menu->addAction("Change color");
 		//***********************Weixiao Update menu name*********************//
-		//change_color->setDisabled(true);
-		//change_color->setVisible(false);
+		change_color->setDisabled(true);
+		change_color->setVisible(false);
 		//********************************************************************//
 		connect(change_color, SIGNAL(triggered()), this,
 			SLOT(on_color_changed_clicked()));

@@ -35,23 +35,21 @@ Surface_mesh_item_classification::Surface_mesh_item_classification(Scene_surface
 		}
 
 		m_label_colors.resize(m_labels.size());
-		int ind = 0;
+		int face_count = 0, unlabeled_count = 0;
 		BOOST_FOREACH(face_descriptor fd, faces(*(m_mesh->polyhedron())))
 		{
-			//std::cout << "ind = " << ind << std::endl;
-			//++ind;
-
-			//std::cout << "m_mesh->face_label[fd] = " << m_mesh->face_label[fd] << std::endl;
-			//std::cout << "m_mesh->face_color[fd] = " << m_mesh->face_color[fd].red() 
-			//	<<", " << m_mesh->face_color[fd].green() 
-			//	<< ", " << m_mesh->face_color[fd].blue() << std::endl;
-
+			++face_count;
 			m_training[fd] = m_mesh->face_label[fd];
 			m_classif[fd] = m_mesh->face_label[fd];
 			if (m_mesh->face_label[fd] != -1)
+			{
 				m_label_colors[m_training[fd]] = m_mesh->face_color[fd];
+			}
 			else
+			{
 				m_label_colors[m_training[fd] + 1] = QColor(0, 0, 0);
+				++unlabeled_count;
+			}
 
 			m_color[fd] = CGAL::Color(m_mesh->face_color[fd].red(),
 				m_mesh->face_color[fd].green(),
@@ -60,6 +58,17 @@ Surface_mesh_item_classification::Surface_mesh_item_classification(Scene_surface
 			m_mesh->face_shown[fd] = true;
 			if (!m_mesh->label_probabilities.empty())
 				m_label_prob[fd] = m_mesh->label_probabilities[fd];
+		}
+
+		if (unlabeled_count == face_count)
+		{
+			for (std::size_t i = 0; i < m_labels.size(); ++i)
+			{
+				if (i == 0)
+					m_label_colors[i] = QColor(0, 0, 0);
+				else
+					m_label_colors[i] = this->get_new_label_color(m_labels[i]->name());
+			}
 		}
 
 		update_comments_of_facet_set_item();
