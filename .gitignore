@@ -101,9 +101,9 @@ ipch/
 #*.cmake
 *.exe
 *.cpp_parameters
-#*.dll
+*.dll
 *.exp
-#*.lib
+*.lib
 *.bin
 *.obj
 *.list
@@ -282,3 +282,4 @@ __pycache__/
 .DS_Store
 Polyhedron/cmake-build-debug
 Polyhedron/cmake-build-release
+/CGAL/auxiliary/gmp

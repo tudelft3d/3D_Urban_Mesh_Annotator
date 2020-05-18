@@ -24,12 +24,6 @@
 #include <QByteArray>
 #include <QBuffer>
 
-#define _MAX_PATH   260 // max. length of full pathname
-#define _MAX_DRIVE  3   // max. length of drive component
-#define _MAX_DIR    256 // max. length of path component
-#define _MAX_FNAME  256 // max. length of file name component
-#define _MAX_EXT    256 // max. length of extension component
-
 class Viewer_impl {
 public:
 	CGAL::Three::Scene_draw_interface* scene;
@@ -787,24 +781,17 @@ void Viewer::save_snapshot_with_camera_params()
 	}
 
 	//get filepath and name for camera position
-	std::string tmp_str = fileName.toStdString();
-	char * filechar = (char *)tmp_str.data();
-	char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFname[_MAX_FNAME], szExt[_MAX_EXT];
-	_splitpath(filechar, szDrive, szDir, szFname, szExt);
-	std::stringstream cam_res;
-	cam_res << szDrive << szDir << szFname << ".txt";
-	QString cam_filename = cam_res.str().data();
-
-	std::stringstream ind_res;
-	ind_res << szFname;
-	QString cam_ind = ind_res.str().data();
+	QFileInfo qtemp_file_info(fileName);
+	QString qcam_filename = (qtemp_file_info.fileName());
+	qcam_filename = qcam_filename.left(qcam_filename.lastIndexOf("."));
+	QString qcam_fullname = qtemp_file_info.path() + QString("/") + qcam_filename + QString(".txt");
 
 	//save camera parameters
 	QString cam_params = this->dumpCameraCoordinates();
-	QFile cam_file(cam_filename);
+	QFile cam_file(qcam_fullname);
 	cam_file.open(QIODevice::WriteOnly);
 	QTextStream out(&cam_file);
-	out << "Camera Position #" << cam_ind
+	out << "Camera Position #" << qcam_filename
 		<< "\n"
 		<< cam_params
 		<< "\n";
