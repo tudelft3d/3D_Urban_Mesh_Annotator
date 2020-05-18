@@ -22,7 +22,7 @@
 #ifndef CGAL_LICENSE_LGPL_H
 #define CGAL_LICENSE_LGPL_H
 
-#include "../CGAL/config.h"
+#include "CGAL/config.h"
 
 
 #ifdef CGAL_LGPL_COMMERCIAL_LICENSE
