@@ -298,5 +298,4 @@ protected:
 	friend struct Scene_surface_mesh_item_priv;
 	Scene_surface_mesh_item_priv* d;
 };
-
 #endif /* CGAL_SCENE_SURFACE_MESH_ITEM_H */

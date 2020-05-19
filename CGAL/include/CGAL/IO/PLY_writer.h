@@ -131,16 +131,16 @@ namespace CGAL{
   bool
 	  write_PLY(std::ostream& out,
 		  const FaceListGraph& mesh,
-		  std::string* comments = NULL,
-		  std::map<vertex_descriptor, QColor> vertex_color = NULL,
-		  std::map<face_descriptor, int> face_label = NULL,
-		  std::map<face_descriptor, QColor> face_color = NULL,
-		  std::map<face_descriptor, std::vector<float>> face_texcoord = NULL,
-		  std::map<face_descriptor, int> face_textureid = NULL,
-		  std::map<face_descriptor, float> face_prob = NULL,
-		  std::map<face_descriptor, int> face_segment_id = NULL,
-		  std::vector<std::string> texture_name = NULL,
-		  bool used_old_comments = false,
+		  std::string* comments,
+		  std::map<vertex_descriptor, QColor> vertex_color,
+		  std::map<face_descriptor, int> face_label,
+		  std::map<face_descriptor, QColor> face_color,
+		  std::map<face_descriptor, std::vector<float>> face_texcoord,
+		  std::map<face_descriptor, int> face_textureid,
+		  std::map<face_descriptor, float> face_prob,
+		  std::map<face_descriptor, int> face_segment_id,
+		  std::vector<std::string> texture_name,
+		  bool used_old_comments,
 		  bool /* verbose */ = false)
   {
 	  typedef typename boost::graph_traits<FaceListGraph>::face_descriptor face_descriptor;

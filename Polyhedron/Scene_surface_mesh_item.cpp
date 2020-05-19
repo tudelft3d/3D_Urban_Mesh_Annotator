@@ -56,7 +56,6 @@
 #include <CGAL/Three/Edge_container.h>
 #include <CGAL/Three/Point_container.h>
 #include <CGAL/Three/Three.h>
-#include <CGAL/Buffer_for_vao.h>
 #include <QMenu>
 #include "id_printing.h"
 #endif
@@ -70,6 +69,82 @@ typedef CGAL::Three::Viewer_interface VI;
 //***********************Weixiao Update for texture define*******************************//
 typedef boost::unordered_set<boost::graph_traits<SMesh>::face_descriptor> Component;
 using namespace CGAL::Three;
+
+typedef Kernel::Point_3  Local_point;
+typedef Kernel::Vector_3 Local_vector;
+//modified from Buffer_for_vao.h
+///adds `acolor` RGB components to `buffer`
+static void add_color_in_buffer(const CGAL::Color& acolor, std::vector<float>& buffer)
+{
+	buffer.push_back((float)acolor.red() / (float)255);
+	buffer.push_back((float)acolor.green() / (float)255);
+	buffer.push_back((float)acolor.blue() / (float)255);
+}
+
+/// adds `kp` coordinates to `buffer`
+template<typename KPoint>
+static void add_point_in_buffer(const KPoint& kp, std::vector<float>& buffer)
+{
+	buffer.push_back(kp.x());
+	buffer.push_back(kp.y());
+	buffer.push_back(kp.z());
+}
+
+/// adds `kv` coordinates to `buffer`
+template<typename KVector>
+static void add_normal_in_buffer(const KVector& kv, std::vector<float>& buffer)
+{
+	buffer.push_back(kv.x());
+	buffer.push_back(kv.y());
+	buffer.push_back(kv.z());
+}
+
+static bool is_facet_convex(const std::vector<Local_point>& facet,
+	const Local_vector& normal)
+{
+	Kernel::Orientation orientation, local_orientation;
+	std::size_t id = 0;
+	do
+	{
+		const Local_point& S = facet[id];
+		const Local_point& T = facet[(id + 1 == facet.size()) ? 0 : id + 1];
+		Local_vector V1 = Local_vector((T - S).x(), (T - S).y(), (T - S).z());
+		const Local_point& U = facet[(id + 2 >= facet.size()) ? id + 2 - facet.size() : id + 2];
+		Local_vector V2 = Local_vector((U - T).x(), (U - T).y(), (U - T).z());
+
+		orientation = Kernel::Orientation_3()(V1, V2, normal);
+		// Is it possible that orientation==COPLANAR ? Maybe if V1 or V2 is very small ?
+	} while (++id != facet.size() &&
+		(orientation == CGAL::COPLANAR || orientation == CGAL::ZERO));
+
+	//Here, all orientations were COPLANAR. Not sure this case is possible,
+	// but we stop here.
+	if (orientation == CGAL::COPLANAR || orientation == CGAL::ZERO)
+	{
+		return false;
+	}
+
+	// Now we compute convexness
+	for (id = 0; id < facet.size(); ++id)
+	{
+		const Local_point& S = facet[id];
+		const Local_point& T = facet[(id + 1 == facet.size()) ? 0 : id + 1];
+		Local_vector V1 = Local_vector((T - S).x(), (T - S).y(), (T - S).z());
+
+		const Local_point& U = facet[(id + 2 >= facet.size()) ? id + 2 - facet.size() : id + 2];
+		Local_vector V2 = Local_vector((U - T).x(), (U - T).y(), (U - T).z());
+
+		local_orientation = Kernel::Orientation_3()(V1, V2, normal);
+
+		if (local_orientation != CGAL::ZERO && local_orientation != orientation)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+//********************************************************************************//
 //*******************************************************************//
 
 //Used to triangulate the AABB_Tree
@@ -534,7 +609,6 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 
 	idx_data_.reserve(num_faces(*smesh_) * 3);
 
-	typedef CGAL::Buffer_for_vao<float, unsigned int> CPF;
 	typedef boost::graph_traits<SMesh>::face_descriptor face_descriptor;
 	typedef boost::graph_traits<SMesh>::halfedge_descriptor halfedge_descriptor;
 	typedef boost::graph_traits<SMesh>::edge_descriptor edge_descriptor;
@@ -557,7 +631,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 				{
 					facet_points.push_back(positions[target(hd, *smesh_)]);
 				}
-				bool is_convex = CPF::is_facet_convex(facet_points, fnormals[fd]);
+				bool is_convex = is_facet_convex(facet_points, fnormals[fd]);
 
 				if (is_convex && is_quad(halfedge(fd, *smesh_), *smesh_))
 				{
@@ -673,17 +747,17 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 				{
 					Point p = positions[source(hd, *smesh_)] + offset;
 					if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
-						CPF::add_point_in_buffer(p, selected_flat_vertices);
+						add_point_in_buffer(p, selected_flat_vertices);
 					}
-					CPF::add_point_in_buffer(p, flat_vertices);
+					add_point_in_buffer(p, flat_vertices);
 				}
 				if (name.testFlag(Scene_item_rendering_helper::NORMALS))
 				{
 					Kernel::Vector_3 n = fnormals[fd];
 					if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
-						CPF::add_normal_in_buffer(n, selected_flat_normals);
+						add_normal_in_buffer(n, selected_flat_normals);
 					}
-					CPF::add_normal_in_buffer(n, flat_normals);
+					add_normal_in_buffer(n, flat_normals);
 				}
 				if (name.testFlag(Scene_item_rendering_helper::COLORS))
 				{
@@ -695,17 +769,17 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 						CGAL::Color color(c.red(), c.green(), c.blue());
 
 						if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
-							CPF::add_color_in_buffer(color, selected_f_colors);
+							add_color_in_buffer(color, selected_f_colors);
 						}
-						CPF::add_color_in_buffer(color, f_colors);
+						add_color_in_buffer(color, f_colors);
 					}
 					else if (has_fcolors)
 					{
 						CGAL::Color c = fcolors[fd];
 						if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
-							CPF::add_color_in_buffer(c, selected_f_colors);
+							add_color_in_buffer(c, selected_f_colors);
 						}
-						CPF::add_color_in_buffer(c, f_colors);
+						add_color_in_buffer(c, f_colors);
 					}
 				}
 			}
@@ -717,7 +791,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 			{
 				facet_points.push_back(positions[target(hd, *smesh_)]);
 			}
-			bool is_convex = CPF::is_facet_convex(facet_points, fnormals[fd]);
+			bool is_convex = is_facet_convex(facet_points, fnormals[fd]);
 			if (is_convex && is_quad(halfedge(fd, *smesh_), *smesh_))
 			{
 				//1st half
@@ -828,12 +902,12 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 			if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
 			{
 				Point p = positions[vd] + offset;
-				CPF::add_point_in_buffer(p, smooth_vertices);
+				add_point_in_buffer(p, smooth_vertices);
 			}
 			if (name.testFlag(Scene_item_rendering_helper::NORMALS))
 			{
 				Kernel::Vector_3 n = vnormals[vd];
-				CPF::add_normal_in_buffer(n, smooth_normals);
+				add_normal_in_buffer(n, smooth_normals);
 			}
 		}
 	}
