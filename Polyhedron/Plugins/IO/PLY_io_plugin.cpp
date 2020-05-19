@@ -141,7 +141,6 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 		std::vector<float> fi_prob;
 		std::vector<int> fi_segment_id;
 		std::string input_comments;
-		std::string* comments = NULL;
 		if (!(CGAL::read_PLY(in, points, polygons, fcolors, vcolors, flabels, face_label_comment, fi_texcoord, texture_id, texture_name, fi_prob, fi_segment_id, input_comments)))
 		{
 			QApplication::restoreOverrideCursor();
