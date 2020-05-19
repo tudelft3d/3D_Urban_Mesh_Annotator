@@ -1,6 +1,5 @@
 #include "Scene_polygon_soup_item.h"
 #include "Scene_surface_mesh_item.h"
-#include "Kernel_type.h"
 
 #include <CGAL/Three/Polyhedron_demo_io_plugin_interface.h>
 #include <CGAL/Three/Three.h>

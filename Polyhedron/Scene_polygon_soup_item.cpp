@@ -816,10 +816,10 @@ void Scene_polygon_soup_item::load(const std::vector<Point>& points, const std::
 // because the d-pointer forbid the definition in the .h for this function.
 template SCENE_POLYGON_SOUP_ITEM_EXPORT void Scene_polygon_soup_item::load<CGAL::cpp11::array<double, 3>, CGAL::cpp11::array<int, 3> >
 (const std::vector<CGAL::cpp11::array<double, 3> >& points, const std::vector<CGAL::cpp11::array<int, 3> >& polygons);
-template SCENE_POLYGON_SOUP_ITEM_EXPORT void Scene_polygon_soup_item::load<CGAL::Kernel::Point_3, std::vector<std::size_t> >
-(const std::vector<CGAL::Kernel::Point_3>& points, const std::vector<std::vector<std::size_t> >& polygons);
-template SCENE_POLYGON_SOUP_ITEM_EXPORT void Scene_polygon_soup_item::load<CGAL::Kernel::Point_3, std::vector<std::size_t> >
-(const std::vector<CGAL::Kernel::Point_3>& points, const std::vector<std::vector<std::size_t> >& polygons,
+template SCENE_POLYGON_SOUP_ITEM_EXPORT void Scene_polygon_soup_item::load<Kernel::Point_3, std::vector<std::size_t> >
+(const std::vector<Kernel::Point_3>& points, const std::vector<std::vector<std::size_t> >& polygons);
+template SCENE_POLYGON_SOUP_ITEM_EXPORT void Scene_polygon_soup_item::load<Kernel::Point_3, std::vector<std::size_t> >
+(const std::vector<Kernel::Point_3>& points, const std::vector<std::vector<std::size_t> >& polygons,
  const std::vector<CGAL::Color>& fcolors,
  const std::vector<CGAL::Color>& vcolors);
 

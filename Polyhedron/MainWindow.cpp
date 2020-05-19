@@ -172,7 +172,7 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 		//********************Weixiao Update************************//
 		shortcut = new QShortcut(QKeySequence(Qt::Key_S + Qt::CTRL), this);
 		connect(shortcut, SIGNAL(activated()),
-			this, SLOT(on_saved_as_button_pressed()));
+			this, SLOT(saved_as_button_pressed()));
 		//**********************************************************//
 	}
 
@@ -2103,7 +2103,7 @@ void MainWindow::on_actionEraseAll_triggered()
 //	selectSceneItem(index);
 //}
 
-void MainWindow::on_saved_as_button_pressed()
+void MainWindow::saved_as_button_pressed()
 {
 	int current_index = getSelectedSceneItemIndex();
 	if (current_index != 0)

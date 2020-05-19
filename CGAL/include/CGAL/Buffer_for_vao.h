@@ -458,6 +458,57 @@ public:
     return true;
   }
 
+
+  //*************************************Weixiao Update*****************************//
+  typedef CGAL::Cartesian<double> Local_kernel_cart;
+  typedef Local_kernel_cart::Point_3  Local_point_cart;
+  typedef Local_kernel_cart::Vector_3 Local_vector_cart;
+  static bool is_facet_convex(const std::vector<Local_point_cart>& facet,
+	  const Local_vector_cart& normal)
+  {
+	  Local_kernel_cart::Orientation orientation, local_orientation;
+	  std::size_t id = 0;
+	  do
+	  {
+		  const Local_point_cart& S = facet[id];
+		  const Local_point_cart& T = facet[(id + 1 == facet.size()) ? 0 : id + 1];
+		  Local_vector_cart V1 = Local_vector_cart((T - S).x(), (T - S).y(), (T - S).z());
+		  const Local_point_cart& U = facet[(id + 2 >= facet.size()) ? id + 2 - facet.size() : id + 2];
+		  Local_vector_cart V2 = Local_vector_cart((U - T).x(), (U - T).y(), (U - T).z());
+
+		  orientation = Local_kernel_cart::Orientation_3()(V1, V2, normal);
+		  // Is it possible that orientation==COPLANAR ? Maybe if V1 or V2 is very small ?
+	  } while (++id != facet.size() &&
+		  (orientation == CGAL::COPLANAR || orientation == CGAL::ZERO));
+
+	  //Here, all orientations were COPLANAR. Not sure this case is possible,
+	  // but we stop here.
+	  if (orientation == CGAL::COPLANAR || orientation == CGAL::ZERO)
+	  {
+		  return false;
+	  }
+
+	  // Now we compute convexness
+	  for (id = 0; id < facet.size(); ++id)
+	  {
+		  const Local_point_cart& S = facet[id];
+		  const Local_point_cart& T = facet[(id + 1 == facet.size()) ? 0 : id + 1];
+		  Local_vector_cart V1 = Local_vector_cart((T - S).x(), (T - S).y(), (T - S).z());
+
+		  const Local_point_cart& U = facet[(id + 2 >= facet.size()) ? id + 2 - facet.size() : id + 2];
+		  Local_vector_cart V2 = Local_vector_cart((U - T).x(), (U - T).y(), (U - T).z());
+
+		  local_orientation = Local_kernel_cart::Orientation_3()(V1, V2, normal);
+
+		  if (local_orientation != CGAL::ZERO && local_orientation != orientation)
+		  {
+			  return false;
+		  }
+	  }
+	  return true;
+  }
+  //**********************************************************************************//
+
 protected:
   void face_begin_internal(bool has_color, bool has_normal)
   {

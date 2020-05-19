@@ -38,7 +38,6 @@
 
 #include <CGAL/IO/File_writer_wavefront.h>
 #include <CGAL/IO/generic_copy_OFF.h>
-#include <CGAL/IO/OBJ_reader.h>
 #include <CGAL/IO/PLY_reader.h>
 #include <CGAL/IO/PLY_writer.h>
 #include <CGAL/Polygon_mesh_processing/measure.h>
@@ -2291,32 +2290,6 @@ void Scene_surface_mesh_item::set_comments(std::string comment_in)
 }
 
 //*******************************************************************//
-
-bool
-Scene_surface_mesh_item::load_obj(std::istream& in)
-{
-	typedef SMesh::Point Point;
-	std::vector<Point> points;
-	std::vector<std::vector<std::size_t> > faces;
-	bool failed = !CGAL::read_OBJ(in, points, faces);
-
-	CGAL::Polygon_mesh_processing::orient_polygon_soup(points, faces);
-	CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(points, faces, *(d->smesh_));
-	if ((!failed) && !isEmpty())
-	{
-		invalidate(ALL);
-		return true;
-	}
-	return false;
-}
-
-bool
-Scene_surface_mesh_item::save_obj(std::ostream& out) const
-{
-	CGAL::File_writer_wavefront  writer;
-	CGAL::generic_print_surface_mesh(out, *(d->smesh_), writer);
-	return out.good();
-}
 
 void
 Scene_surface_mesh_item_priv::

@@ -9,7 +9,6 @@
 #include "Scene_surface_mesh_item.h"
 #include "Scene_polyhedron_selection_item.h"
 #include "Item_classification_base.h"
-#include "Kernel_type.h"
 
 //#include <CGAL/Classification.h>
 #include <CGAL/Classification/Label.h>
