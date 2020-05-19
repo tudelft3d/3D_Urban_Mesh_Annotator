@@ -44,14 +44,23 @@ typedef std::size_t seg_id;
 
 
 class seg_boundary_edge_info;
+struct seg_boundary_edge_Comp
+{
+	bool operator() ()
+	{
+		return true;
+	}
+};
+
+
 class Segment {
 public:
 	std::set<face_descriptor> faces_included;
-	std::set<seg_boundary_edge_info> boundary_edges;
+	std::set<seg_boundary_edge_info, seg_boundary_edge_Comp> boundary_edges;
 	std::size_t id;
-	Segment(std::vector<face_descriptor> faces) 
+	Segment(std::vector<face_descriptor> faces)
 	{
-		BOOST_FOREACH(face_descriptor fd, faces) 
+		BOOST_FOREACH(face_descriptor fd, faces)
 		{
 			if (fd.is_valid())
 				faces_included.insert(fd);
