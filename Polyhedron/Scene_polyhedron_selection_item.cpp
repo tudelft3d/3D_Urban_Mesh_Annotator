@@ -9,7 +9,6 @@
 #include <CGAL/Handle_hash_function.h>
 #include <CGAL/Unique_hash_map.h>
 #include <CGAL/statistics_helpers.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 
 #ifndef Q_MOC_RUN
 #include <boost/graph/properties.hpp>

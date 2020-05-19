@@ -12,7 +12,6 @@
 #include <set>
 #include <stack>
 #include <algorithm>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 
 #include <CGAL/IO/OFF_reader.h>
 #include <CGAL/IO/File_writer_OFF.h>
