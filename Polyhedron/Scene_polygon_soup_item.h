@@ -12,7 +12,7 @@
 struct Scene_polygon_soup_item_priv;
 struct Polygon_soup
 {
-    typedef EPICK::Point_3 Point_3;
+    typedef Kernel::Point_3 Point_3;
     typedef std::vector<Point_3> Points;
     //vector containing 3 indices of points in Points
     typedef std::vector<std::size_t> Polygon_3;
@@ -103,7 +103,7 @@ class SCENE_POLYGON_SOUP_ITEM_EXPORT Scene_polygon_soup_item
 {
     Q_OBJECT
 public:  
-    typedef EPICK::Point_3 Point_3;
+    typedef Kernel::Point_3 Point_3;
     typedef Polygon_soup::Points Points;
     typedef Polygon_soup::Polygons Polygons;
     typedef Polygon_soup::Edges Edges;

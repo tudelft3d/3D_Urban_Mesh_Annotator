@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <QObject>
 
-typedef EPICK  ::Point_3 Point;
+typedef Kernel  ::Point_3 Point;
 
 struct Scene_textured_surface_mesh_item_priv
 {
@@ -199,8 +199,8 @@ Scene_textured_surface_mesh_item_priv::compute_normals_and_vertices(void) const
   //Faces
   SMesh::Property_map<vertex_descriptor, Point> positions =
       sm->points();
-  SMesh::Property_map<face_descriptor, EPICK::Vector_3 > fnormals =
-      sm->add_property_map<face_descriptor, EPICK::Vector_3 >("f:normal").first;
+  SMesh::Property_map<face_descriptor, Kernel::Vector_3 > fnormals =
+      sm->add_property_map<face_descriptor, Kernel::Vector_3 >("f:normal").first;
   CGAL::Polygon_mesh_processing::compute_face_normals(*sm,fnormals);
 
   for(face_iterator f = faces(*sm).begin();
@@ -218,7 +218,7 @@ Scene_textured_surface_mesh_item_priv::compute_normals_and_vertices(void) const
       faces_buffer.push_back(p.y() + offset.y);
       faces_buffer.push_back(p.z() + offset.z);
       //normals [3]
-      const EPICK::Vector_3& n = get(fnormals, face(*he, *sm));
+      const Kernel::Vector_3& n = get(fnormals, face(*he, *sm));
       faces_buffer.push_back(n[0]);
       faces_buffer.push_back(n[1]);
       faces_buffer.push_back(n[2]);
@@ -231,7 +231,7 @@ Scene_textured_surface_mesh_item_priv::compute_normals_and_vertices(void) const
   }
 
   //Edges
-  typedef EPICK::Point_3		Point;
+  typedef Kernel::Point_3		Point;
   typedef SMesh::Edge_iterator	Edge_iterator;
 
   Edge_iterator he;

@@ -80,7 +80,7 @@ public:
 	// types
 	typedef face_descriptor Id; // Id type
 	typedef Point_3 Point; // point type
-	typedef EPICK::Triangle_3 Datum; // datum type
+	typedef Kernel::Triangle_3 Datum; // datum type
 
 private:
 	// member data
@@ -105,12 +105,12 @@ public:
 };
 
 
-typedef CGAL::AABB_traits<EPICK, Primitive> AABB_traits;
+typedef CGAL::AABB_traits<Kernel, Primitive> AABB_traits;
 typedef CGAL::AABB_tree<AABB_traits> Input_facets_AABB_tree;
 
 struct Scene_surface_mesh_item_priv {
 
-	typedef EPICK::Point_3 Point;
+	typedef Kernel::Point_3 Point;
 	typedef CGAL::Surface_mesh<Point> SMesh;
 	typedef boost::graph_traits<SMesh>::face_descriptor face_descriptor;
 
@@ -217,21 +217,21 @@ struct Scene_surface_mesh_item_priv {
 
 	void killIds();
 	void fillTargetedIds(const face_descriptor& selected_fh,
-		const EPICK::Point_3& point_under,
+		const Kernel::Point_3& point_under,
 		CGAL::Three::Viewer_interface* viewer,
 		const CGAL::qglviewer::Vec& offset);
 
 	void initialize_colors() const;
 	void invalidate_stats();
 	void initializeBuffers(CGAL::Three::Viewer_interface*) const;
-	void addFlatData(Point, EPICK::Vector_3, CGAL::Color*, Scene_item_rendering_helper::Gl_data_names name) const;
+	void addFlatData(Point, Kernel::Vector_3, CGAL::Color*, Scene_item_rendering_helper::Gl_data_names name) const;
 	void* get_aabb_tree();
-	QList<EPICK::Triangle_3> triangulate_primitive(face_descriptor fit,
-		EPICK::Vector_3 normal);
+	QList<Kernel::Triangle_3> triangulate_primitive(face_descriptor fit,
+		Kernel::Vector_3 normal);
 
 	/*********************Ziqian*******************************/
 	void computeSegmentBoundary();
-	void addSelectedFlatData(Point p, EPICK::Vector_3 n, CGAL::Color* c, Scene_item_rendering_helper::Gl_data_names name) const;
+	void addSelectedFlatData(Point p, Kernel::Vector_3 n, CGAL::Color* c, Scene_item_rendering_helper::Gl_data_names name) const;
 	/**********************************************************/
 
 	//! \brief triangulate_facet Triangulates a facet.
@@ -243,13 +243,13 @@ struct Scene_surface_mesh_item_priv {
 	//! fill the flat data vectors.
 	void
 		triangulate_facet(face_descriptor fd,
-			SMesh::Property_map<face_descriptor, EPICK::Vector_3>* fnormals,
+			SMesh::Property_map<face_descriptor, Kernel::Vector_3>* fnormals,
 			SMesh::Property_map<face_descriptor, CGAL::Color>* fcolors,
 			boost::property_map< SMesh, boost::vertex_index_t >::type* im,
 			Scene_item_rendering_helper::Gl_data_names name,
 			bool index) const;
 	void triangulate_convex_facet(face_descriptor fd,
-		SMesh::Property_map<face_descriptor, EPICK::Vector_3>* fnormals,
+		SMesh::Property_map<face_descriptor, Kernel::Vector_3>* fnormals,
 		SMesh::Property_map<face_descriptor, CGAL::Color>* fcolors,
 		boost::property_map< SMesh, boost::vertex_index_t >::type* im,
 		Scene_item_rendering_helper::Gl_data_names name,
@@ -427,7 +427,7 @@ Scene_surface_mesh_item::color_vector()
 	return d->colors_;
 }
 
-void Scene_surface_mesh_item_priv::addFlatData(Point p, EPICK::Vector_3 n, CGAL::Color* c, Scene_item_rendering_helper::Gl_data_names name) const
+void Scene_surface_mesh_item_priv::addFlatData(Point p, Kernel::Vector_3 n, CGAL::Color* c, Scene_item_rendering_helper::Gl_data_names name) const
 {
 	const CGAL::qglviewer::Vec offset = static_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first())->offset();
 	if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
@@ -451,7 +451,7 @@ void Scene_surface_mesh_item_priv::addFlatData(Point p, EPICK::Vector_3 n, CGAL:
 }
 
 /*********************Ziqian*********************/
-void Scene_surface_mesh_item_priv::addSelectedFlatData(Point p, EPICK::Vector_3 n, CGAL::Color* c, Scene_item_rendering_helper::Gl_data_names name) const
+void Scene_surface_mesh_item_priv::addSelectedFlatData(Point p, Kernel::Vector_3 n, CGAL::Color* c, Scene_item_rendering_helper::Gl_data_names name) const
 {
 	const CGAL::qglviewer::Vec offset = static_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first())->offset();
 	if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
@@ -509,18 +509,18 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 	idx_data_.shrink_to_fit();
 
 
-	SMesh::Property_map<vertex_descriptor, EPICK::Vector_3 > vnormals =
-		smesh_->add_property_map<vertex_descriptor, EPICK::Vector_3 >("v:normal").first;
+	SMesh::Property_map<vertex_descriptor, Kernel::Vector_3 > vnormals =
+		smesh_->add_property_map<vertex_descriptor, Kernel::Vector_3 >("v:normal").first;
 
-	SMesh::Property_map<face_descriptor, EPICK::Vector_3 > fnormals =
-		smesh_->add_property_map<face_descriptor, EPICK::Vector_3 >("f:normal").first;
+	SMesh::Property_map<face_descriptor, Kernel::Vector_3 > fnormals =
+		smesh_->add_property_map<face_descriptor, Kernel::Vector_3 >("f:normal").first;
 	CGAL::Polygon_mesh_processing::compute_face_normals(*smesh_, fnormals);
 
 	typedef boost::graph_traits<SMesh>::face_descriptor face_descriptor;
 	CGAL::Polygon_mesh_processing::compute_vertex_normals(*smesh_, vnormals);
 
 	const CGAL::qglviewer::Vec o = static_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first())->offset();
-	EPICK::Vector_3 offset(o.x, o.y, o.z);
+	Kernel::Vector_3 offset(o.x, o.y, o.z);
 
 	SMesh::Property_map<vertex_descriptor, SMesh::Point> positions = smesh_->points();
 
@@ -680,7 +680,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 				}
 				if (name.testFlag(Scene_item_rendering_helper::NORMALS))
 				{
-					EPICK::Vector_3 n = fnormals[fd];
+					Kernel::Vector_3 n = fnormals[fd];
 					if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
 						CPF::add_normal_in_buffer(n, selected_flat_normals);
 					}
@@ -724,7 +724,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 				//1st half
 				halfedge_descriptor hd = halfedge(fd, *smesh_);
 				Point p = positions[source(hd, *smesh_)];
-				EPICK::Vector_3 n = fnormals[fd];
+				Kernel::Vector_3 n = fnormals[fd];
 				CGAL::Color* c;
 				if (has_fpatch_id)
 				{
@@ -833,7 +833,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 			}
 			if (name.testFlag(Scene_item_rendering_helper::NORMALS))
 			{
-				EPICK::Vector_3 n = vnormals[vd];
+				Kernel::Vector_3 n = vnormals[vd];
 				CPF::add_normal_in_buffer(n, smooth_normals);
 			}
 		}
@@ -1566,7 +1566,7 @@ void Scene_surface_mesh_item_priv::checkFloat()const
 }
 
 void Scene_surface_mesh_item_priv::triangulate_convex_facet(face_descriptor fd,
-	SMesh::Property_map<face_descriptor, EPICK::Vector_3>* fnormals,
+	SMesh::Property_map<face_descriptor, Kernel::Vector_3>* fnormals,
 	SMesh::Property_map<face_descriptor, CGAL::Color>* fcolors,
 	boost::property_map< SMesh, boost::vertex_index_t >::type* im,
 	Scene_item_rendering_helper::Gl_data_names name,
@@ -1624,7 +1624,7 @@ void Scene_surface_mesh_item_priv::triangulate_convex_facet(face_descriptor fd,
 
 void
 Scene_surface_mesh_item_priv::triangulate_facet(face_descriptor fd,
-	SMesh::Property_map<face_descriptor, EPICK::Vector_3>* fnormals,
+	SMesh::Property_map<face_descriptor, Kernel::Vector_3>* fnormals,
 	SMesh::Property_map<face_descriptor, CGAL::Color>* fcolors,
 	boost::property_map< SMesh, boost::vertex_index_t >::type* im,
 	Scene_item_rendering_helper::Gl_data_names name,
@@ -1632,7 +1632,7 @@ Scene_surface_mesh_item_priv::triangulate_facet(face_descriptor fd,
 {
 
 	//Computes the normal of the facet
-	EPICK::Vector_3 normal = get(*fnormals, fd);
+	Kernel::Vector_3 normal = get(*fnormals, fd);
 	if (normal == CGAL::NULL_VECTOR)
 	{
 		boost::graph_traits<SMesh>::halfedge_descriptor start = prev(halfedge(fd, *smesh_), *smesh_);
@@ -1664,9 +1664,9 @@ Scene_surface_mesh_item_priv::triangulate_facet(face_descriptor fd,
 		return;
 	}
 
-	typedef FacetTriangulator<SMesh, EPICK, boost::graph_traits<SMesh>::vertex_descriptor> FT;
+	typedef FacetTriangulator<SMesh, Kernel, boost::graph_traits<SMesh>::vertex_descriptor> FT;
 	const CGAL::qglviewer::Vec off = static_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first())->offset();
-	EPICK::Vector_3 offset(off.x, off.y, off.z);
+	Kernel::Vector_3 offset(off.x, off.y, off.z);
 	FT triangulation(fd, normal, smesh_, offset);
 	//iterates on the internal faces
 	for (FT::CDT::Finite_faces_iterator
@@ -1823,9 +1823,9 @@ void* Scene_surface_mesh_item_priv::get_aabb_tree()
 				//if face not triangle, triangulate corresponding primitive before adding it to the tree
 				if (!CGAL::is_triangle(halfedge(f, *sm), *sm))
 				{
-					EPICK::Vector_3 normal = CGAL::Polygon_mesh_processing::compute_face_normal(f, *sm);
+					Kernel::Vector_3 normal = CGAL::Polygon_mesh_processing::compute_face_normal(f, *sm);
 					index += 3;
-					Q_FOREACH(EPICK::Triangle_3 triangle, triangulate_primitive(f, normal))
+					Q_FOREACH(Kernel::Triangle_3 triangle, triangulate_primitive(f, normal))
 					{
 						Primitive primitive(triangle, f);
 						tree->insert(primitive);
@@ -1833,7 +1833,7 @@ void* Scene_surface_mesh_item_priv::get_aabb_tree()
 				}
 				else
 				{
-					EPICK::Triangle_3 triangle(
+					Kernel::Triangle_3 triangle(
 						sm->point(target(halfedge(f, *sm), *sm)),
 						sm->point(target(next(halfedge(f, *sm), *sm), *sm)),
 						sm->point(target(next(next(halfedge(f, *sm), *sm), *sm), *sm))
@@ -1862,15 +1862,15 @@ Scene_surface_mesh_item::select(double orig_x,
 	SMesh* sm = d->smesh_;
 	std::size_t vertex_to_emit = 0;
 	typedef Input_facets_AABB_tree Tree;
-	typedef Tree::Intersection_and_primitive_id<EPICK::Ray_3>::Type Object_and_primitive_id;
+	typedef Tree::Intersection_and_primitive_id<Kernel::Ray_3>::Type Object_and_primitive_id;
 	int selected_facet_num = 0, selected_vertex_num = 0, selected_edge_num = 0;
 
 	Tree* aabb_tree = static_cast<Tree*>(d->get_aabb_tree());
 	if (aabb_tree)
 	{
-		const EPICK::Point_3 ray_origin(orig_x, orig_y, orig_z);
-		const EPICK::Vector_3 ray_dir(dir_x, dir_y, dir_z);
-		const EPICK::Ray_3 ray(ray_origin, ray_dir);
+		const Kernel::Point_3 ray_origin(orig_x, orig_y, orig_z);
+		const Kernel::Vector_3 ray_dir(dir_x, dir_y, dir_z);
+		const Kernel::Ray_3 ray(ray_origin, ray_dir);
 		typedef std::list<Object_and_primitive_id> Intersections;
 		Intersections intersections;
 		aabb_tree->all_intersections(ray, std::back_inserter(intersections));
@@ -1878,8 +1878,8 @@ Scene_surface_mesh_item::select(double orig_x,
 		if (closest != intersections.end())
 		{
 
-			const EPICK::Point_3* closest_point =
-				boost::get<EPICK::Point_3>(&(closest->first));
+			const Kernel::Point_3* closest_point =
+				boost::get<Kernel::Point_3>(&(closest->first));
 			for (Intersections::iterator
 				it = boost::next(intersections.begin()),
 				end = intersections.end();
@@ -1889,8 +1889,8 @@ Scene_surface_mesh_item::select(double orig_x,
 					closest = it;
 				}
 				else {
-					const EPICK::Point_3* it_point =
-						boost::get<EPICK::Point_3>(&it->first);
+					const Kernel::Point_3* it_point =
+						boost::get<Kernel::Point_3>(&it->first);
 					if (it_point &&
 						(ray_dir * (*it_point - *closest_point)) < 0)
 					{
@@ -1912,11 +1912,11 @@ Scene_surface_mesh_item::select(double orig_x,
 
 					vertex_descriptor v = sm->target(*he_it), nearest_v = v;
 
-					EPICK::FT sq_dist = CGAL::squared_distance(*closest_point,
+					Kernel::FT sq_dist = CGAL::squared_distance(*closest_point,
 						sm->point(v));
 					while (++he_it != around_end) {
 						v = sm->target(*he_it);
-						EPICK::FT new_sq_dist = CGAL::squared_distance(*closest_point,
+						Kernel::FT new_sq_dist = CGAL::squared_distance(*closest_point,
 							sm->point(v));
 						if (new_sq_dist < sq_dist) {
 							sq_dist = new_sq_dist;
@@ -1933,18 +1933,18 @@ Scene_surface_mesh_item::select(double orig_x,
 					SMesh::Halfedge_around_face_circulator he_it(sm->halfedge(selected_face), *sm), around_end(he_it);
 
 					halfedge_descriptor nearest_h = *he_it;
-					EPICK::FT sq_dist =
+					Kernel::FT sq_dist =
 						CGAL::squared_distance(*closest_point,
-							EPICK::Segment_3(sm->point(sm->target(*he_it)),
+							Kernel::Segment_3(sm->point(sm->target(*he_it)),
 								sm->point(
 									sm->target(
 										sm->opposite(*he_it)))));
 
 					while (++he_it != around_end)
 					{
-						EPICK::FT new_sq_dist =
+						Kernel::FT new_sq_dist =
 							CGAL::squared_distance(*closest_point,
-								EPICK::Segment_3(sm->point(sm->target(*he_it)),
+								Kernel::Segment_3(sm->point(sm->target(*he_it)),
 									sm->point(
 										sm->target(
 											sm->opposite(*he_it)))));
@@ -2092,17 +2092,17 @@ void Scene_surface_mesh_item::invalidate(Gl_data_names name)
 	}
 }
 
-QList<EPICK::Triangle_3> Scene_surface_mesh_item_priv::triangulate_primitive(face_descriptor fit,
-	EPICK::Vector_3 normal)
+QList<Kernel::Triangle_3> Scene_surface_mesh_item_priv::triangulate_primitive(face_descriptor fit,
+	Kernel::Vector_3 normal)
 {
-	typedef FacetTriangulator<SMesh, EPICK, boost::graph_traits<SMesh>::vertex_descriptor> FT;
+	typedef FacetTriangulator<SMesh, Kernel, boost::graph_traits<SMesh>::vertex_descriptor> FT;
 	//The output list
-	QList<EPICK::Triangle_3> res;
+	QList<Kernel::Triangle_3> res;
 	//check if normal contains NaN values
 	if (normal.x() != normal.x() || normal.y() != normal.y() || normal.z() != normal.z())
 	{
 		qDebug() << "Warning in triangulation of the selection item: normal contains NaN values and is not valid.";
-		return QList<EPICK::Triangle_3>();
+		return QList<Kernel::Triangle_3>();
 	}
 	FT triangulation(fit, normal, smesh_);
 	//iterates on the internal faces to add the vertices to the positions
@@ -2116,7 +2116,7 @@ QList<EPICK::Triangle_3> Scene_surface_mesh_item_priv::triangulate_primitive(fac
 			continue;
 
 
-		res << EPICK::Triangle_3(ffit->vertex(0)->point(),
+		res << Kernel::Triangle_3(ffit->vertex(0)->point(),
 			ffit->vertex(1)->point(),
 			ffit->vertex(2)->point());
 
@@ -2143,17 +2143,17 @@ bool Scene_surface_mesh_item::intersect_face(double orig_x,
 	Tree* aabb_tree = static_cast<Tree*>(d->get_aabb_tree());
 	if (aabb_tree)
 	{
-		const EPICK::Point_3 ray_origin(orig_x, orig_y, orig_z);
-		const EPICK::Vector_3 ray_dir(dir_x, dir_y, dir_z);
-		const EPICK::Ray_3 ray(ray_origin, ray_dir);
+		const Kernel::Point_3 ray_origin(orig_x, orig_y, orig_z);
+		const Kernel::Vector_3 ray_dir(dir_x, dir_y, dir_z);
+		const Kernel::Ray_3 ray(ray_origin, ray_dir);
 		typedef std::list<Object_and_primitive_id> Intersections;
 		Intersections intersections;
 		aabb_tree->all_intersections(ray, std::back_inserter(intersections));
 		Intersections::iterator closest = intersections.begin();
 		if (closest != intersections.end())
 		{
-			const EPICK::Point_3* closest_point =
-				CGAL::object_cast<EPICK::Point_3>(&closest->first);
+			const Kernel::Point_3* closest_point =
+				CGAL::object_cast<Kernel::Point_3>(&closest->first);
 			for (Intersections::iterator
 				it = boost::next(intersections.begin()),
 				end = intersections.end();
@@ -2163,8 +2163,8 @@ bool Scene_surface_mesh_item::intersect_face(double orig_x,
 					closest = it;
 				}
 				else {
-					const EPICK::Point_3* it_point =
-						CGAL::object_cast<EPICK::Point_3>(&it->first);
+					const Kernel::Point_3* it_point =
+						CGAL::object_cast<Kernel::Point_3>(&it->first);
 					if (it_point &&
 						(ray_dir * (*it_point - *closest_point)) < 0)
 					{
@@ -2572,7 +2572,7 @@ CGAL::Three::Scene_item::Header_data Scene_surface_mesh_item::header() const
 void Scene_surface_mesh_item::zoomToPosition(const QPoint& point, CGAL::Three::Viewer_interface* viewer) const
 {
 	typedef Input_facets_AABB_tree Tree;
-	typedef Tree::Intersection_and_primitive_id<EPICK::Ray_3>::Type Intersection_and_primitive_id;
+	typedef Tree::Intersection_and_primitive_id<Kernel::Ray_3>::Type Intersection_and_primitive_id;
 
 	Tree* aabb_tree = static_cast<Input_facets_AABB_tree*>(d->get_aabb_tree());
 	if (aabb_tree) {
@@ -2581,11 +2581,11 @@ void Scene_surface_mesh_item::zoomToPosition(const QPoint& point, CGAL::Three::V
 		//find clicked facet
 		bool found = false;
 		CGAL::qglviewer::Vec point_under = viewer->camera()->pointUnderPixel(point, found);
-		EPICK::Point_3 ray_origin;
+		Kernel::Point_3 ray_origin;
 		CGAL::qglviewer::Vec dir;
 		if (viewer->camera()->type() == CGAL::qglviewer::Camera::PERSPECTIVE)
 		{
-			ray_origin = EPICK::Point_3(viewer->camera()->position().x - offset.x,
+			ray_origin = Kernel::Point_3(viewer->camera()->position().x - offset.x,
 				viewer->camera()->position().y - offset.y,
 				viewer->camera()->position().z - offset.z);
 			dir = point_under - viewer->camera()->position();
@@ -2593,20 +2593,20 @@ void Scene_surface_mesh_item::zoomToPosition(const QPoint& point, CGAL::Three::V
 		else
 		{
 			dir = viewer->camera()->viewDirection();
-			ray_origin = EPICK::Point_3(point_under.x - dir.x,
+			ray_origin = Kernel::Point_3(point_under.x - dir.x,
 				point_under.y - dir.y,
 				point_under.z - dir.z);
 		}
-		const EPICK::Vector_3 ray_dir(dir.x, dir.y, dir.z);
-		const EPICK::Ray_3 ray(ray_origin, ray_dir);
+		const Kernel::Vector_3 ray_dir(dir.x, dir.y, dir.z);
+		const Kernel::Ray_3 ray(ray_origin, ray_dir);
 		typedef std::list<Intersection_and_primitive_id> Intersections;
 		Intersections intersections;
 		aabb_tree->all_intersections(ray, std::back_inserter(intersections));
 
 		if (!intersections.empty()) {
 			Intersections::iterator closest = intersections.begin();
-			const EPICK::Point_3* closest_point =
-				boost::get<EPICK::Point_3>(&closest->first);
+			const Kernel::Point_3* closest_point =
+				boost::get<Kernel::Point_3>(&closest->first);
 			for (Intersections::iterator
 				it = boost::next(intersections.begin()),
 				end = intersections.end();
@@ -2616,8 +2616,8 @@ void Scene_surface_mesh_item::zoomToPosition(const QPoint& point, CGAL::Three::V
 					closest = it;
 				}
 				else {
-					const EPICK::Point_3* it_point =
-						boost::get<EPICK::Point_3>(&it->first);
+					const Kernel::Point_3* it_point =
+						boost::get<Kernel::Point_3>(&it->first);
 					if (it_point &&
 						(ray_dir * (*it_point - *closest_point)) < 0)
 					{
@@ -2631,7 +2631,7 @@ void Scene_surface_mesh_item::zoomToPosition(const QPoint& point, CGAL::Three::V
 					d->smesh_->points();
 				face_descriptor selected_fh = closest->second;
 				//compute new position and orientation
-				EPICK::Vector_3 face_normal = CGAL::Polygon_mesh_processing::
+				Kernel::Vector_3 face_normal = CGAL::Polygon_mesh_processing::
 					compute_face_normal(selected_fh,
 						*d->smesh_,
 						CGAL::Polygon_mesh_processing::parameters::all_default());
@@ -2663,7 +2663,7 @@ void Scene_surface_mesh_item::zoomToPosition(const QPoint& point, CGAL::Three::V
 
 					++total;
 				}
-				EPICK::Point_3 centroid(x / total + offset.x,
+				Kernel::Point_3 centroid(x / total + offset.x,
 					y / total + offset.y,
 					z / total + offset.z);
 
@@ -2676,7 +2676,7 @@ void Scene_surface_mesh_item::zoomToPosition(const QPoint& point, CGAL::Three::V
 				double factor = CGAL::abs(max_side / (tan(viewer->camera()->aspectRatio() /
 					(viewer->camera()->fieldOfView() / 2))));
 
-				EPICK::Point_3 new_pos = centroid + factor * face_normal;
+				Kernel::Point_3 new_pos = centroid + factor * face_normal;
 				viewer->camera()->setSceneCenter(CGAL::qglviewer::Vec(centroid.x(),
 					centroid.y(),
 					centroid.z()));
@@ -2846,14 +2846,14 @@ void Scene_surface_mesh_item::printPrimitiveId(QPoint point, CGAL::Three::Viewer
 	if (!aabb_tree)
 		return;
 	face_descriptor selected_fh;
-	EPICK::Point_3 pt_under;
+	Kernel::Point_3 pt_under;
 	const CGAL::qglviewer::Vec offset = static_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first())->offset();
 	if (find_primitive_id(point, aabb_tree, viewer, selected_fh, pt_under))
 		d->fillTargetedIds(selected_fh, pt_under, viewer, offset);
 
 }
 void Scene_surface_mesh_item_priv::fillTargetedIds(const face_descriptor& selected_fh,
-	const EPICK::Point_3& pt_under,
+	const Kernel::Point_3& pt_under,
 	CGAL::Three::Viewer_interface* viewer,
 	const CGAL::qglviewer::Vec& offset)
 {
@@ -2950,24 +2950,24 @@ void Scene_surface_mesh_item::printAllIds(CGAL::Three::Viewer_interface* viewer)
 bool Scene_surface_mesh_item::testDisplayId(double x, double y, double z, CGAL::Three::Viewer_interface* viewer)const
 {
 	const CGAL::qglviewer::Vec offset = static_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first())->offset();
-	EPICK::Point_3 src(x - offset.x,
+	Kernel::Point_3 src(x - offset.x,
 		y - offset.y,
 		z - offset.z);
 
 	CGAL::qglviewer::Camera* cam = viewer->camera();
-	EPICK::Point_3 dest(cam->position().x - offset.x,
+	Kernel::Point_3 dest(cam->position().x - offset.x,
 		cam->position().y - offset.y,
 		cam->position().z - offset.z);
-	EPICK::Vector_3 v(src, dest);
-	EPICK::Vector_3 dir(cam->viewDirection().x,
+	Kernel::Vector_3 v(src, dest);
+	Kernel::Vector_3 dir(cam->viewDirection().x,
 		cam->viewDirection().y,
 		cam->viewDirection().z);
 	if (-CGAL::scalar_product(v, dir) < cam->zNear()) //if src is behind the near plane, don't display.
 		return false;
 	v = 0.01 * v;
-	EPICK::Point_3 point = src;
+	Kernel::Point_3 point = src;
 	point = point + v;
-	EPICK::Segment_3 query(point, dest);
+	Kernel::Segment_3 query(point, dest);
 	return !static_cast<Input_facets_AABB_tree*>(d->get_aabb_tree())->do_intersect(query);
 }
 

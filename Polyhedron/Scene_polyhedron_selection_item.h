@@ -829,7 +829,7 @@ public:
 			}
 		}
 		// construct point vector
-		std::vector<EPICK::Point_3> points;
+		std::vector<Kernel::Point_3> points;
 		points.reserve(selected_facets.size());
 		VPmap vpm = get(CGAL::vertex_point, *polyhedron());
 		unsigned int counter = 1;

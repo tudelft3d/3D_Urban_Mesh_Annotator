@@ -22,7 +22,7 @@
 #include <CGAL/Polygon_2.h>
 
 typedef Scene_surface_mesh_item Scene_facegraph_item;
-typedef EPICK FG_Traits;
+typedef Kernel FG_Traits;
 
 typedef Scene_facegraph_item::Face_graph FaceGraph;
 typedef boost::graph_traits<FaceGraph>::vertex_descriptor fg_vertex_descriptor;

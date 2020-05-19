@@ -33,7 +33,7 @@
 struct Scene_polygon_soup_item_priv{
 
   typedef Polygon_soup::Polygons::const_iterator Polygons_iterator;
-  typedef EPICK::Point_3 Point_3;
+  typedef Kernel::Point_3 Point_3;
 
   Scene_polygon_soup_item_priv(Scene_polygon_soup_item* parent)
     : soup(0),
@@ -198,14 +198,14 @@ Scene_polygon_soup_item_priv::initializeBuffers(CGAL::Three::Viewer_interface* v
     item->are_buffers_filled = true;
 }
 
-typedef EPICK Traits;
+typedef Kernel Traits;
 typedef Polygon_soup::Polygon_3 Facet;
 
 void
 Scene_polygon_soup_item_priv::triangulate_polygon(Polygons_iterator pit, int polygon_id) const
 {
   const CGAL::qglviewer::Vec off = static_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first())->offset();
-  EPICK::Vector_3 offset(off.x,off.y,off.z);
+  Kernel::Vector_3 offset(off.x,off.y,off.z);
   
     //Computes the normal of the facet
     Traits::Vector_3 normal = CGAL::NULL_VECTOR;
@@ -222,7 +222,7 @@ Scene_polygon_soup_item_priv::triangulate_polygon(Polygons_iterator pit, int pol
     if (normal == CGAL::NULL_VECTOR) // No normal could be computed, return
       return;
     
-    typedef FacetTriangulator<SMesh, EPICK, std::size_t> FT;
+    typedef FacetTriangulator<SMesh, Kernel, std::size_t> FT;
 
     std::size_t it = 0;
     std::size_t it_end =pit->size();
@@ -327,7 +327,7 @@ Scene_polygon_soup_item_priv::compute_normals_and_vertices() const{
             const Point_3& pb = soup->points[it->at(1)];
             const Point_3& pc = soup->points[it->at(2)];
 
-            EPICK::Vector_3 n = CGAL::cross_product(pb-pa, pc -pa);
+            Kernel::Vector_3 n = CGAL::cross_product(pb-pa, pc -pa);
             n = n / std::sqrt(n * n);
 
             normals.push_back(n.x());
@@ -816,10 +816,10 @@ void Scene_polygon_soup_item::load(const std::vector<Point>& points, const std::
 // because the d-pointer forbid the definition in the .h for this function.
 template SCENE_POLYGON_SOUP_ITEM_EXPORT void Scene_polygon_soup_item::load<CGAL::cpp11::array<double, 3>, CGAL::cpp11::array<int, 3> >
 (const std::vector<CGAL::cpp11::array<double, 3> >& points, const std::vector<CGAL::cpp11::array<int, 3> >& polygons);
-template SCENE_POLYGON_SOUP_ITEM_EXPORT void Scene_polygon_soup_item::load<CGAL::Epick::Point_3, std::vector<std::size_t> >
-(const std::vector<CGAL::Epick::Point_3>& points, const std::vector<std::vector<std::size_t> >& polygons);
-template SCENE_POLYGON_SOUP_ITEM_EXPORT void Scene_polygon_soup_item::load<CGAL::Epick::Point_3, std::vector<std::size_t> >
-(const std::vector<CGAL::Epick::Point_3>& points, const std::vector<std::vector<std::size_t> >& polygons,
+template SCENE_POLYGON_SOUP_ITEM_EXPORT void Scene_polygon_soup_item::load<CGAL::Kernel::Point_3, std::vector<std::size_t> >
+(const std::vector<CGAL::Kernel::Point_3>& points, const std::vector<std::vector<std::size_t> >& polygons);
+template SCENE_POLYGON_SOUP_ITEM_EXPORT void Scene_polygon_soup_item::load<CGAL::Kernel::Point_3, std::vector<std::size_t> >
+(const std::vector<CGAL::Kernel::Point_3>& points, const std::vector<std::vector<std::size_t> >& polygons,
  const std::vector<CGAL::Color>& fcolors,
  const std::vector<CGAL::Color>& vcolors);
 
