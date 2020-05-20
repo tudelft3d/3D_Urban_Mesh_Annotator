@@ -1,7 +1,7 @@
 #ifndef SELECTION_VISUALIZER_H
 #define SELECTION_VISUALIZER_H
 
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Cartesian.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Viewer_interface.h>
@@ -13,7 +13,7 @@ class Q_DECL_EXPORT Selection_visualizer
 {
 
  private:
-  typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+  typedef CGAL::Cartesian<double> K;
   typedef K::Point_2 Point_2;
   typedef K::Point_3 Point_3;
   typedef CGAL::Polygon_2<K> Polygon_2;

@@ -41,21 +41,12 @@ class QSlider;
 struct Scene_surface_mesh_item_priv;
 /******************Ziqian && Weixiao*********************/
 typedef std::size_t seg_id;
-
-
 class seg_boundary_edge_info;
-struct seg_boundary_edge_Comp
-{
-	bool operator() (const seg_boundary_edge_info &a, const seg_boundary_edge_info &b)
-	{
-		return true;
-	}
-};
-
 class Segment {
 public:
+	Segment() {}
 	std::set<face_descriptor> faces_included;
-	std::set<seg_boundary_edge_info, seg_boundary_edge_Comp> boundary_edges;
+	std::set<seg_boundary_edge_info> boundary_edges;
 	std::size_t id;
 	Segment(std::vector<face_descriptor> faces)
 	{
@@ -65,14 +56,21 @@ public:
 				faces_included.insert(fd);
 		}
 	}
-	Segment() {}
 };
 
 class seg_boundary_edge_info {
 public:
+	
+	seg_boundary_edge_info() {}
 	Segment** adjecent_segs;
 	void set_adjecent_segs(Segment* s1, Segment* s2);
 	Segment* get_adjecent_segs(Segment* s);
+	int boundary_size = 0;
+
+	inline bool operator< (const seg_boundary_edge_info& a) const
+	{
+		return this->boundary_size < a.boundary_size;
+	}
 };
 
 /*********************************************/

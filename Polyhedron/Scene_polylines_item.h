@@ -2,9 +2,8 @@
 #define SCENE_POLYLINES_ITEM_H
 #include "Scene_polylines_item_config.h"
 #include <CGAL/Three/Viewer_interface.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Three/Scene_group_item.h>
-
+#include <CGAL/Cartesian.h>
 #include <QString>
 #include <QMenu>
 
@@ -17,7 +16,7 @@ class SCENE_POLYLINES_ITEM_EXPORT Scene_polylines_item : public CGAL::Three::Sce
 {
     Q_OBJECT
 public:
-    typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+    typedef CGAL::Cartesian<double> K;
     typedef K::Point_3 Point_3;
     typedef std::vector<Point_3> Polyline;
     typedef std::list<Polyline> Polylines_container;

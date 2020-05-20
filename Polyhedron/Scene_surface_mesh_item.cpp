@@ -400,11 +400,12 @@ struct Scene_surface_mesh_item_priv {
 	/*************************/
 };
 
-/*******************Ziqian**************************/
+/*******************Ziqian && Weixiao**************************/
 void seg_boundary_edge_info::set_adjecent_segs(Segment* s1, Segment* s2) {
 	adjecent_segs = new Segment *[2];
 	adjecent_segs[0] = s1;
 	adjecent_segs[1] = s2;
+	boundary_size = s1->boundary_edges.size() + s2->boundary_edges.size();
 }
 Segment* seg_boundary_edge_info::get_adjecent_segs(Segment* s) {
 	if (s == adjecent_segs[0]) {
