@@ -46,12 +46,11 @@ typedef std::size_t seg_id;
 class seg_boundary_edge_info;
 struct seg_boundary_edge_Comp
 {
-	bool operator() ()
+	bool operator() (const seg_boundary_edge_info &a, const seg_boundary_edge_info &b)
 	{
 		return true;
 	}
 };
-
 
 class Segment {
 public:
