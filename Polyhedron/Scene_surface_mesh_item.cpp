@@ -67,7 +67,6 @@ typedef CGAL::Three::Point_container Pt;
 typedef CGAL::Three::Viewer_interface VI;
 
 //***********************Weixiao Update for texture define*******************************//
-typedef boost::unordered_set<boost::graph_traits<SMesh>::face_descriptor> Component;
 using namespace CGAL::Three;
 
 typedef Kernel::Point_3  Local_point;
@@ -1301,7 +1300,6 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 			d->_face_texcoord = this->face_texcoord;
 			d->_face_textureid = this->face_textureid;
 			QPointF min(FLT_MAX, FLT_MAX), max(-FLT_MAX, -FLT_MAX);
-			Component* component = new Component();
 			SMesh::Property_map<halfedge_descriptor, std::pair<float, float> > uv;
 			uv = (*d->smesh_).add_property_map<halfedge_descriptor, std::pair<float, float> >("h:uv", std::make_pair(0.0f, 0.0f)).first;
 
@@ -1310,7 +1308,6 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 				if (d->_face_texcoord[fd].empty() == true)
 					break;
 
-				component->insert(fd);
 				SMesh::Halfedge_around_face_circulator he(halfedge(fd, *d->smesh_), *d->smesh_);
 				SMesh::Halfedge_around_face_circulator end = he;
 				int ind = 0;
@@ -1381,7 +1378,6 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 			d->_face_texcoord = this->face_texcoord;
 			d->_face_textureid = this->face_textureid;
 			QPointF min(FLT_MAX, FLT_MAX), max(-FLT_MAX, -FLT_MAX);
-			Component* component = new Component();
 			SMesh::Property_map<halfedge_descriptor, std::pair<float, float> > uv;
 			uv = (*d->smesh_).add_property_map<halfedge_descriptor, std::pair<float, float> >("h:uv", std::make_pair(0.0f, 0.0f)).first;
 
@@ -1390,7 +1386,6 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 				if (d->_face_texcoord[fd].empty() == true)
 					break;
 
-				component->insert(fd);
 				SMesh::Halfedge_around_face_circulator he(halfedge(fd, *d->smesh_), *d->smesh_);
 				SMesh::Halfedge_around_face_circulator end = he;
 				int ind = 0;
@@ -1463,7 +1458,6 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 			d->_face_texcoord = this->face_texcoord;
 			d->_face_textureid = this->face_textureid;
 			QPointF min(FLT_MAX, FLT_MAX), max(-FLT_MAX, -FLT_MAX);
-			Component* component = new Component();
 			SMesh::Property_map<halfedge_descriptor, std::pair<float, float> > uv;
 			uv = (*d->smesh_).add_property_map<halfedge_descriptor, std::pair<float, float> >("h:uv", std::make_pair(0.0f, 0.0f)).first;
 
@@ -1471,8 +1465,6 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 			{
 				if (d->_face_texcoord[fd].empty() == true)
 					break;
-
-				component->insert(fd);
 				SMesh::Halfedge_around_face_circulator he(halfedge(fd, *d->smesh_), *d->smesh_);
 				SMesh::Halfedge_around_face_circulator end = he;
 				int ind = 0;
