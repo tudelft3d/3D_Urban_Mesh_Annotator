@@ -882,6 +882,17 @@ void Scene_polyhedron_selection_item::inverse_selection()
 	v->update();
 }
 
+void Scene_polyhedron_selection_item::inverse_selection_in_segment()
+{
+	Selection_set_facet temp_select = selected_facets;
+	select_all_facets_in_segment();
+	Q_FOREACH(fg_face_descriptor fh, temp_select)
+		selected_facets.erase(fh);
+	invalidateOpenGLBuffers();
+	CGAL::QGLViewer* v = *CGAL::QGLViewer::QGLViewerPool().begin();
+	v->update();
+}
+
 void Scene_polyhedron_selection_item::set_operation_mode(int mode)
 {
 	k_ring_selector.setEditMode(true);
@@ -1589,7 +1600,7 @@ bool Scene_polyhedron_selection_item::treat_selection(const std::set<fg_face_des
 			/********************Ziqian********************/
 		case 12:
 			set_editing_segment(poly_item->face_segment_id[fh]);
-			poly_item->emphasize_present_segment(edited_segment);
+			poly_item->emphasize_present_segment(seg_id(edited_segment));
 
 			clear_all();
 			set_operation_mode(-1);

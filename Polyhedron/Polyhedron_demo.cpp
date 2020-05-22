@@ -30,11 +30,11 @@ Polyhedron_demo::Polyhedron_demo(int& argc, char **argv,
   std::cout.precision(17);
   std::clog.precision(17);
 
-  //for windows
-//#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
-//  this->setAttribute(Qt::AA_UseDesktopOpenGL);
-//#endif
+  this->setAttribute(Qt::AA_EnableHighDpiScaling);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
   this->setAttribute(Qt::AA_UseDesktopOpenGL);
+#endif
+ 
   // Import resources from libCGAL (Qt5).
   CGAL_QT_INIT_RESOURCES;
 

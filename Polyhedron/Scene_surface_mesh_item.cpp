@@ -1093,6 +1093,7 @@ void Scene_surface_mesh_item::get_connected_faces(face_descriptor fd, std::vecto
 //**************************Zi qian && Weixiao****************************//
 void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 	m_RMode = renderingMode();
+	d->chosen_segments.clear();
 	d->chosen_segments.insert(seg);
 	d->compute_elements(ALL);
 	setRenderingMode(Emphasizing);

@@ -211,6 +211,7 @@ public:
 	Scene_polyhedron_selection_item(Scene_face_graph_item* poly_item, QMainWindow* mw);
 	~Scene_polyhedron_selection_item();
 	void inverse_selection();
+	void inverse_selection_in_segment();
 	void setPathSelection(bool b);
 	//For ID printing
 	void printPrimitiveId(QPoint, CGAL::Three::Viewer_interface*);
@@ -489,6 +490,19 @@ public:
 		Tr tr(this);
 		for (typename Tr::Iterator it = tr.iterator_begin(); it != tr.iterator_end(); ++it) {
 			tr.container().insert(*it);
+		}
+		invalidateOpenGLBuffers();
+		Q_EMIT itemChanged();
+	}
+
+	void select_all_facets_in_segment()
+	{
+		typedef Selection_traits<fg_face_descriptor, Scene_polyhedron_selection_item> Tr;
+		Tr tr(this);
+		for (typename Tr::Iterator it = tr.iterator_begin(); it != tr.iterator_end(); ++it)
+		{
+			if (poly_item->face_segment_id[*it] == edited_segment)
+				tr.container().insert(*it);
 		}
 		invalidateOpenGLBuffers();
 		Q_EMIT itemChanged();
@@ -1129,7 +1143,7 @@ protected:
 	bool is_insert;
 
 	/****************Ziqian*******************/
-	std::size_t edited_segment;
+	int edited_segment = -1;
 	/*****************************************/
 	//********************Weixiao Update************************//
 	int wheel_count = 0;

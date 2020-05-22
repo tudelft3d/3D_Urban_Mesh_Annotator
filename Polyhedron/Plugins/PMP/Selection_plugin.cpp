@@ -289,7 +289,12 @@ public Q_SLOTS:
 			return;
 		}
 
-		selection_item->select_all();
+		if (ui_widget.Selection_type_combo_box->currentIndex() == 1)
+		{
+			selection_item->select_all_facets_in_segment();
+		}
+		else
+			selection_item->select_all();
 	}
 	/***************************Ziqian && Weixiao*****************************************/
 	void on_Selected_class_clicked()
@@ -357,6 +362,7 @@ public Q_SLOTS:
 		}
 		selection_item->clear_all();
 		selection_item->poly_item->unemphasize();
+		selection_item->edited_segment = -1;
 		//selection_item->segmentifySelection();
 	}
 
@@ -396,7 +402,10 @@ public Q_SLOTS:
 			print_message("Error: there is no selected polyhedron selection item!");
 			return;
 		}
-		selection_item->inverse_selection();
+		if (ui_widget.Selection_type_combo_box->currentIndex() == 1)
+			selection_item->inverse_selection_in_segment();
+		else
+			selection_item->inverse_selection();
 	}
 
 	void reset_highlight_facets_if_selected()

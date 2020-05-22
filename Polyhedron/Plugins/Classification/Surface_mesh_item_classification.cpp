@@ -70,6 +70,14 @@ Surface_mesh_item_classification::Surface_mesh_item_classification(Scene_surface
 					m_label_colors[i] = this->get_new_label_color(m_labels[i]->name());
 			}
 		}
+		else
+		{
+			for (std::size_t i = 0; i < m_labels.size(); ++i)
+			{
+				if (i != 0 && m_label_colors[i].red() == 0 && m_label_colors[i].green() == 0 && m_label_colors[i].blue() == 0)
+					m_label_colors[i] = this->get_new_label_color(m_labels[i]->name());
+			}
+		}
 
 		update_comments_of_facet_set_item();
 	}
