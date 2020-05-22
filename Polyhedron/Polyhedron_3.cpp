@@ -10,6 +10,11 @@
  */
 int main(int argc, char **argv)
 {
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+    QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+#endif
+
   QSurfaceFormat fmt;
 
   fmt.setVersion(4, 3);
