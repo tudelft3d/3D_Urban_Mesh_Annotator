@@ -157,6 +157,12 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 	scene = new Scene(this);
 	viewer->textRenderer()->setScene(scene);
 	viewer->setScene(scene);
+
+	int screen_width = viewer->camera()->screenWidth() * this->devicePixelRatio();
+	int screen_height = viewer->camera()->screenHeight() * this->devicePixelRatio();
+	viewer->camera()->setScreenWidthAndHeight(screen_width, screen_height);
+	viewer->camera()->frame()->setSpinningSensitivity(100.0);
+
 	CGAL::Three::Three::s_scene = scene;
 	CGAL::Three::Three::s_connectable_scene = scene;
 	{
