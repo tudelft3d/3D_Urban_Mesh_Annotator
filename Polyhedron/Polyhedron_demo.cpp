@@ -100,7 +100,8 @@ Polyhedron_demo::Polyhedron_demo(int& argc, char **argv,
 
   mainWindow.setWindowTitle(main_window_title);
   mainWindow.show();
-
+  mainWindow.raise();
+  mainWindow.activateWindow();
   // On Apple, the first time the application is launched, the menus are unclicable, and
   // the only way you can fix it is to unfocus and re-focus the application.
   // This is a hack that makes the application lose the focus after it is started, to force the user
