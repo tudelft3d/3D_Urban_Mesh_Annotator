@@ -292,7 +292,7 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 		viewer, SLOT(SetOrthoProjection(bool)));
 
 	// add the "About CGAL..." and "About demo..." entries
-	//this->addAboutCGAL();
+	this->addAboutCGAL();
 	this->addAboutDemo(":/cgal/Polyhedron_3/about.html");
 
 	// Connect the button "addButton" with actionLoad
@@ -302,9 +302,8 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 	//********************Weixiao Update************************//
 	//ui->duplicateButton->setDefaultAction(ui->actionDuplicate);
   //**********************************************************//
-
-
-	// Connect actionQuit (Ctrl+Q) and qApp->quit()
+	   
+  // Connect actionQuit (Ctrl+Q) and qApp->quit()
 	connect(ui->actionQuit, SIGNAL(triggered()),
 		this, SLOT(quit()));
 	// Connect "Select all items"

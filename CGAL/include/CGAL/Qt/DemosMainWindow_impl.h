@@ -86,12 +86,14 @@ DemosMainWindow::DemosMainWindow(QWidget * parent, ::Qt::WindowFlags flags)
 
   actionAboutCGAL = new QAction(this);
   actionAboutCGAL->setObjectName("actionAboutCGAL");
-  actionAboutCGAL->setText(tr("About &CGAL..."));
-
+  //***********************Weixiao Update************************//
+  actionAboutCGAL->setText(tr("&Help Manual"));//actionAboutCGAL->setText(tr("About &CGAL..."));
+  //*************************************************************//
   actionAbout = new QAction(this);
   actionAbout->setObjectName("actionAbout");
-  actionAbout->setText(tr("&About..."));
-
+  //***********************Weixiao Update************************//
+  actionAbout->setText(tr("&About"));//actionAbout->setText(tr("&About..."));
+  //*************************************************************//
   setAcceptDrops(true);
 }
 
@@ -339,8 +341,54 @@ CGAL_INLINE_FUNCTION
 void
 DemosMainWindow::popupAboutCGAL()
 {
-  popupAboutBox(tr("About CGAL..."),
-                ":/cgal/help/about_CGAL.html");
+	//popupAboutBox(tr("Manual..."),
+	//	":/cgal/help/about_CGAL.html");
+	QMessageBox mb(QMessageBox::NoIcon,
+		tr("Manual..."),
+		QString("3D Annotator\n"
+			"\n"
+			"Welcome to 3D Annotator! Please read carefully this notice\n"
+			"before using the plugin.\n"
+			"\n"
+			"[QUICK INTRODUCTION]\n"
+			"Firstly, you need to load the mesh data (*.ply) and start the [3D Annotation] in [Operations] menu.\n"
+			"Then you need to click the 'selection' layer in 'Geometric Objects' to start annotation process. After you finished, do not forget to save your work.\n"
+			"\n"
+			"In order to annotate the data, you might need to use the following shortcuts:\n"
+			"[Most used]\n"
+			"Shift + Left Button: Selection\n"
+			"Shift + Wheel(Forward/Backward): Expand/Reduce selected area\n"
+			"Shift + D + Left Button: Deselection\n"
+			"Shift + [Capital letter of labels in the bracket(?)] : Add selection to the label category\n"
+			"Ctrl + 1: Switch on/off Texture rendering mode\n"
+			"Ctrl + 2: Switch on/off Flat rendering mode\n"
+			"Ctrl + Left Button: Update to the new view center\n"
+			"Ctrl + S: Save data\n"
+			"Z + Mouse Left Button: Zoom into the position\n"
+			"[Additional used]\n"
+			"Left Button Double Click: Set orthographic projection\n"
+			"Shift + Right Button: Pop up context menu of current layer\n"
+			"Ctrl + Space: Turn on/off current view\n"
+			"Ctrl + R: Recenter the view center to original\n"
+			"Ctrl + L: Load data\n"
+			"Ctrl + F1: Save snapshot and camera parameters\n"
+			"Ctrl + F2: Load camera parameter and move to the view\n"
+			"D + Mouse Left Button 1st && 2nd: Measure euclidean distance between 1st and 2nd point\n"
+		),
+		QMessageBox::Ok,
+		this);
+
+	QLabel* mb_label = mb.findChild<QLabel*>("qt_msgbox_label");
+	if (mb_label) {
+		mb_label->setTextInteractionFlags(mb_label->textInteractionFlags() |
+			::Qt::LinksAccessibleByMouse |
+			::Qt::LinksAccessibleByKeyboard);
+	}
+	else {
+		std::cerr << "Cannot find child \"qt_msgbox_label\" in QMessageBox\n"
+			<< "  with Qt version " << QT_VERSION_STR << "!\n";
+	}
+	mb.exec();
 }
 
 CGAL_INLINE_FUNCTION

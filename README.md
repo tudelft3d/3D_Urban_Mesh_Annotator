@@ -2,7 +2,7 @@
 	3D Annotator for mesh
   
 # Main entry point  
-	Polyhedron_3  
+	MeshAnnotator  
   
 # Required Plugins  
 	camera_positions_plugin  

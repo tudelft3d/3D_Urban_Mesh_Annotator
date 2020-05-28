@@ -228,9 +228,9 @@ if(CGAL_Qt5_FOUND AND Qt5_FOUND AND OPENGL_FOUND )
     ${FileLoaderDialogUI_files} ${MainWindowUI_files} ${PreferencesUI_FILES} ${statisticsUI_FILES})
   target_link_libraries(polyhedron_demo PUBLIC
     demo_framework Qt5::Gui Qt5::OpenGL Qt5::Widgets Qt5::Script)
-  add_executable  ( Polyhedron_3 Polyhedron_3.cpp )
-  target_link_libraries( Polyhedron_3 PRIVATE polyhedron_demo )
-  add_to_cached_list( CGAL_EXECUTABLE_TARGETS Polyhedron_3 )
+  add_executable  ( MeshAnnotator Polyhedron_3.cpp )
+  target_link_libraries( MeshAnnotator PRIVATE polyhedron_demo )
+  add_to_cached_list( CGAL_EXECUTABLE_TARGETS MeshAnnotator )
   cgal_add_compilation_test(polyhedron_demo)
 
   if( POLYHEDRON_QTSCRIPT_DEBUGGER )
@@ -240,10 +240,10 @@ if(CGAL_Qt5_FOUND AND Qt5_FOUND AND OPENGL_FOUND )
       message(STATUS "POLYHEDRON_QTSCRIPT_DEBUGGER is set to TRUE but the Qt5 ScriptTools library was not found.")
     endif()
   endif()
-  target_link_libraries( Polyhedron_3 PRIVATE demo_framework )
+  target_link_libraries( MeshAnnotator PRIVATE demo_framework )
 
   # Link with CGAL
-  target_link_libraries( Polyhedron_3 PUBLIC ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+  target_link_libraries( MeshAnnotator PUBLIC ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 
   add_to_cached_list( CGAL_EXECUTABLE_TARGETS Polyhedron_3 )
 
