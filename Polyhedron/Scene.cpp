@@ -933,6 +933,8 @@ Scene::draw_aux(bool with_names, CGAL::Three::Viewer_interface* viewer)
 		Q_EMIT(itemPicked(index_map.key(mainSelectionIndex())));
 	}
 	Q_EMIT drawFinished();
+
+    viewer->glDepthFunc(GL_LESS);
 }
 
 // workaround for Qt-4.2 (see above)

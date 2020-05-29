@@ -55,7 +55,7 @@ list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}")
 # Find CGAL
 
 option( POLYHEDRON_QTSCRIPT_DEBUGGER 
-  "Activate the use of Qt Script Debugger in Polyhedron_3 demo" OFF)
+  "Activate the use of Qt Script Debugger in UrbanMeshAnnotator" OFF)
 
 # Find Qt5 itself
 find_package(CGAL COMPONENTS Qt5 ImageIO)
@@ -222,13 +222,13 @@ if(CGAL_Qt5_FOUND AND Qt5_FOUND AND OPENGL_FOUND )
   add_definitions( -DUSE_FORWARD_DECL)
   add_library(polyhedron_demo SHARED
     MainWindow.cpp
-    Polyhedron_demo.cpp
+    UrbanMeshAnnotator.cpp
     File_loader_dialog_moc.cpp
     ${CGAL_Qt5_RESOURCE_FILES} ${CGAL_Qt5_MOC_FILES}
     ${FileLoaderDialogUI_files} ${MainWindowUI_files} ${PreferencesUI_FILES} ${statisticsUI_FILES})
   target_link_libraries(polyhedron_demo PUBLIC
     demo_framework Qt5::Gui Qt5::OpenGL Qt5::Widgets Qt5::Script)
-  add_executable  ( 3D_Annotator Polyhedron_3.cpp )
+  add_executable  ( 3D_Annotator main.cpp)
   target_link_libraries( 3D_Annotator PRIVATE polyhedron_demo )
   add_to_cached_list( CGAL_EXECUTABLE_TARGETS 3D_Annotator )
   cgal_add_compilation_test(polyhedron_demo)

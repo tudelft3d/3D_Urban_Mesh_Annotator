@@ -11,7 +11,7 @@
 
 struct Polyhedron_demo_impl;
 
-class POLYHEDRON_DEMO_EXPORT Polyhedron_demo : public QApplication
+class POLYHEDRON_DEMO_EXPORT UrbanMeshAnnotator : public QApplication
 {
   bool d_ptr_is_initialized; /// can be false during a call to `notify()`
   QScopedPointer<Polyhedron_demo_impl> d_ptr;
@@ -19,12 +19,12 @@ public:
   /*!
    * Constructor : calls the constructor of QApplication
    */
-  Polyhedron_demo(int& argc, char **argv,
-                  QString application_name = "Polyhedron_3 demo",
-                  QString main_window_title = "CGAL Polyhedron demo", 
+  UrbanMeshAnnotator(int& argc, char **argv,
+                  QString application_name = "UrbanMeshAnnotator",
+                  QString main_window_title = "UrbanMeshAnnotator",
                   QStringList input_keywords = QStringList());
 
-  ~Polyhedron_demo();
+  ~UrbanMeshAnnotator();
 
   /*!
    * Catches unhandled exceptions from all the widgets
@@ -39,6 +39,6 @@ public:
   /*! Call `QApplication::exec()` unless the main window is already closed
    */
   int try_exec();
-}; // end class Polyhedron_demo
+}; // end class UrbanMeshAnnotator
 
 #endif // POLYHEDRON_DEMO_H
