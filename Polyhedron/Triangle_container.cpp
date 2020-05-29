@@ -119,6 +119,8 @@ void Triangle_container::initGL( Viewer_interface* viewer)
 void Triangle_container::draw(Viewer_interface* viewer,
                               bool is_color_uniform)
 {
+	float dpi_tmp = viewer->devicePixelRatio();
+
 QOpenGLFramebufferObject* fbo = viewer->depthPeelingFbo();
   bindUniformValues(viewer);
 
@@ -133,8 +135,8 @@ QOpenGLFramebufferObject* fbo = viewer->depthPeelingFbo();
     if(getVao(viewer)->program->property("hasTransparency").toBool())
     {
       getVao(viewer)->program->setUniformValue("comparing", viewer->currentPass() > 0);;
-      getVao(viewer)->program->setUniformValue("width", viewer->width()*1.0f);         
-      getVao(viewer)->program->setUniformValue("height", viewer->height()*1.0f);       
+      getVao(viewer)->program->setUniformValue("width", viewer->width()*dpi_tmp);
+      getVao(viewer)->program->setUniformValue("height", viewer->height()*dpi_tmp);
       getVao(viewer)->program->setUniformValue("near", (float)viewer->camera()->zNear());     
       getVao(viewer)->program->setUniformValue("far", (float)viewer->camera()->zFar());       
       getVao(viewer)->program->setUniformValue("writing", viewer->isDepthWriting());   
@@ -159,8 +161,8 @@ QOpenGLFramebufferObject* fbo = viewer->depthPeelingFbo();
     if(getVao(viewer)->program->property("hasTransparency").toBool())
     {
       getVao(viewer)->program->setUniformValue("comparing", viewer->currentPass() > 0);
-      getVao(viewer)->program->setUniformValue("width", viewer->width()*1.0f);
-      getVao(viewer)->program->setUniformValue("height", viewer->height()*1.0f);
+      getVao(viewer)->program->setUniformValue("width", viewer->width()*dpi_tmp);
+      getVao(viewer)->program->setUniformValue("height", viewer->height()*dpi_tmp);
       getVao(viewer)->program->setUniformValue("near", (float)viewer->camera()->zNear());
       getVao(viewer)->program->setUniformValue("far", (float)viewer->camera()->zFar());
       getVao(viewer)->program->setUniformValue("writing", viewer->isDepthWriting());

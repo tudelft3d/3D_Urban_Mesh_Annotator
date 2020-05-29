@@ -404,10 +404,10 @@ public Q_SLOTS:
 
 	void on_help_clicked()
 	{
-		QMessageBox::information(dock_widget, QString("3D Annotator"),
-			QString("3D Annotator\n"
+		QMessageBox::information(dock_widget, QString("Urban Mesh Annotator"),
+			QString("Urban Mesh Annotator\n"
 				"\n"
-				"Welcome to 3D Annotator! Please read carefully this notice\n"
+				"Welcome to Urban Mesh Annotator! Please read carefully this notice\n"
 				"before using the plugin.\n"
 				"\n"
 				"[QUICK INTRODUCTION]\n"

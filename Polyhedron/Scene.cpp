@@ -598,7 +598,11 @@ void Scene::renderScene(const QList<Scene_interface::Item_id>& items,
 
 					//    read depth buffer at pick location;
 					float depth = 1.0;
-					viewer->glReadPixels(picked_pixel.x(), viewer->camera()->screenHeight() - 1 - picked_pixel.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+					/*viewer->glReadPixels(picked_pixel.x(), viewer->camera()->screenHeight() - 1 - picked_pixel.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);*/
+					viewer->glReadPixels(picked_pixel.x() * viewer->devicePixelRatio(), 
+						(viewer->camera()->screenHeight() - 2 - picked_pixel.y()) * viewer->devicePixelRatio(),
+						1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+
 					if (depth != 1.0)
 					{
 						//add object to list of picked objects;
@@ -796,7 +800,7 @@ Scene::draw_aux(bool with_names, CGAL::Three::Viewer_interface* viewer)
 		depth_test.resize((int)viewer->total_pass() - 1);
 
 		//first pass
-		fbos[0] = new QOpenGLFramebufferObject(viewer->width(), viewer->height(), QOpenGLFramebufferObject::Depth, GL_TEXTURE_2D, GL_RGBA32F);
+		fbos[0] = new QOpenGLFramebufferObject(viewer->width()* viewer->devicePixelRatio(), viewer->height()* viewer->devicePixelRatio(), QOpenGLFramebufferObject::Depth, GL_TEXTURE_2D, GL_RGBA32F);
 		fbos[0]->bind();
 		viewer->glDisable(GL_BLEND);
 		viewer->glEnable(GL_DEPTH_TEST);
@@ -808,7 +812,7 @@ Scene::draw_aux(bool with_names, CGAL::Three::Viewer_interface* viewer)
 		renderScene(transparent_items, viewer, picked_item_IDs, false, 0, false, NULL);
 		fbos[0]->release();
 
-		depth_test[0] = new QOpenGLFramebufferObject(viewer->width(), viewer->height(), QOpenGLFramebufferObject::Depth, GL_TEXTURE_2D, GL_RGBA32F);
+		depth_test[0] = new QOpenGLFramebufferObject(viewer->width()* viewer->devicePixelRatio(), viewer->height()* viewer->devicePixelRatio(), QOpenGLFramebufferObject::Depth, GL_TEXTURE_2D, GL_RGBA32F);
 		depth_test[0]->bind();
 		viewer->glDisable(GL_BLEND);
 		viewer->glEnable(GL_DEPTH_TEST);
@@ -823,7 +827,7 @@ Scene::draw_aux(bool with_names, CGAL::Three::Viewer_interface* viewer)
 		//other passes
 		for (int i = 1; i < viewer->total_pass() - 1; ++i)
 		{
-			fbos[i] = new QOpenGLFramebufferObject(viewer->width(), viewer->height(), QOpenGLFramebufferObject::Depth, GL_TEXTURE_2D, GL_RGBA32F);
+			fbos[i] = new QOpenGLFramebufferObject(viewer->width()* viewer->devicePixelRatio(), viewer->height()* viewer->devicePixelRatio(), QOpenGLFramebufferObject::Depth, GL_TEXTURE_2D, GL_RGBA32F);
 			fbos[i]->bind();
 			viewer->glDisable(GL_BLEND);
 			viewer->glEnable(GL_DEPTH_TEST);
@@ -840,7 +844,7 @@ Scene::draw_aux(bool with_names, CGAL::Three::Viewer_interface* viewer)
 			renderScene(transparent_items, viewer, picked_item_IDs, false, i, false, depth_test[i - 1]);
 			fbos[i]->release();
 
-			depth_test[i] = new QOpenGLFramebufferObject(viewer->width(), viewer->height(), QOpenGLFramebufferObject::Depth, GL_TEXTURE_2D, GL_RGBA32F);
+			depth_test[i] = new QOpenGLFramebufferObject(viewer->width()* viewer->devicePixelRatio(), viewer->height()* viewer->devicePixelRatio(), QOpenGLFramebufferObject::Depth, GL_TEXTURE_2D, GL_RGBA32F);
 			depth_test[i]->bind();
 			viewer->glDisable(GL_BLEND);
 			viewer->glEnable(GL_DEPTH_TEST);
@@ -858,7 +862,7 @@ Scene::draw_aux(bool with_names, CGAL::Three::Viewer_interface* viewer)
 
 
 		//last pass
-		fbos[(int)viewer->total_pass() - 1] = new QOpenGLFramebufferObject(viewer->width(), viewer->height(), QOpenGLFramebufferObject::Depth, GL_TEXTURE_2D, GL_RGBA32F);
+		fbos[(int)viewer->total_pass() - 1] = new QOpenGLFramebufferObject(viewer->width()* viewer->devicePixelRatio(), viewer->height()* viewer->devicePixelRatio(), QOpenGLFramebufferObject::Depth, GL_TEXTURE_2D, GL_RGBA32F);
 		fbos[(int)viewer->total_pass() - 1]->bind();
 		viewer->glDisable(GL_BLEND);
 		viewer->glEnable(GL_DEPTH_TEST);

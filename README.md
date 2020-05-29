@@ -1,8 +1,8 @@
 # 3D_Annotator_for_public
-	3D Annotator for mesh
+	Mesh annotator for urban scenes
   
 # Main entry point  
-	MeshAnnotator  
+	UrbanMeshAnnotator main.cpp  
   
 # Required Plugins  
 	camera_positions_plugin  
@@ -30,7 +30,7 @@
   
 # Compiling
 
-## macOS
+## Windows and macOS with CMake 
 
   1. install CGAL so that all its dependency are installed: `brew install cgal`
   1. `brew instal eigen`
