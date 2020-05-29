@@ -157,10 +157,6 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 	scene = new Scene(this);
 	viewer->textRenderer()->setScene(scene);
 	viewer->setScene(scene);
-
-	int screen_width = viewer->camera()->screenWidth() * this->devicePixelRatio();
-	int screen_height = viewer->camera()->screenHeight() * this->devicePixelRatio();
-	viewer->camera()->setScreenWidthAndHeight(screen_width, screen_height);
 	viewer->camera()->frame()->setSpinningSensitivity(100.0);
 
 	CGAL::Three::Three::s_scene = scene;
@@ -980,6 +976,7 @@ void MainWindow::updateViewerBBox(bool recenter = true)
 	{
 		const Scene::Bbox bbox = scene->bbox();
 		CGAL::qglviewer::Vec center = viewer->camera()->pivotPoint();
+
 		const double xmin = bbox.xmin();
 		const double ymin = bbox.ymin();
 		const double zmin = bbox.zmin();

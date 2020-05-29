@@ -27,6 +27,7 @@ int& code_to_call_before_creation_of_QCoreApplication(int& i) {
   fmt.setOption(QSurfaceFormat::DebugContext);
   QSurfaceFormat::setDefaultFormat(fmt);
 
+  QApplication::setAttribute(Qt::AA_DisableHighDpiScaling);//QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   //for windows
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
   QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
@@ -106,7 +107,7 @@ Polyhedron_demo::Polyhedron_demo(int& argc, char **argv,
   // the only way you can fix it is to unfocus and re-focus the application.
   // This is a hack that makes the application lose the focus after it is started, to force the user
   // to re-focus it. (source : http://www.alecjacobson.com/weblog/?p=3910)
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
     system("osascript -e 'tell application \"System Events\" "
       "to keystroke tab using {command down, shift down}'");
 #endif
