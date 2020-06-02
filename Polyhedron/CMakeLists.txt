@@ -220,6 +220,7 @@ if(CGAL_Qt5_FOUND AND Qt5_FOUND AND OPENGL_FOUND )
   endforeach()
 
   add_definitions( -DUSE_FORWARD_DECL)
+  add_definitions( -DCGAL_KERNEL_NO_ASSERTIONS)
   add_library(polyhedron_demo SHARED
     MainWindow.cpp
     UrbanMeshAnnotator.cpp

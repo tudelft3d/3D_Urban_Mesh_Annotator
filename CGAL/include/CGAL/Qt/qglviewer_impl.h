@@ -1159,10 +1159,10 @@ conjunction with backface culling. If you encounter problems try to \c
 glDisable(GL_CULL_FACE). */
 CGAL_INLINE_FUNCTION
 void CGAL::QGLViewer::select(const QPoint &point) {
-  beginSelection(point);
-  drawWithNames();
-  endSelection(point);
-  postSelection(point);
+	beginSelection(point);
+	drawWithNames();
+	endSelection(point);
+	postSelection(point);
 }
 
 /*! This method should prepare the selection. It is called by select() before
@@ -1173,7 +1173,7 @@ void CGAL::QGLViewer::beginSelection(const QPoint &point)
 {
   makeCurrent();
   glEnable(GL_SCISSOR_TEST);
-  glScissor(point.x(), camera()->screenHeight()-1-point.y(), 1, 1);
+  glScissor(point.x() * devicePixelRatio(), (camera()->screenHeight()-1-point.y()) * devicePixelRatio(), 1, 1);
 }
 
 /*! This method is called by select() after scene elements were drawn by

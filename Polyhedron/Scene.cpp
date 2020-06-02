@@ -595,21 +595,18 @@ void Scene::renderScene(const QList<Scene_interface::Item_id>& items,
 				item.draw(viewer);
 
 				if (with_names) {
-
 					//    read depth buffer at pick location;
 					float depth = 1.0;
-					/*viewer->glReadPixels(picked_pixel.x(), viewer->camera()->screenHeight() - 1 - picked_pixel.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);*/
 					viewer->glReadPixels(picked_pixel.x() * viewer->devicePixelRatio(), 
-						(viewer->camera()->screenHeight() - 2 - picked_pixel.y()) * viewer->devicePixelRatio(),
+						(viewer->camera()->screenHeight() - 1 - picked_pixel.y()) * viewer->devicePixelRatio(),
 						1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
-
 					if (depth != 1.0)
 					{
 						//add object to list of picked objects;
 						picked_item_IDs[depth] = index;
 						//********************Weixiao Update************************//
 						bool found_tmp = false;
-						CGAL::qglviewer::Vec point = viewer->camera()->pointUnderPixel(picked_pixel, found_tmp) - viewer->offset();
+						CGAL::qglviewer::Vec point = viewer->camera()->pointUnderPixel(picked_pixel, found_tmp, viewer->devicePixelRatio()) - viewer->offset();
 						first_layer_picked_point.clear();
 						first_layer_picked_point[index] = point;
 						//**********************************************************//
@@ -673,7 +670,7 @@ void Scene::renderWireScene(const QList<Scene_interface::Item_id>& items,
 
 				//    read depth buffer at pick location;
 				float depth = 1.0;
-				viewer->glReadPixels(picked_pixel.x(), viewer->camera()->screenHeight() - 1 - picked_pixel.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+				viewer->glReadPixels(picked_pixel.x()* viewer->devicePixelRatio(), (viewer->camera()->screenHeight() - 1 - picked_pixel.y()) * viewer->devicePixelRatio(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
 				if (depth != 1.0)
 				{
 					//add object to list of picked objects;
@@ -711,7 +708,7 @@ void Scene::renderPointScene(const QList<Scene_interface::Item_id>& items,
 			if (item.renderingMode() == Points && with_names) {
 				//    read depth buffer at pick location;
 				float depth = 1.0;
-				viewer->glReadPixels(picked_pixel.x(), viewer->camera()->screenHeight() - 1 - picked_pixel.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+				viewer->glReadPixels(picked_pixel.x() * viewer->devicePixelRatio(), (viewer->camera()->screenHeight() - 1 - picked_pixel.y()) * viewer->devicePixelRatio(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
 				if (depth != 1.0)
 				{
 					//add object to list of picked objects;
@@ -763,7 +760,7 @@ Scene::draw_aux(bool with_names, CGAL::Three::Viewer_interface* viewer)
 		//According ot that, in the viewer, either we perform the picking, either we do nothing.
 		if (has_alpha()) {
 			bool found = false;
-			CGAL::qglviewer::Vec point = viewer->camera()->pointUnderPixel(picked_pixel, found) - viewer->offset();
+			CGAL::qglviewer::Vec point = viewer->camera()->pointUnderPixel(picked_pixel, found, viewer->devicePixelRatio()) - viewer->offset();
 			//********************Weixiao Update************************//
 			if (!found)
 			{

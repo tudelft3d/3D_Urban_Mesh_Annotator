@@ -2621,7 +2621,7 @@ void Scene_surface_mesh_item::zoomToPosition(const QPoint& point, CGAL::Three::V
 		const CGAL::qglviewer::Vec offset = static_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first())->offset();
 		//find clicked facet
 		bool found = false;
-		CGAL::qglviewer::Vec point_under = viewer->camera()->pointUnderPixel(point, found);
+		CGAL::qglviewer::Vec point_under = viewer->camera()->pointUnderPixel(point, found, viewer->devicePixelRatio());
 		Kernel::Point_3 ray_origin;
 		CGAL::qglviewer::Vec dir;
 		if (viewer->camera()->type() == CGAL::qglviewer::Camera::PERSPECTIVE)

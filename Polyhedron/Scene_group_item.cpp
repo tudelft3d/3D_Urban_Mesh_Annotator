@@ -212,7 +212,7 @@ void Scene_group_item::renderChildren(Viewer_interface *viewer,
     if(with_names) {
       //    read depth buffer at pick location;
       float depth = 1.0;
-      viewer->glReadPixels(picked_pixel.x(),viewer->camera()->screenHeight()-1-picked_pixel.y(),1,1,GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+      viewer->glReadPixels(picked_pixel.x()* viewer->devicePixelRatio(), (viewer->camera()->screenHeight()-1-picked_pixel.y()) * viewer->devicePixelRatio(),1,1,GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
       if (depth != 1.0)
       {
         //add object to list of picked objects;

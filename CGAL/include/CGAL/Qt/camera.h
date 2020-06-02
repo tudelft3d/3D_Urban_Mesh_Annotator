@@ -422,7 +422,7 @@ public:
   void getUnprojectedCoordinatesOf(const qreal src[3], qreal res[3],
                                    const Frame *frame = NULL) const;
   void convertClickToLine(const QPoint &pixel, Vec &orig, Vec &dir) const;
-  Vec pointUnderPixel(const QPoint &pixel, bool &found) const;
+  Vec pointUnderPixel(const QPoint &pixel, bool &found, float devicePixelRatio = 1.0f) const;
   //@}
 
   /*! @name Fly speed */

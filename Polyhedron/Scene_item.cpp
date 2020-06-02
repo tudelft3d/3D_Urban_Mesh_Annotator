@@ -53,6 +53,7 @@ CGAL::Three::Scene_item::~Scene_item() {
   {
     delete vaos[i];
   }
+  resetMenu();
 }
 
 void CGAL::Three::Scene_item::itemAboutToBeDestroyed(CGAL::Three::Scene_item* item) {

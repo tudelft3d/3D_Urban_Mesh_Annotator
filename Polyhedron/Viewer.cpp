@@ -860,7 +860,7 @@ void Viewer::postSelection(const QPoint& pixel)
 		}
 	}
 	else {
-		point = camera()->pointUnderPixel(pixel, found) - offset();
+		point = camera()->pointUnderPixel(pixel, found, devicePixelRatio()) - offset();
 	}
 	if (found) {
 		Q_EMIT selectedPoint(point.x,
@@ -1476,7 +1476,7 @@ void Viewer_impl::showDistance(QPoint pixel)
 	static bool isAset = false;
 	bool found;
 	CGAL::qglviewer::Vec point;
-	point = viewer->camera()->pointUnderPixel(pixel, found);
+	point = viewer->camera()->pointUnderPixel(pixel, found, viewer->devicePixelRatio());
 	if (!isAset && found)
 	{
 		//set APoint
