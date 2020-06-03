@@ -453,7 +453,15 @@ void filterMenuOperations(QMenu* menu, QString filter, bool keep_from_here)
 				action->setVisible(!(submenu->isEmpty()));
 			}
 			else if (action->text().contains(filter, Qt::CaseInsensitive)) {
-				menu->addAction(action);
+				//*************Weixiao update************//
+				if (action->objectName().toStdString() == "actionSelection")
+				{
+					action->setVisible(false);
+				}//*******************************//
+				else
+				{
+					menu->addAction(action);
+				}
 			}
 			buffer.removeAll(action);
 		}
@@ -1452,6 +1460,26 @@ void MainWindow::showSceneContextMenu(int selectedItemIndex,
 		}
 	}
 	menu->addMenu(ui->menuOperations);
+	//***********Weixiao***********//
+	Q_FOREACH(QAction* action, scene->item(selectedItemIndex)->contextMenu()->actions())
+	{
+		if (action->text().toStdString() == "Set points Mode")
+			action->setVisible(false);
+
+		if (action->text().toStdString() == "Set wire Mode")
+			action->setVisible(false);
+
+		if (action->text().toStdString() == "Set flat+edges Mode")
+			action->setVisible(false);
+
+		if (action->text().toStdString() == "Set Gouraud Mode")
+			action->setVisible(false);
+
+		if (action->text().toStdString() == "Set Emphasizing Mode")
+			action->setVisible(false);
+	}
+	//*****************************//
+
 	if (menu)
 		menu->exec(global_pos);
 }
@@ -2611,7 +2639,7 @@ void MainWindow::resetHeader()
 	sceneView->header()->setSectionResizeMode(Scene::VisibleColumn, QHeaderView::Fixed);
 	sceneView->header()->resizeSection(Scene::ColorColumn, sceneView->header()->fontMetrics().width("_#_"));
 	sceneView->resizeColumnToContents(Scene::RenderingModeColumn);
-	sceneView->header()->resizeSection(Scene::ABColumn, sceneView->header()->fontMetrics().width(QString("_AB_")));
+	//sceneView->header()->resizeSection(Scene::ABColumn, sceneView->header()->fontMetrics().width(QString("_AB_")));
 	sceneView->header()->resizeSection(Scene::VisibleColumn, sceneView->header()->fontMetrics().width(QString("_View_")));
 }
 

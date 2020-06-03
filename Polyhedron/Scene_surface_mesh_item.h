@@ -177,7 +177,7 @@ public:
 	// this process is finished in PLY reading only, after the scene_surface_mesh is built.
 	void computeSegments();
 	bool segmentBoundryShow = true;
-	bool edgesShow = true;
+	bool edgesShow = false;
 	bool pointShow = false;
 	RenderingMode m_RMode, tmp_default_renderingmode;
 	QComboBox* label_selection_combox_tmp = NULL;

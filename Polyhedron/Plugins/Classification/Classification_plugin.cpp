@@ -194,8 +194,10 @@ public:
 			connect(scene_obj, SIGNAL(itemAboutToBeDestroyed(CGAL::Three::Scene_item*)), this,
 				SLOT(item_about_to_be_destroyed(CGAL::Three::Scene_item*)));
 
-			connect(scene_obj, SIGNAL(itemIndexSelected(int)), this,
-				SLOT(update_plugin(int)));
+			//*************Weixiao*************//
+			//connect(scene_obj, SIGNAL(itemIndexSelected(int)), this,
+			//	SLOT(update_plugin(int)));
+			//*********************************//
 		}
 	}
 	virtual void closure()
@@ -813,6 +815,12 @@ public Q_SLOTS:
 		ui_widget.ProbSwitcher->setEnabled(false);
 		ui_widget.label_2->setEnabled(false);
 		ui_widget.label->setEnabled(false);
+
+		ui_widget.ProbSlider->setVisible(false);
+		ui_widget.ProbSpin->setVisible(false);
+		ui_widget.ProbSwitcher->setVisible(false);
+		ui_widget.label_2->setVisible(false);
+		ui_widget.label->setVisible(false);
 		//progress bar
 		ui_widget.label_3->setEnabled(true);
 		ui_widget.label_4->setEnabled(true);
@@ -820,6 +828,13 @@ public Q_SLOTS:
 		ui_widget.lineEdit->setEnabled(true);
 		ui_widget.lineEdit_2->setEnabled(true);
 		ui_widget.progressBar->setEnabled(true);
+
+		ui_widget.label_3->setVisible(true);
+		ui_widget.label_4->setVisible(true);
+		ui_widget.label_5->setVisible(true);
+		ui_widget.lineEdit->setVisible(true);
+		ui_widget.lineEdit_2->setVisible(true);
+		ui_widget.progressBar->setVisible(true);
 	}
 
 	void enable_probability_disable_progressbar()
@@ -830,6 +845,12 @@ public Q_SLOTS:
 		ui_widget.ProbSwitcher->setEnabled(true);
 		ui_widget.label_2->setEnabled(true);
 		ui_widget.label->setEnabled(true);
+
+		ui_widget.ProbSlider->setVisible(true);
+		ui_widget.ProbSpin->setVisible(true);
+		ui_widget.ProbSwitcher->setVisible(true);
+		ui_widget.label_2->setVisible(true);
+		ui_widget.label->setVisible(true);
 		//progress bar
 		ui_widget.label_3->setEnabled(false);
 		ui_widget.label_4->setEnabled(false);
@@ -837,6 +858,13 @@ public Q_SLOTS:
 		ui_widget.lineEdit->setEnabled(false);
 		ui_widget.lineEdit_2->setEnabled(false);
 		ui_widget.progressBar->setEnabled(false);
+
+		ui_widget.label_3->setVisible(false);
+		ui_widget.label_4->setVisible(false);
+		ui_widget.label_5->setVisible(false);
+		ui_widget.lineEdit->setVisible(false);
+		ui_widget.lineEdit_2->setVisible(false);
+		ui_widget.progressBar->setVisible(false);
 	}
 
 	void disable_probability_disable_progressbar()

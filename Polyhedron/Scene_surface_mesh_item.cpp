@@ -2800,16 +2800,20 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 			menu->addAction(tr("Display Triangle Vertices"));
 
 		actionDisplayTriangleVertices->setCheckable(true);
-		actionDisplayTriangleVertices->setChecked(false);
+		actionDisplayTriangleVertices->setChecked(pointShow);
 		actionDisplayTriangleVertices->setObjectName("actionDisplayTriangleVertices");
 		connect(actionDisplayTriangleVertices, SIGNAL(triggered(bool)),
 			this, SLOT(showFacetVertices(bool)));
+
+		actionDisplayTriangleVertices->setEnabled(false);
+		actionDisplayTriangleVertices->setVisible(false);
+
 		//
 		QAction* actionDisplayTriangleEdges =
 			menu->addAction(tr("Display Triangle Edges"));
 
 		actionDisplayTriangleEdges->setCheckable(true);
-		actionDisplayTriangleEdges->setChecked(true);
+		actionDisplayTriangleEdges->setChecked(edgesShow);
 		actionDisplayTriangleEdges->setObjectName("actionDisplayTriangleEdges");
 		connect(actionDisplayTriangleEdges, SIGNAL(triggered(bool)),
 			this, SLOT(showFacetEdges(bool)));
@@ -2818,7 +2822,7 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 			menu->addAction(tr("Display Segment Border"));
 
 		actionDisplaySegmentBorder->setCheckable(true);
-		actionDisplaySegmentBorder->setChecked(true);
+		actionDisplaySegmentBorder->setChecked(segmentBoundryShow);
 		actionDisplaySegmentBorder->setObjectName("actionDisplaySegmentBorder");
 		connect(actionDisplaySegmentBorder, SIGNAL(triggered(bool)),
 			this, SLOT(showSegmentBorders(bool)));
@@ -2878,6 +2882,14 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 	if (action) action->setChecked(d->edges_displayed);
 	action = menu->findChild<QAction*>("actionPrintFaces");
 	if (action) action->setChecked(d->faces_displayed);
+	//********************Weixiao Update************************//
+	action = menu->findChild<QAction*>("actionDisplayTriangleVertices");
+	if (action) action->setChecked(pointShow);
+	action = menu->findChild<QAction*>("actionDisplayTriangleEdges");
+	if (action) action->setChecked(edgesShow);
+	action = menu->findChild<QAction*>("actionDisplaySegmentBorder");
+	if (action) action->setChecked(segmentBoundryShow);
+	//**********************************************************//
 	return menu;
 }
 void Scene_surface_mesh_item::printPrimitiveId(QPoint point, CGAL::Three::Viewer_interface* viewer)
