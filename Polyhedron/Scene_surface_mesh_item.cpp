@@ -2831,8 +2831,8 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 		QAction* actionPrintVertices =
 			menu->addAction(tr("Display Vertices Ids"));
 		//********************Weixiao Update************************//
-		//actionPrintVertices->setEnabled(false);
-		//actionPrintVertices->setVisible(false);
+		actionPrintVertices->setEnabled(false);
+		actionPrintVertices->setVisible(false);
 		//**********************************************************//
 		actionPrintVertices->setCheckable(true);
 		actionPrintVertices->setObjectName("actionPrintVertices");
@@ -2842,8 +2842,8 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 		QAction* actionPrintEdges =
 			menu->addAction(tr("Display Edges Ids"));
 		//********************Weixiao Update************************//
-		//actionPrintEdges->setEnabled(false);
-		//actionPrintEdges->setVisible(false);
+		actionPrintEdges->setEnabled(false);
+		actionPrintEdges->setVisible(false);
 		//**********************************************************//
 		actionPrintEdges->setCheckable(true);
 		actionPrintEdges->setObjectName("actionPrintEdges");
@@ -2853,8 +2853,8 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 		QAction* actionPrintFaces =
 			menu->addAction(tr("Display Faces Ids"));
 		//********************Weixiao Update************************//
-		//actionPrintFaces->setEnabled(false);
-		//actionPrintFaces->setVisible(false);
+		actionPrintFaces->setEnabled(false);
+		actionPrintFaces->setVisible(false);
 		//**********************************************************//
 		actionPrintFaces->setCheckable(true);
 		actionPrintFaces->setObjectName("actionPrintFaces");

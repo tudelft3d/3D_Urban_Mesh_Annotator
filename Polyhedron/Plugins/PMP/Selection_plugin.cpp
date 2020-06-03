@@ -153,6 +153,16 @@ public:
 		connect(ui_widget.Delete_selection_button, SIGNAL(clicked()), this, SLOT(on_Delete_selection_clicked()));
 		connect(ui_widget.SelectClasses, SIGNAL(clicked()), this, SLOT(on_Selected_class_clicked()));
 		connect(ui_widget.comboBox_2, SIGNAL(currentIndexChanged(int)), this, SLOT(on_selected_label_combo_box_changed(int)));
+
+		ui_widget.Create_selection_item_button->setDisabled(true);
+		ui_widget.Create_selection_item_button->setVisible(false);
+
+		ui_widget.Delete_facets_from_selection->setDisabled(true);
+		ui_widget.Delete_facets_from_selection->setVisible(false);
+
+		ui_widget.Delete_selection_button->setDisabled(true);
+		ui_widget.Delete_selection_button->setVisible(false);
+
 		//**********************************************************//
 		/************************Ziqian***************************/
 		connect(ui_widget.Clear_all_button, SIGNAL(clicked()), this, SLOT(on_Clear_all_button_clicked()));
@@ -165,6 +175,11 @@ public:
 		connect(ui_widget.Expand_reduce_button, SIGNAL(clicked()), this, SLOT(on_Expand_reduce_button_clicked()));
 		connect(ui_widget.Recommendation_button, SIGNAL(clicked()), this, SLOT(on_Recommendation_button_clicked()));
 
+		ui_widget.Recommendation_button->setDisabled(true);
+		ui_widget.Recommendation_button->setVisible(false);
+
+		ui_widget.comboBox->setDisabled(true);
+		ui_widget.comboBox->setVisible(false);
 		/*********************************************************/
 		QObject* scene = dynamic_cast<QObject*>(scene_interface);
 		if (scene) {

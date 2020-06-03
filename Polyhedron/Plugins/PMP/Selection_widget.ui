@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>540</width>
+    <width>608</width>
     <height>396</height>
    </rect>
   </property>
@@ -263,7 +263,7 @@
            </spacer>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
              <widget class="QPushButton" name="Create_selection_item_button">
               <property name="enabled">
@@ -292,23 +292,19 @@
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="Delete_selection_button">
+              <property name="text">
+               <string>Delete Selection</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="Inverse_selection_button">
               <property name="toolTip">
                <string extracomment="Invert selection for Selection Type"/>
               </property>
               <property name="text">
                <string>Invert Selection</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
-            <item>
-             <widget class="QPushButton" name="Delete_selection_button">
-              <property name="text">
-               <string>Delete Selection</string>
               </property>
              </widget>
             </item>
