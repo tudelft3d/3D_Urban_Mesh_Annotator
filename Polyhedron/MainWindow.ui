@@ -81,18 +81,9 @@
      </property>
      <addaction name="dummyAction"/>
     </widget>
-    <widget class="QMenu" name="menuCamera">
-     <property name="title">
-      <string>Ca&amp;mera</string>
-     </property>
-     <addaction name="actionDumpCamera"/>
-     <addaction name="actionCopyCamera"/>
-     <addaction name="actionPasteCamera"/>
-    </widget>
     <addaction name="actionRecenterScene"/>
     <addaction name="actionSwitchProjection"/>
     <addaction name="menuDockWindows"/>
-    <addaction name="menuCamera"/>
     <addaction name="separator"/>
    </widget>
    <addaction name="menuFile"/>
@@ -354,16 +345,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Space</string>
-   </property>
-  </action>
-  <action name="actionSetPolyhedronA">
-   <property name="text">
-    <string>Set Facegraph A</string>
-   </property>
-  </action>
-  <action name="actionSetPolyhedronB">
-   <property name="text">
-    <string>Set Facegraph B</string>
    </property>
   </action>
   <action name="actionDrawTwoSides">

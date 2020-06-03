@@ -332,10 +332,10 @@ protected Q_SLOTS:
 	void setMaxTextItemsDisplayed(int val);
 	void setTransparencyPasses(int val);
 	// Select A/B
-	//!Sets the selected item as item_A.
-	void on_actionSetPolyhedronA_triggered();
-	//!Sets the selected item as Item_B.
-	void on_actionSetPolyhedronB_triggered();
+	////!Sets the selected item as item_A.
+	//void on_actionSetPolyhedronA_triggered();
+	////!Sets the selected item as Item_B.
+	//void on_actionSetPolyhedronB_triggered();
 
 	//Preferences edition
 	//!Opens the Preferences dialog.

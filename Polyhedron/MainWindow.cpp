@@ -187,6 +187,10 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 
 	connect(ui->searchEdit, SIGNAL(textChanged(QString)),
 		proxyModel, SLOT(setFilterFixedString(QString)));
+	//********************Weixiao Update************************//
+	ui->searchEdit->setEnabled(false);
+	ui->searchEdit->setVisible(false);
+	//**********************************************************//
 	sceneView->setModel(proxyModel);
 
 	// setup the sceneview: delegation and columns sizing...
@@ -2132,18 +2136,6 @@ void MainWindow::on_actionShowHide_triggered()
 	}
 	scene->setUpdatesEnabled(true);
 	updateViewerBBox(false);
-}
-
-void MainWindow::on_actionSetPolyhedronA_triggered()
-{
-	int i = getSelectedSceneItemIndex();
-	scene->setItemA(i);
-}
-
-void MainWindow::on_actionSetPolyhedronB_triggered()
-{
-	int i = getSelectedSceneItemIndex();
-	scene->setItemB(i);
 }
 
 void MainWindow::on_actionPreferences_triggered()

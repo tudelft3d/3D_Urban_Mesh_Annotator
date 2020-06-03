@@ -1015,9 +1015,9 @@ Scene::headerData(int section, ::Qt::Orientation orientation, int role) const
 				break;
 			case RenderingModeColumn:
 				return tr("Mode");
-			case ABColumn:
-				return tr("A/B");
-				break;
+			//case ABColumn:
+			//	return tr("A/B");
+			//	break;
 			case VisibleColumn:
 				return tr("View");
 				break;

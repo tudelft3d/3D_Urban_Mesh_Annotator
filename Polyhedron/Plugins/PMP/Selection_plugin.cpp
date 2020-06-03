@@ -281,6 +281,10 @@ public Q_SLOTS:
 		//********************Weixiao Update************************//
 		poly_item->fill_classes_combo_box(ui_widget.comboBox_2);
 		poly_item->update_labels_for_selection();
+
+		CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
+		poly_item->setRenderingMode(TextureModePlusFlatEdges);
+		CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
 		//**********************************************************//
 	}
 
