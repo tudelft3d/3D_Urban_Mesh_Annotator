@@ -220,6 +220,10 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 			{
 				sm_item->set_comments(input_comments);
 			}
+
+			CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
+			sm_item->setRenderingMode(TextureModePlusFlatEdges);
+			//CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
 			//*******************************************************************//
 
 			return sm_item;

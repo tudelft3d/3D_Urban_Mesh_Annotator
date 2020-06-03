@@ -284,7 +284,7 @@ public Q_SLOTS:
 
 		CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
 		poly_item->setRenderingMode(TextureModePlusFlatEdges);
-		CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
+		//CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
 		//**********************************************************//
 	}
 
@@ -518,6 +518,10 @@ public Q_SLOTS:
 				Q_EMIT save_handleType();
 
 				Q_EMIT set_operation_mode(-1);
+
+				CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
+				selection_item->poly_item->setRenderingMode(TextureModePlusFlatEdges);
+				//CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
 			}
 			if (index == 1)
 			{
