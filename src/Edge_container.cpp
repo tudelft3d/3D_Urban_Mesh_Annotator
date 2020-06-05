@@ -99,7 +99,7 @@ void Edge_container::initializeBuffers(Viewer_interface* viewer)
 		if (viewer->getShaderProgram(getProgram())->property("hasBarycenter").toBool())
 			viewer->glVertexAttribDivisor(getVao(viewer)->program->attributeLocation("barycenter"), 1);
 		if (viewer->getShaderProgram(getProgram())->property("hasRadius").toBool()) {
-			viewer->glVertexAttribDivisor(getVao(viewer)->program->attributeLocation("radius"), 5);
+			viewer->glVertexAttribDivisor(getVao(viewer)->program->attributeLocation("radius"), 1.0f);
 		}
 		viewer->glVertexAttribDivisor(getVao(viewer)->program->attributeLocation("colors"), 1);
 		getVao(viewer)->release();
@@ -124,7 +124,7 @@ void Edge_container::draw(Viewer_interface* viewer,
 		getVao(viewer)->program->setUniformValue("viewport", vp);
 		getVao(viewer)->program->setUniformValue("near", (GLfloat)viewer->camera()->zNear());
 		getVao(viewer)->program->setUniformValue("far", (GLfloat)viewer->camera()->zFar());
-		getVao(viewer)->program->setUniformValue("width", GLfloat(5.0f));
+		getVao(viewer)->program->setUniformValue("width", GLfloat(1.0f));
 		getVao(viewer)->bind();
 		/*************************************************************/
 		getVbo(Indices)->bind();
@@ -146,7 +146,7 @@ void Edge_container::draw(Viewer_interface* viewer,
 			getVao(viewer)->program->setUniformValue("f_matrix", getFrameMatrix());
 
 		/***************************Ziqian****************************/
-		getVao(viewer)->program->setUniformValue("width", GLfloat(3.0f));
+		getVao(viewer)->program->setUniformValue("width", GLfloat(1.0f));
 		/*************************************************************/
 		if (viewer->getShaderProgram(getProgram())->property("isInstanced").toBool())
 		{

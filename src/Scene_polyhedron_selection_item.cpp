@@ -637,8 +637,8 @@ void Scene_polyhedron_selection_item_priv::compute_HL_elements()const
 
 void Scene_polyhedron_selection_item::draw(CGAL::Three::Viewer_interface* viewer) const
 {
-	GLfloat offset_factor;
-	GLfloat offset_units;
+//	GLfloat offset_factor;
+//	GLfloat offset_units;
 
 	if (!d->are_HL_buffers_filled)
 	{
@@ -646,9 +646,10 @@ void Scene_polyhedron_selection_item::draw(CGAL::Three::Viewer_interface* viewer
 		d->initialize_HL_buffers(viewer);
 	}
 
-	viewer->glGetFloatv(GL_POLYGON_OFFSET_FACTOR, &offset_factor);
-	viewer->glGetFloatv(GL_POLYGON_OFFSET_UNITS, &offset_units);
-	viewer->glPolygonOffset(0.9f, 0.9f);
+//	viewer->glGetFloatv(GL_POLYGON_OFFSET_FACTOR, &offset_factor);
+//	viewer->glGetFloatv(GL_POLYGON_OFFSET_UNITS, &offset_units);
+	viewer->glEnable(GL_POLYGON_OFFSET_FILL);
+	viewer->glPolygonOffset(0.5f, -0.0001f);
 
 	vaos[Scene_polyhedron_selection_item_priv::HLFacets]->bind();
 	d->program = getShaderProgram(PROGRAM_WITH_LIGHT);
@@ -688,11 +689,9 @@ void Scene_polyhedron_selection_item::draw(CGAL::Three::Viewer_interface* viewer
 	d->program->release();
 	vaos[Scene_polyhedron_selection_item_priv::Facets]->release();
 
-	viewer->glEnable(GL_POLYGON_OFFSET_LINE);
-	viewer->glPolygonOffset(0.3f, 0.3f);
-	drawEdges(viewer);
 	viewer->glDisable(GL_POLYGON_OFFSET_LINE);
-	viewer->glPolygonOffset(offset_factor, offset_units);
+
+	drawEdges(viewer);
 	drawPoints(viewer);
 }
 

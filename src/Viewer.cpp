@@ -805,8 +805,6 @@ void Viewer_impl::draw_aux(bool with_names, Viewer* viewer)
 		return;
 	current_total_pass = viewer->inFastDrawing() ? total_pass / 2 : total_pass;
 	viewer->setGlPointSize(2.f);
-	viewer->glEnable(GL_POLYGON_OFFSET_FILL);
-	viewer->glPolygonOffset(1.0f, 1.0f);
 
 	if (!with_names && antialiasing)
 	{
@@ -829,7 +827,6 @@ void Viewer_impl::draw_aux(bool with_names, Viewer* viewer)
 		scene->drawWithNames(viewer);
 	else
 		scene->draw(viewer);
-	viewer->glDisable(GL_POLYGON_OFFSET_FILL);
 }
 
 bool Viewer::inDrawWithNames() const {
