@@ -280,7 +280,7 @@ paket-files/
 __pycache__/
 *.pyc
 .DS_Store
-Polyhedron/cmake-build-debug
-Polyhedron/cmake-build-release
+src/cmake-build-debug
+src/cmake-build-release
 /CGAL/auxiliary/gmp
 /src/build/
