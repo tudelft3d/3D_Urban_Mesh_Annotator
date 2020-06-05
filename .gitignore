@@ -283,3 +283,4 @@ __pycache__/
 Polyhedron/cmake-build-debug
 Polyhedron/cmake-build-release
 /CGAL/auxiliary/gmp
+/src/build/
