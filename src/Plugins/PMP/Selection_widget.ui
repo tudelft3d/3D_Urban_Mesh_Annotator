@@ -43,6 +43,13 @@
              </spacer>
             </item>
             <item>
+             <widget class="QLabel" name="selection_mode">
+              <property name="text">
+               <string>Selection Mode:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QComboBox" name="Selection_type_combo_box">
               <property name="font">
                <font>

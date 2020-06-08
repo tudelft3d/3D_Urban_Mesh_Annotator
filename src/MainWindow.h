@@ -320,7 +320,7 @@ protected Q_SLOTS:
 	//********************Weixiao Update************************//
 	  ////!Duplicates the selected item and selects the new item.
 	  // void on_actionDuplicate_triggered();
-	void on_popupHelpMenu_triggered();
+	void popupHelpMenu();
 	//**********************************************************//
 	//!If QT_SCRIPT_LIB is defined, opens a dialog to choose a script.
 	void on_actionLoadScript_triggered();
@@ -453,7 +453,7 @@ private:
 		actionHelpMenu->setObjectName("actionHelpMenu");
 		actionHelpMenu->setText(tr("&Help"));//actionAboutCGAL->setText(tr("About &CGAL..."));
 		menuHelp->addAction(actionHelpMenu);
-		connect(actionHelpMenu, SIGNAL(triggered()), this, SLOT(on_popupHelpMenu_triggered()));
+		connect(actionHelpMenu, SIGNAL(triggered()), this, SLOT(popupHelpMenu()));
 	}
 
 	void updateMenus();

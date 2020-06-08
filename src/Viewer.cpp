@@ -269,8 +269,8 @@ Viewer::Viewer(QWidget* parent, bool antialiasing)
 	//	tr("Toggle macro mode: useful to view details very near from the camera, "
 	//		"but decrease the z-buffer precision"));
 	//**********************************************************//
-	setKeyDescription(Qt::Key_I + Qt::CTRL,
-		tr("Toggle the primitive IDs visibility of the selected Item."));
+	//setKeyDescription(Qt::Key_I + Qt::CTRL,
+	//	tr("Toggle the primitive IDs visibility of the selected Item."));
 	setKeyDescription(Qt::Key_D,
 		tr("Disable the distance between two points visibility."));
 	setKeyDescription(Qt::Key_F5,
@@ -280,13 +280,15 @@ Viewer::Viewer(QWidget* parent, bool antialiasing)
 	setMouseBinding(Qt::Key(0), Qt::NoModifier, Qt::LeftButton, CGAL::qglviewer::RAP_FROM_PIXEL, true, Qt::RightButton);
 	//setMouseBinding(Qt::Key_R, Qt::NoModifier, Qt::LeftButton, CGAL::qglviewer::RAP_FROM_PIXEL);
 
-	setMouseBindingDescription(Qt::ControlModifier, Qt::RightButton,
-		tr("Select and pop context menu"));
+	setMouseBindingDescription(Qt::AltModifier, Qt::RightButton,
+	tr("Select and pop context menu"));
 
 	//use the new API for these
 	//********************Weixiao Update************************//
 	//setMouseBinding(Qt::ShiftModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
 	setMouseBinding(Qt::ControlModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
+	setMouseBindingDescription(Qt::ControlModifier, Qt::LeftButton,
+		tr("Recenter to the selected position."));
 
 	setKeyDescription(Qt::Key_F1 + Qt::CTRL,
 		tr("Save snapshot with camera parameters."));
@@ -301,14 +303,13 @@ Viewer::Viewer(QWidget* parent, bool antialiasing)
 	//setMouseBindingDescription(Qt::Key(0), Qt::ShiftModifier, Qt::LeftButton,
 	//	tr("Selects and display context "
 	//		"menu of the selected item"));
-	setMouseBindingDescription(Qt::Key_I, Qt::NoModifier, Qt::LeftButton,
-		tr("Show/hide the primitive ID."));
+	//setMouseBindingDescription(Qt::Key_I, Qt::NoModifier, Qt::LeftButton,
+	//	tr("Show/hide the primitive ID."));
 	setMouseBindingDescription(Qt::Key_D, Qt::NoModifier, Qt::LeftButton,
 		tr("Selects a point. When the second point is selected,  "
 			"displays the two points and the distance between them."));
 	setMouseBindingDescription(Qt::Key_O, Qt::NoModifier, Qt::LeftButton,
-		tr("Move the camera orthogonally to the picked facet of a Scene_surface_mesh_item or "
-			"to the current selection of a Scene_points_with_normal_item."));
+		tr("Move the camera orthogonally to the picked facet of a Scene_surface_mesh_item"));
 	setKeyDescription(Qt::Key_F5,
 		tr("Reloads the selected item if possible."));
 	setKeyDescription(Qt::Key_F11,
@@ -547,7 +548,7 @@ void Viewer::mousePressEvent(QMouseEvent* event)
 {
 	makeCurrent();
 	if (event->button() == Qt::RightButton && 
-		event->modifiers().testFlag(Qt::ControlModifier))
+		event->modifiers().testFlag(Qt::AltModifier))
 	{
 		//********************Weixiao Update************************//
 		//select(event->pos());
@@ -625,11 +626,12 @@ void Viewer::keyPressEvent(QKeyEvent* e)
 		//	return;
 		//}
 		//**********************************************************//
-		else if (e->key() == Qt::Key_I) {
-			d->i_is_pressed = true;
-		}
+		//else if (e->key() == Qt::Key_I) {
+		//	d->i_is_pressed = true;
+		//}
 		else if (e->key() == Qt::Key_O) {
 			d->o_is_pressed = true;
+			return;
 		}
 		else if (e->key() == Qt::Key_D) {
 			if (e->isAutoRepeat())
@@ -645,11 +647,11 @@ void Viewer::keyPressEvent(QKeyEvent* e)
 			return;
 		}
 	}
-	else if (e->key() == Qt::Key_I && e->modifiers() & Qt::ControlModifier) {
-		d->scene->printAllIds(this);
-		update();
-		return;
-	}
+	//else if (e->key() == Qt::Key_I && e->modifiers() & Qt::ControlModifier) {
+	//	d->scene->printAllIds(this);
+	//	update();
+	//	return;
+	//}
 
 	else if (e->key() == Qt::Key_C && e->modifiers() & Qt::ControlModifier) {
 		d->sendSnapshotToClipboard(this);
@@ -691,10 +693,10 @@ void Viewer::keyPressEvent(QKeyEvent* e)
 
 void Viewer::keyReleaseEvent(QKeyEvent* e)
 {	
-	if (e->key() == Qt::Key_I) {
+/*	if (e->key() == Qt::Key_I) {
 		d->i_is_pressed = false;
 	}
-	else if (e->key() == Qt::Key_O) {
+	else */if (e->key() == Qt::Key_O) {
 		d->o_is_pressed = false;
 	}
 	else if (!e->modifiers() && e->key() == Qt::Key_D)

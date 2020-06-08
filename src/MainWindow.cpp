@@ -1044,6 +1044,18 @@ void MainWindow::updateViewerBBox(bool recenter = true)
 }
 
 void MainWindow::reloadItem() {
+	//********Weixiao**********//
+	if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work?")
+		== QMessageBox::No)
+	{
+		on_actionSaveAs_triggered();
+	}
+	//remove plugin in case of ambiguity 
+	for (int i = 0; i < plugins.size(); i++)
+	{
+		plugins[i].first->closure();
+	}
+	//*************************//
 
 	Scene_item* item = NULL;
 
@@ -1076,6 +1088,17 @@ void MainWindow::reloadItem() {
 		new_item->invalidateOpenGLBuffers();
 		item->deleteLater();
 	}
+
+	//********Weixiao**********//
+	//trigger the plugin when loading the data
+	QList<QAction*> as = ui->menuOperations->actions();
+	Q_FOREACH(QAction* a, as)
+	{
+		if (a->text().toStdString() == "Annotation")
+			a->trigger();
+		popupHelpMenu();
+	}
+	//*************************//
 }
 
 CGAL::Three::Polyhedron_demo_io_plugin_interface* MainWindow::findLoader(const QString& loader_name) const {
@@ -1224,9 +1247,9 @@ void MainWindow::open(QString filename)
 	QList<QAction*> as = ui->menuOperations->actions();
 	Q_FOREACH(QAction* a, as)
 	{
-		if (a->text().toStdString() == "3D Annotation")
+		if (a->text().toStdString() == "Annotation")
 			a->trigger();
-		on_popupHelpMenu_triggered();
+		popupHelpMenu();
 	}
 
 	//disabled loading files
@@ -2953,7 +2976,7 @@ void MainWindow::on_action_Save_triggered()
 	}
 }
 
-void MainWindow::on_popupHelpMenu_triggered()
+void MainWindow::popupHelpMenu()
 {
 	this->viewer->help();
 }

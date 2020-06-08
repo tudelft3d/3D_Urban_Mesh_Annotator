@@ -130,12 +130,12 @@ public:
 		messages = m;
 		//***********************Weixiao Update menu name*******************************//
 		//actionClassification = new QAction(tr("Classification"), mw);
-		actionClassification = new QAction(tr("3D Annotation"), mw);
+		actionClassification = new QAction(tr("Annotation"), mw);
 		//********************************************************************//
 		connect(actionClassification, SIGNAL(triggered()), this, SLOT(classification_action()));
 		//***********************Weixiao Update menu name*******************************//
 		//dock_widget = new QDockWidget("Classification", mw);
-		dock_widget = new QDockWidget("3D Annotation", mw);
+		dock_widget = new QDockWidget("Annotation", mw);
 		//********************************************************************//
 		dock_widget->setVisible(false);
 
@@ -519,7 +519,7 @@ public Q_SLOTS:
 		if (classif->number_of_labels() != 0)
 		{
 			QMessageBox::StandardButton reply
-				= QMessageBox::question(NULL, "Classification",
+				= QMessageBox::question(NULL, "Annotation",
 					"Current labels will be discarded. Continue?",
 					QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 
@@ -566,7 +566,7 @@ public Q_SLOTS:
 
 		ui_widget.labelGrid->addWidget(label_buttons.back().color_button, x, y);
 
-		QAction* add_selection = label_buttons.back().menu->addAction("Add selection to training set");
+		QAction* add_selection = label_buttons.back().menu->addAction("Assign the label to the selected area");
 
 		add_selection->setShortcut(Qt::SHIFT | (Qt::Key_A + (label_button.shortcut - 'a')));
 		//    add_selection->setShortcut(Qt::Key_0 + label_buttons.size() - 1);

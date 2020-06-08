@@ -1796,6 +1796,20 @@ static QString tableLine(const QString &left, const QString &right) {
   return res;
 }
 
+//*******************Weixiao update ***********************//
+CGAL_INLINE_FUNCTION
+QString CGAL::QGLViewer::helpString() const
+{ 
+	QString html_resource_name = ":/cgal/Polyhedron_3/tutorial.html";
+	QFile tutorial(html_resource_name);
+	tutorial.open(QIODevice::ReadOnly);
+	QString about_CGAL_txt = QTextStream(&tutorial).readAll();
+
+	return about_CGAL_txt;
+}
+
+//*********************************************************//
+
 /*! Returns a QString that describes the application mouse bindings, displayed
 in the help() window \c Mouse tab.
 
@@ -2135,7 +2149,8 @@ void CGAL::QGLViewer::help() {
       tab->setReadOnly(true);
 
       helpWidget()->insertTab(i, tab, label[i]);
-      if (i == 3) {
+      if (i == 3) 
+	  {
 #include "resources/3d_geoinfo_logo.xpm"
         QPixmap pixmap(qglviewer_icon);
         tab->document()->addResource(QTextDocument::ImageResource,
@@ -2164,7 +2179,6 @@ void CGAL::QGLViewer::help() {
                 "This application is used for annotating triangular mesh of urban scenes.<br>"
                 "Copyright &copy;2020 Weixiao GAO<br>"
                 "<code>%3</code>")
-                 .arg("2020")
                  .arg("http://3d.bk.tudelft.nl/") +
              QString("</center>");
       break;

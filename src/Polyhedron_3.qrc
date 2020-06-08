@@ -34,7 +34,22 @@
 		<file>resources/toplayer.png</file>
     </qresource>
     <qresource prefix="/cgal/Polyhedron_3">
-        <file alias="about.html">resources/about.html</file>
+		<file alias="tutorial.html">resources/tutorial.html</file>
+		<file>resources/pics/context_menu.png</file>
+		<file>resources/pics/progress_bar.png</file>
+		<file>resources/pics/lasso_select2.png</file>
+		<file>resources/pics/lasso_select.png</file>
+		<file>resources/pics/selection_edit_inside_one_segment.png</file>
+		<file>resources/pics/ctrl.png</file>
+		<file>resources/pics/annotation_panel.png</file>
+		<file>resources/pics/shift.png</file>
+		<file>resources/pics/select_2.png</file>
+		<file>resources/pics/select_1.png</file>
+		<file>resources/pics/rightclick.png</file>
+		<file>resources/pics/leftclick.png</file>
+		<file>resources/pics/load_data.png</file>
+		<file>resources/pics/plus.png</file>
+		<file alias="about.html">resources/about.html</file>
         <file>resources/shader_with_light.vert</file>
         <file>resources/shader_with_light.frag</file>
         <file>resources/shader_without_light.frag</file>

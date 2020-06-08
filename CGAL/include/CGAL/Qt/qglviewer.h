@@ -634,7 +634,7 @@ public:
   \endcode
 
   See also mouseString() and keyboardString(). */
-  virtual QString helpString() const { return tr("No help available."); }
+	virtual QString helpString() const;// { return tr("No help available."); }
 
   virtual QString mouseString() const;
   virtual QString keyboardString() const;
