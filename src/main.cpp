@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
 #endif
 
     QSurfaceFormat fmt;
-    fmt.setSamples(4);
+    //fmt.setSamples(4); //the recenter will not work if setSamples
     fmt.setVersion(4, 3);
     fmt.setRenderableType(QSurfaceFormat::OpenGL);
     fmt.setProfile(QSurfaceFormat::CoreProfile);

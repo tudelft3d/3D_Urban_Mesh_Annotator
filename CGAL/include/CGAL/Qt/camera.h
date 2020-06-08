@@ -145,7 +145,7 @@ public Q_SLOTS:
   void fitBoundingBox(const Vec &min, const Vec &max);
   void fitScreenRegion(const QRect &rectangle);
   void centerScene();
-  void interpolateToZoomOnPixel(const QPoint &pixel);
+  void interpolateToZoomOnPixel(const QPoint &pixel, float devicePixelRatio = 1.0f);
   void interpolateToFitScene();
   void interpolateTo(const Frame &fr, qreal duration);
   //@}
@@ -337,7 +337,7 @@ public:
 public Q_SLOTS:
   void setSceneRadius(qreal radius);
   void setSceneCenter(const Vec &center);
-  bool setSceneCenterFromPixel(const QPoint &pixel);
+  bool setSceneCenterFromPixel(const QPoint &pixel, float devicePixelRatio = 1.0f);
   void setSceneBoundingBox(const Vec &min, const Vec &max);
   //@}
 
@@ -345,7 +345,7 @@ public Q_SLOTS:
   //@{
 public Q_SLOTS:
   void setPivotPoint(const Vec &point);
-  bool setPivotPointFromPixel(const QPoint &pixel);
+  bool setPivotPointFromPixel(const QPoint &pixel, float devicePixelRatio = 1.0f);
 
 public:
   Vec pivotPoint() const;

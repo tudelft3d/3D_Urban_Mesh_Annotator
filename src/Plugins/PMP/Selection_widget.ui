@@ -100,7 +100,7 @@
             <item>
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>Brush &amp;size:</string>
+               <string>Multi-selection &amp;rings:</string>
               </property>
               <property name="buddy">
                <cstring>Brush_size_spin_box</cstring>

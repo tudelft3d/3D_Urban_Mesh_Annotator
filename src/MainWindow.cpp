@@ -290,11 +290,11 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 		viewer, SLOT(setTwoSides(bool)));
 	connect(ui->actionSwitchProjection, SIGNAL(toggled(bool)),
 		viewer, SLOT(SetOrthoProjection(bool)));
-
+	//********************Weixiao Update************************//
 	// add the "About CGAL..." and "About demo..." entries
-	this->addAboutCGAL();
-	this->addAboutDemo(":/cgal/Polyhedron_3/about.html");
-
+	//this->addHelpMenu(viewer);
+	//this->addAboutDemo(":/cgal/Polyhedron_3/about.html");
+	//**********************************************************//
 	// Connect the button "addButton" with actionLoad
 	ui->addButton->setDefaultAction(ui->actionLoad);
 	// Same with "removeButton" and "duplicateButton"
@@ -420,6 +420,13 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 
   // setup menu filtering
 	connect(ui->menuOperations, SIGNAL(aboutToShow()), this, SLOT(filterOperations()));
+	//***********Weixiao************//
+	//ui->menuOperations->setDisabled(true);
+	ui->menuOperations->menuAction()->setVisible(false);
+
+	this->addHelpMenu();
+	//this->addAboutDemo(":/cgal/Polyhedron_3/about.html");
+	//*****************************//
 }
 
 //Recursive function that do a pass over a menu and its sub-menus(etc.) and hide them when they are empty
@@ -1211,6 +1218,27 @@ void MainWindow::open(QString filename)
 	if (group)
 		scene->redraw_model();
 	updateViewerBBox(true);
+
+	//********Weixiao**********//
+	//trigger the plugin when loading the data
+	QList<QAction*> as = ui->menuOperations->actions();
+	Q_FOREACH(QAction* a, as)
+	{
+		if (a->text().toStdString() == "3D Annotation")
+			a->trigger();
+		on_popupHelpMenu_triggered();
+	}
+
+	//disabled loading files
+	ui->actionLoad->setDisabled(true);
+	QStringList files = settings.value("recentFileList").toStringList();
+	int numRecentFiles = qMin(files.size(), (int)this->maxNumberOfRecentFiles());
+	for (int i = 0; i < numRecentFiles; ++i)
+	{
+		recentFileActs[i]->setDisabled(true);
+	}
+	//*************************//
+
 }
 
 bool MainWindow::open(QString filename, QString loader_name) {
@@ -1326,7 +1354,7 @@ void MainWindow::showRecenteredView(double x, double y, double z)
 		arg(y, 0, 'g', 10).
 		arg(z, 0, 'g', 10));
 
-	warning(QString("If you are in selection mode, you need to click the selection layer for continuing selection."));
+	//warning(QString("If you are in selection mode, you need to click the selection layer for continuing selection."));
 }
 //**********************************************************//
 
@@ -1948,8 +1976,12 @@ void MainWindow::on_actionLoad_triggered()
 		{
 			int scene_size = scene->numberOfEntries();
 			open(filename);
-			if (scene->numberOfEntries() != scene_size)
+			//***********Weixiao************//
+			if (scene->numberOfEntries() != 2)
 				scene->item(scene->numberOfEntries() - 1)->setColor(colors_[++nb_item]);
+			//if (scene->numberOfEntries() != scene_size)
+			//	scene->item(scene->numberOfEntries() - 1)->setColor(colors_[++nb_item]);
+			//*****************************//
 		}
 	}
 }
@@ -2103,13 +2135,33 @@ void MainWindow::on_actionSaveSnapshot_triggered()
 bool MainWindow::on_actionErase_triggered()
 {
 	//********************Weixiao Update************************//
-	int current_index = getSelectedSceneItemIndex();
-	if (current_index == 0)
+	if (scene->numberOfEntries() > 0 && !is_erased)
 	{
 		if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work?")
 			== QMessageBox::No)
 		{
 			on_actionSaveAs_triggered();
+		}
+
+		is_erased = true;
+		on_actionEraseAll_triggered();
+	}
+	else
+	{
+		//remove plugin in case of ambiguity 
+		for (int i = 0; i < plugins.size(); i++)
+		{
+			plugins[i].first->closure();
+		}
+		is_erased = false;
+
+		//enable loading files
+		ui->actionLoad->setEnabled(true);
+		QStringList files = settings.value("recentFileList").toStringList();
+		int numRecentFiles = qMin(files.size(), (int)this->maxNumberOfRecentFiles());
+		for (int i = 0; i < numRecentFiles; ++i)
+		{
+			recentFileActs[i]->setEnabled(true);
 		}
 	}
 	//**********************************************************//
@@ -2631,12 +2683,12 @@ void MainWindow::setMaxTextItemsDisplayed(int val)
 void MainWindow::resetHeader()
 {
 	sceneView->header()->setStretchLastSection(false);
-	scene->invisibleRootItem()->setColumnCount(5);
-	sceneView->header()->setSectionResizeMode(Scene::NameColumn, QHeaderView::Stretch);
-	sceneView->header()->setSectionResizeMode(Scene::ColorColumn, QHeaderView::Fixed);
+	scene->invisibleRootItem()->setColumnCount(4);
+	sceneView->header()->setSectionResizeMode(Scene::NameColumn, QHeaderView::Interactive);
+	sceneView->header()->setSectionResizeMode(Scene::ColorColumn, QHeaderView::Stretch);
 	sceneView->header()->setSectionResizeMode(Scene::RenderingModeColumn, QHeaderView::ResizeToContents);
-	sceneView->header()->setSectionResizeMode(Scene::ABColumn, QHeaderView::Fixed);
-	sceneView->header()->setSectionResizeMode(Scene::VisibleColumn, QHeaderView::Fixed);
+	//sceneView->header()->setSectionResizeMode(Scene::ABColumn, QHeaderView::Fixed);
+	sceneView->header()->setSectionResizeMode(Scene::VisibleColumn, QHeaderView::Stretch);
 	sceneView->header()->resizeSection(Scene::ColorColumn, sceneView->header()->fontMetrics().width("_#_"));
 	sceneView->resizeColumnToContents(Scene::RenderingModeColumn);
 	//sceneView->header()->resizeSection(Scene::ABColumn, sceneView->header()->fontMetrics().width(QString("_AB_")));
@@ -2899,4 +2951,9 @@ void MainWindow::on_action_Save_triggered()
 			save(filename, item);
 		}
 	}
+}
+
+void MainWindow::on_popupHelpMenu_triggered()
+{
+	this->viewer->help();
 }

@@ -666,9 +666,9 @@ void Camera::setSceneCenter(const Vec &center) {
 
   See also setPivotPointFromPixel(). See the pointUnderPixel() documentation. */
 CGAL_INLINE_FUNCTION
-bool Camera::setSceneCenterFromPixel(const QPoint &pixel) {
+bool Camera::setSceneCenterFromPixel(const QPoint &pixel, float devicePixelRatio) {
   bool found;
-  Vec point = pointUnderPixel(pixel, found);
+  Vec point = pointUnderPixel(pixel, found, devicePixelRatio);
   if (found)
     setSceneCenter(point);
   return found;
@@ -703,9 +703,9 @@ window). See pointUnderPixel().
 
 See also setSceneCenterFromPixel(). */
 CGAL_INLINE_FUNCTION
-bool Camera::setPivotPointFromPixel(const QPoint &pixel) {
+bool Camera::setPivotPointFromPixel(const QPoint &pixel, float devicePixelRatio) {
   bool found;
-  Vec point = pointUnderPixel(pixel, found);
+  Vec point = pointUnderPixel(pixel, found, devicePixelRatio);
   if (found)
     setPivotPoint(point);
   return found;
@@ -785,11 +785,11 @@ void Camera::setFOVToFitScene() {
 
  See also interpolateToFitScene(). */
 CGAL_INLINE_FUNCTION
-void Camera::interpolateToZoomOnPixel(const QPoint &pixel) {
+void Camera::interpolateToZoomOnPixel(const QPoint &pixel, float devicePixelRatio) {
   const qreal coef = 0.1;
 
   bool found;
-  Vec target = pointUnderPixel(pixel, found);
+  Vec target = pointUnderPixel(pixel, found, devicePixelRatio);
 
   if (!found)
     return;

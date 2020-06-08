@@ -320,6 +320,7 @@ protected Q_SLOTS:
 	//********************Weixiao Update************************//
 	  ////!Duplicates the selected item and selects the new item.
 	  // void on_actionDuplicate_triggered();
+	void on_popupHelpMenu_triggered();
 	//**********************************************************//
 	//!If QT_SCRIPT_LIB is defined, opens a dialog to choose a script.
 	void on_actionLoadScript_triggered();
@@ -403,6 +404,58 @@ protected:
 	//! Returns a list of the selected items in the Geometric Objects view.
 	QList<int> getSelectedSceneItemIndices() const;
 private:
+	CGAL_INLINE_FUNCTION
+		QMenu* getMenu(QString objectName, QString title)
+	{
+		QMenu* menu = NULL;
+
+		QString title2 = title;
+		title2.remove('&');
+		// search if a menu has objectName()==objectName
+		menu = this->findChild<QMenu*>(objectName);
+
+		// then search if a menu has title()==title
+		if (menu) {
+			return menu;
+		}
+		else {
+			Q_FOREACH(menu, this->findChildren<QMenu*>()) {
+				if (menu->title() == title ||
+					menu->title() == title2) {
+					return menu;
+				}
+			}
+		}
+		return NULL;
+	}
+
+	CGAL_INLINE_FUNCTION
+	QMenu* getHelpMenu()
+	{
+		QMenu* menuHelp = getMenu("menuHelp", tr("&Help"));
+		if (!menuHelp) {
+			menuHelp = new QMenu(this->menuBar());
+			menuHelp->setTitle(tr("&Help"));
+			this->menuBar()->addAction(menuHelp->menuAction());
+			menuHelp->setObjectName("menuHelp");
+		}
+		return menuHelp;
+	}
+
+	CGAL_INLINE_FUNCTION
+	void addHelpMenu(QMenu* menuHelp = 0)
+	{
+		if (!menuHelp) {
+			menuHelp = getHelpMenu();
+		}
+
+		actionHelpMenu = new QAction(this);
+		actionHelpMenu->setObjectName("actionHelpMenu");
+		actionHelpMenu->setText(tr("&Help"));//actionAboutCGAL->setText(tr("About &CGAL..."));
+		menuHelp->addAction(actionHelpMenu);
+		connect(actionHelpMenu, SIGNAL(triggered()), this, SLOT(on_popupHelpMenu_triggered()));
+	}
+
 	void updateMenus();
 	bool load_plugin(QString names, bool blacklisted);
 	void recurseExpand(QModelIndex index);
@@ -438,6 +491,7 @@ private:
 	void insertActionBeforeLoadPlugin(QMenu*, QAction *actionToInsert);
 	//********************Weixiao Update************************//
 	bool is_saved = false;
+	bool is_erased = false;
 	//**********************************************************//
 #ifdef QT_SCRIPT_LIB
 	QScriptEngine* script_engine;
@@ -461,6 +515,7 @@ private:
 	QList<QDockWidget *> visibleDockWidgets;
 	QLineEdit operationSearchBar;
 	QWidgetAction* searchAction;
+	QAction *actionHelpMenu;
 	QString def_save_dir;
 	bool bbox_need_update;
 	QMap<QString, QPair<QStringList, QString> >plugin_metadata_map;

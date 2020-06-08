@@ -80,8 +80,8 @@ public:
 	// Hold mouse keyboard state together
 	struct Mouse_keyboard_state
 	{
-		Mouse_keyboard_state() : shift_pressing(false), left_button_pressing(false) { }
-		bool shift_pressing, left_button_pressing;
+		Mouse_keyboard_state() : shift_pressing(false), left_button_pressing(false), right_button_pressing(false){ }
+		bool shift_pressing, left_button_pressing, right_button_pressing;
 	};
 
 	Mouse_keyboard_state  state;
@@ -146,7 +146,8 @@ public:
 		CGAL::QGLViewer* viewer = *CGAL::QGLViewer::QGLViewerPool().begin();
 		viewer->installEventFilter(this);
 		mw->installEventFilter(this);
-		viewer->setMouseBindingDescription(Qt::Key_D, Qt::ShiftModifier, Qt::LeftButton, "(When in selection plugin) Removes the clicked primitive from the selection. ");
+		//viewer->setMouseBindingDescription(Qt::Key_D, Qt::ShiftModifier, Qt::LeftButton, "(When in selection plugin) Removes the clicked primitive from the selection. ");
+		viewer->setMouseBindingDescription(Qt::ShiftModifier, Qt::RightButton, "(When in selection plugin) Removes the clicked primitive from the selection. ");
 		connect(poly_item, SIGNAL(selected_vertex(void*)), this, SLOT(vertex_has_been_selected(void*)));
 		connect(poly_item, SIGNAL(selected_facet(void*)), this, SLOT(facet_has_been_selected(void*)));
 		connect(poly_item, SIGNAL(selected_edge(void*)), this, SLOT(edge_has_been_selected(void*)));
@@ -224,7 +225,7 @@ public Q_SLOTS:
 			CGAL::qglviewer::Camera* camera = viewer->camera();
 			viewer->makeCurrent();
 			bool found = false;
-			const CGAL::qglviewer::Vec& point = camera->pointUnderPixel(paint_pos, found) - offset;
+			const CGAL::qglviewer::Vec& point = camera->pointUnderPixel(paint_pos, found, viewer->devicePixelRatio()) - offset;
 			if (found)
 			{
 				CGAL::qglviewer::Vec orig;
@@ -429,7 +430,7 @@ public Q_SLOTS:
 			CGAL::qglviewer::Camera* camera = viewer->camera();
 			viewer->makeCurrent();
 			bool found = false;
-			const CGAL::qglviewer::Vec& point = camera->pointUnderPixel(hl_pos, found) - offset;
+			const CGAL::qglviewer::Vec& point = camera->pointUnderPixel(hl_pos, found, viewer->devicePixelRatio()) - offset;
 			if (found)
 			{
 				CGAL::qglviewer::Vec orig;
@@ -832,30 +833,38 @@ protected:
 			state.shift_pressing = modifiers.testFlag(Qt::ShiftModifier);
 		}
 
-		if (event->type() == QEvent::KeyPress
+		if (event->type() == QEvent::MouseButtonPress //QEvent::KeyPress //
 			&& state.shift_pressing
-			&& static_cast<QKeyEvent*>(event)->key() == Qt::Key_D)
+			&& static_cast<QMouseEvent*>(event)->button() == Qt::RightButton) //static_cast<QKeyEvent*>(event)->key() == Qt::Key_D) //
 		{
+			state.right_button_pressing = true;
 			Q_EMIT toogle_insert(false);
 		}
-		else if (event->type() == QEvent::KeyRelease
-			&& static_cast<QKeyEvent*>(event)->key() == Qt::Key_D)
+		else if (event->type() == QEvent::MouseButtonPress //QEvent::KeyRelease //
+			&& state.shift_pressing
+			&& static_cast<QMouseEvent*>(event)->button() == Qt::LeftButton) //static_cast<QKeyEvent*>(event)->key() == Qt::Key_D) //
 		{
+			state.right_button_pressing = false;
 			Q_EMIT toogle_insert(true);
 		}
 
 		// mouse events
-		if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease) {
+		if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease)
+		{
 			QMouseEvent* mouse_event = static_cast<QMouseEvent*>(event);
-			if (mouse_event->button() == Qt::LeftButton) {
+
+			if (mouse_event->button() == Qt::LeftButton || mouse_event->button() == Qt::RightButton) 
+			{
 				state.left_button_pressing = event->type() == QEvent::MouseButtonPress;
+				state.right_button_pressing = event->type() == QEvent::MouseButtonPress;
 				if (is_edit_mode)
 					Q_EMIT clearHL();
-				if (!state.left_button_pressing)//MouseButtonRelease
+				if (!state.left_button_pressing && !state.right_button_pressing)//MouseButtonRelease
 				{
 					//std::cerr << "is_active "<< is_active <<" recommendation_state "<< recommendation_state << " lasso_active "<<is_lasso_active<<std::endl;
 					/******************************************/
-					switch (recommendation_state) {
+					switch (recommendation_state)
+					{
 					case 0:
 						if (is_active)
 						{
@@ -863,7 +872,7 @@ protected:
 							is_active = false;
 						}
 						apply_path();
-						lasso_selection();
+						lasso_selection();//perform lasso selection
 						break;
 						// in recommedation mode
 					case 1:
@@ -891,16 +900,19 @@ protected:
 				}
 			}
 			//to avoid the contextual menu to mess up the states.
-			else if (mouse_event->button() == Qt::RightButton) {
-				state.left_button_pressing = false;
-				state.shift_pressing = false;
-			}
+			//else if (mouse_event->button() == Qt::RightButton) {
+				//state.left_button_pressing = false;
+				//state.shift_pressing = false;
+			//}
 		}
 		// use mouse move event for paint-like selection
-		if ((event->type() == QEvent::MouseMove
-			|| (event->type() == QEvent::MouseButtonPress
-				&& static_cast<QMouseEvent*>(event)->button() == Qt::LeftButton))
-			&& (state.shift_pressing && state.left_button_pressing))
+		if ((event->type() == QEvent::MouseMove ||
+			(event->type() == QEvent::MouseButtonPress
+				&& (static_cast<QMouseEvent*>(event)->button() == Qt::LeftButton || 
+					static_cast<QMouseEvent*>(event)->button() == Qt::RightButton)
+				)
+			)
+			&& (state.shift_pressing && (state.left_button_pressing || state.right_button_pressing)))
 		{
 			Q_EMIT isCurrentlySelected(this);
 			if (!is_current_selection)
@@ -918,7 +930,7 @@ protected:
 				paint_pos = mouse_event->pos();
 				if (!is_edit_mode || event->type() == QEvent::MouseButtonPress)
 				{
-					QTimer::singleShot(0, this, SLOT(paint_selection()));
+					QTimer::singleShot(0, this, SLOT(paint_selection()));//perform paint selection
 				}
 				//std::cout << "here" << std::endl;
 			}
@@ -946,7 +958,7 @@ protected:
 		}
 		//if in edit_mode and the mouse is moving without left button pressed :
 		// highlight the primitive under cursor
-		else if (is_edit_mode && event->type() == QEvent::MouseMove && !state.left_button_pressing)
+		else if (is_edit_mode && event->type() == QEvent::MouseMove && (!state.left_button_pressing || !state.right_button_pressing))
 		{
 			if (target == mainwindow)
 			{

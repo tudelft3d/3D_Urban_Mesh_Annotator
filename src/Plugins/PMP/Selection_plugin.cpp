@@ -107,7 +107,7 @@ public:
 		const Scene_polyhedron_selection_item* item = qobject_cast<const Scene_polyhedron_selection_item*>(scene_item);
 		if (item == NULL) { return false; }
 		//********************Weixiao Update************************//
-		CGAL::Three::Three::warning("You are not saving your labeling work but the selection area. For saving the work, you need to select the first layer! ");
+		//CGAL::Three::Three::warning("You are not saving your labeling work but the selection area. For saving the work, you need to select the first layer! ");
 		//**********************************************************//
 		return item->save(fileinfo.filePath().toStdString());
 	}
@@ -279,6 +279,7 @@ public Q_SLOTS:
 		new_item->setName(QString("%1 (selection)").arg(poly_item->name()));
 		connectItem(new_item);
 		//********************Weixiao Update************************//
+		new_item->setColor(QColor(255, 0, 0));
 		poly_item->fill_classes_combo_box(ui_widget.comboBox_2);
 		poly_item->update_labels_for_selection();
 

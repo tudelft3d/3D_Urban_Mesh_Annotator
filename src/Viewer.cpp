@@ -278,9 +278,9 @@ Viewer::Viewer(QWidget* parent, bool antialiasing)
 
 	//modify mouse bindings that have been updated
 	setMouseBinding(Qt::Key(0), Qt::NoModifier, Qt::LeftButton, CGAL::qglviewer::RAP_FROM_PIXEL, true, Qt::RightButton);
-	setMouseBinding(Qt::Key_R, Qt::NoModifier, Qt::LeftButton, CGAL::qglviewer::RAP_FROM_PIXEL);
+	//setMouseBinding(Qt::Key_R, Qt::NoModifier, Qt::LeftButton, CGAL::qglviewer::RAP_FROM_PIXEL);
 
-	setMouseBindingDescription(Qt::ShiftModifier, Qt::RightButton,
+	setMouseBindingDescription(Qt::ControlModifier, Qt::RightButton,
 		tr("Select and pop context menu"));
 
 	//use the new API for these
@@ -547,7 +547,7 @@ void Viewer::mousePressEvent(QMouseEvent* event)
 {
 	makeCurrent();
 	if (event->button() == Qt::RightButton && 
-		event->modifiers().testFlag(Qt::ShiftModifier))
+		event->modifiers().testFlag(Qt::ControlModifier))
 	{
 		//********************Weixiao Update************************//
 		//select(event->pos());
@@ -573,6 +573,11 @@ void Viewer::mousePressEvent(QMouseEvent* event)
 	{
 		d->showDistance(event->pos());
 		event->accept();
+	}
+	else if (event->button() == Qt::LeftButton &&
+		event->modifiers().testFlag(Qt::ShiftModifier))
+	{
+		//Do nothing, SHIFT + LEFT Button has been triggered by selection in Scene_facegraph_item_k_ring_selection.h 
 	}
 	else {
 		makeCurrent();

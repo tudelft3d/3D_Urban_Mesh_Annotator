@@ -165,6 +165,8 @@ public:
 		
 		connect(ui_widget.help, SIGNAL(clicked()), this,
 			SLOT(on_help_clicked()));
+
+		ui_widget.help->setVisible(false);
 		connect(ui_widget.close, SIGNAL(clicked()), this,
 			SLOT(ask_for_closing()));
 
@@ -236,11 +238,11 @@ public Q_SLOTS:
 			//********************Weixiao Update************************//
 			CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
 			mesh_item->setRenderingMode(TextureModePlusFlatEdges);
-			CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
+			//CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
 			//**********************************************************//
 		}
 
-		on_help_clicked();
+		//on_help_clicked();
 	}
 
 	void ask_for_closing()
@@ -393,12 +395,12 @@ public Q_SLOTS:
 		update_plugin_from_item(classif);
 
 		/************Weixiao Update************/
-		if (!classif->can_show_probability())
-			print_message("Input data do not have probability or with invalid probability, \
-			so the probability slider will not work. The good news is the progress bar will work perfectly!!!");
-		else
-			print_message("Input data have probability and predict labels, so the labeling progress bar will not work. \
-			The good news is the probability slider will work perfectly!!!");
+		//if (!classif->can_show_probability())
+		//	print_message("Input data do not have probability or with invalid probability, \
+		//	so the probability slider will not work. The good news is the progress bar will work perfectly!!!");
+		//else
+		//	print_message("Input data have probability and predict labels, so the labeling progress bar will not work. \
+		//	The good news is the probability slider will work perfectly!!!");
 		/**************************************/
 
 		return classif;

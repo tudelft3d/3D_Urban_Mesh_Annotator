@@ -638,16 +638,16 @@ void CGAL::QGLViewer::setCameraIsEdited(bool edit) {
 CGAL_INLINE_FUNCTION
 void CGAL::QGLViewer::setDefaultShortcuts() {
   // D e f a u l t   a c c e l e r a t o r s
-  setShortcut(qglviewer::DRAW_AXIS, ::Qt::Key_A);
-  setShortcut(qglviewer::DRAW_GRID, ::Qt::Key_G);
-  setShortcut(qglviewer::DISPLAY_FPS, ::Qt::Key_F);
-  setShortcut(qglviewer::ENABLE_TEXT, ::Qt::SHIFT + ::Qt::Key_Question);
+  //setShortcut(qglviewer::DRAW_AXIS, ::Qt::Key_A);
+  //setShortcut(qglviewer::DRAW_GRID, ::Qt::Key_G);
+  //setShortcut(qglviewer::DISPLAY_FPS, ::Qt::Key_F);
+  //setShortcut(qglviewer::ENABLE_TEXT, ::Qt::SHIFT + ::Qt::Key_Question);
   setShortcut(qglviewer::EXIT_VIEWER, ::Qt::Key_Escape);
-  setShortcut(qglviewer::CAMERA_MODE, ::Qt::Key_Space);
+  //setShortcut(qglviewer::CAMERA_MODE, ::Qt::Key_Space);
   setShortcut(qglviewer::FULL_SCREEN, ::Qt::ALT + ::Qt::Key_Return);
-  setShortcut(qglviewer::ANIMATION, ::Qt::Key_Return);
+  //setShortcut(qglviewer::ANIMATION, ::Qt::Key_Return);
   setShortcut(qglviewer::HELP, ::Qt::Key_H);
-  setShortcut(qglviewer::EDIT_CAMERA, ::Qt::Key_C);
+  //setShortcut(qglviewer::EDIT_CAMERA, ::Qt::Key_C);
   setShortcut(qglviewer::MOVE_CAMERA_LEFT, ::Qt::Key_Left);
   setShortcut(qglviewer::MOVE_CAMERA_RIGHT, ::Qt::Key_Right);
   setShortcut(qglviewer::MOVE_CAMERA_UP, ::Qt::Key_Up);
@@ -655,25 +655,25 @@ void CGAL::QGLViewer::setDefaultShortcuts() {
   setShortcut(qglviewer::INCREASE_FLYSPEED, ::Qt::Key_Plus);
   setShortcut(qglviewer::DECREASE_FLYSPEED, ::Qt::Key_Minus);
 
-  keyboardActionDescription_[qglviewer::DISPLAY_FPS] =
-      tr("Toggles the display of the FPS", "DISPLAY_FPS action description");
+  //keyboardActionDescription_[qglviewer::DISPLAY_FPS] =
+  //    tr("Toggles the display of the FPS", "DISPLAY_FPS action description");
   keyboardActionDescription_[qglviewer::FULL_SCREEN] =
       tr("Toggles full screen display", "FULL_SCREEN action description");
-  keyboardActionDescription_[qglviewer::DRAW_AXIS] = tr(
-      "Toggles the display of the world axis", "DRAW_AXIS action description");
-  keyboardActionDescription_[qglviewer::DRAW_GRID] =
-      tr("Toggles the display of the XY grid", "DRAW_GRID action description");
-  keyboardActionDescription_[qglviewer::CAMERA_MODE] = tr(
-      "Changes camera mode (observe or fly)", "CAMERA_MODE action description");
+  //keyboardActionDescription_[qglviewer::DRAW_AXIS] = tr(
+  //    "Toggles the display of the world axis", "DRAW_AXIS action description");
+  //keyboardActionDescription_[qglviewer::DRAW_GRID] =
+  //    tr("Toggles the display of the XY grid", "DRAW_GRID action description");
+  //keyboardActionDescription_[qglviewer::CAMERA_MODE] = tr(
+  //    "Changes camera mode (observe or fly)", "CAMERA_MODE action description");
   keyboardActionDescription_[qglviewer::HELP] =
       tr("Opens this help window", "HELP action description");
-  keyboardActionDescription_[qglviewer::ANIMATION] =
-      tr("Starts/stops the animation", "ANIMATION action description");
-  keyboardActionDescription_[qglviewer::EDIT_CAMERA] =
-      tr("Toggles camera paths display",
-         "EDIT_CAMERA action description"); // TODO change
-  keyboardActionDescription_[qglviewer::ENABLE_TEXT] =
-      tr("Toggles the display of the text", "ENABLE_TEXT action description");
+  //keyboardActionDescription_[qglviewer::ANIMATION] =
+  //    tr("Starts/stops the animation", "ANIMATION action description");
+  //keyboardActionDescription_[qglviewer::EDIT_CAMERA] =
+  //    tr("Toggles camera paths display",
+  //       "EDIT_CAMERA action description"); // TODO change
+  //keyboardActionDescription_[qglviewer::ENABLE_TEXT] =
+  //    tr("Toggles the display of the text", "ENABLE_TEXT action description");
   keyboardActionDescription_[qglviewer::EXIT_VIEWER] =
       tr("Exits program", "EXIT_VIEWER action description");
   keyboardActionDescription_[qglviewer::MOVE_CAMERA_LEFT] =
@@ -729,12 +729,12 @@ void CGAL::QGLViewer::setDefaultMouseBindings() {
   }
 
   // Z o o m   o n   r e g i o n
-  setMouseBinding(::Qt::ShiftModifier, ::Qt::MidButton, qglviewer::CAMERA, qglviewer::ZOOM_ON_REGION);
+  //setMouseBinding(::Qt::ShiftModifier, ::Qt::MidButton, qglviewer::CAMERA, qglviewer::ZOOM_ON_REGION);
 
   // S e l e c t
-  setMouseBinding(::Qt::ShiftModifier, ::Qt::LeftButton, qglviewer::SELECT);
+  //setMouseBinding(::Qt::ShiftModifier, ::Qt::LeftButton, qglviewer::SELECT);
 
-  setMouseBinding(::Qt::ShiftModifier, ::Qt::RightButton, qglviewer::RAP_FROM_PIXEL);
+  //setMouseBinding(::Qt::ShiftModifier, ::Qt::RightButton, qglviewer::RAP_FROM_PIXEL);
   // D o u b l e   c l i c k
   setMouseBinding(::Qt::NoModifier, ::Qt::LeftButton, qglviewer::ALIGN_CAMERA, true);
   setMouseBinding(::Qt::NoModifier, ::Qt::MidButton, qglviewer::SHOW_ENTIRE_SCENE, true);
@@ -1227,7 +1227,7 @@ void CGAL::QGLViewer::performClickAction(qglviewer::ClickAction ca, const QMouse
   case qglviewer::NO_CLICK_ACTION:
     break;
   case qglviewer::ZOOM_ON_PIXEL:
-    camera()->interpolateToZoomOnPixel(e->pos());
+    camera()->interpolateToZoomOnPixel(e->pos(), devicePixelRatio());
     break;
   case qglviewer::ZOOM_TO_FIT:
     camera()->interpolateToFitScene();
@@ -1237,7 +1237,7 @@ void CGAL::QGLViewer::performClickAction(qglviewer::ClickAction ca, const QMouse
     update();
     break;
   case qglviewer::RAP_FROM_PIXEL:
-    if (!camera()->setPivotPointFromPixel(e->pos()))
+    if (!camera()->setPivotPointFromPixel(e->pos(), devicePixelRatio()))
       camera()->setPivotPoint(sceneCenter());
     setVisualHintsMask(1);
     update();
@@ -2119,7 +2119,7 @@ void CGAL::QGLViewer::help() {
   int width = 600;
   int height = 400;
 
-  static QString label[] = {tr("&Help", "Help window tab title"),
+  static QString label[] = {tr("&Tutorial", "Help window tab title"),
                             tr("&Keyboard", "Help window tab title"),
                             tr("&Mouse", "Help window tab title"),
                             tr("&About", "Help window about title")};
@@ -2136,10 +2136,10 @@ void CGAL::QGLViewer::help() {
 
       helpWidget()->insertTab(i, tab, label[i]);
       if (i == 3) {
-#include "resources/qglviewer-icon.xpm"
+#include "resources/3d_geoinfo_logo.xpm"
         QPixmap pixmap(qglviewer_icon);
         tab->document()->addResource(QTextDocument::ImageResource,
-                                     QUrl("mydata://qglviewer-icon.xpm"),
+                                     QUrl("mydata://3d_geoinfo_logo.xpm"),
                                      QVariant(pixmap));
       }
     }
@@ -2158,14 +2158,14 @@ void CGAL::QGLViewer::help() {
       text = mouseString();
       break;
     case 3:
-      text = QString("<center><br><img src=\"mydata://qglviewer-icon.xpm\">") +
-             tr("<h1>libQGLViewer</h1>"
-                "<h3>Forked from version 2.7.0</h3><br>"
-                "A versatile 3D viewer based on OpenGL and Qt<br>"
-                "Copyright 2002-%2 Gilles Debunne<br>"
+      text = QString("<center><br><img src=\"mydata://3d_geoinfo_logo.xpm\">") +
+             tr("<h1>Urban Mesh Annotator</h1>"
+                "<h3>Version 1.0</h3><br>"
+                "This application is used for annotating triangular mesh of urban scenes.<br>"
+                "Copyright &copy;2020 Weixiao GAO<br>"
                 "<code>%3</code>")
-                 .arg("2014")
-                 .arg("http://www.libqglviewer.com") +
+                 .arg("2020")
+                 .arg("http://3d.bk.tudelft.nl/") +
              QString("</center>");
       break;
     default:
@@ -2342,22 +2342,22 @@ void CGAL::QGLViewer::handleKeyboardAction(qglviewer::KeyboardAction id) {
 
   case qglviewer::MOVE_CAMERA_LEFT:
     camera()->frame()->translate(camera()->frame()->inverseTransformOf(
-        qglviewer::Vec(-10.0 * camera()->flySpeed(), 0.0, 0.0)));
+        qglviewer::Vec(10.0 * camera()->flySpeed(), 0.0, 0.0)));
     update();
     break;
   case qglviewer::MOVE_CAMERA_RIGHT:
     camera()->frame()->translate(camera()->frame()->inverseTransformOf(
-        qglviewer::Vec(10.0 * camera()->flySpeed(), 0.0, 0.0)));
+        qglviewer::Vec(-10.0 * camera()->flySpeed(), 0.0, 0.0)));
     update();
     break;
   case qglviewer::MOVE_CAMERA_UP:
     camera()->frame()->translate(camera()->frame()->inverseTransformOf(
-        qglviewer::Vec(0.0, 10.0 * camera()->flySpeed(), 0.0)));
+        qglviewer::Vec(0.0, -10.0 * camera()->flySpeed(), 0.0)));
     update();
     break;
   case qglviewer::MOVE_CAMERA_DOWN:
     camera()->frame()->translate(camera()->frame()->inverseTransformOf(
-        qglviewer::Vec(0.0, -10.0 * camera()->flySpeed(), 0.0)));
+        qglviewer::Vec(0.0, 10.0 * camera()->flySpeed(), 0.0)));
     update();
     break;
 

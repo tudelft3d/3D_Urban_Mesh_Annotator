@@ -124,7 +124,7 @@ void Edge_container::draw(Viewer_interface* viewer,
 		getVao(viewer)->program->setUniformValue("viewport", vp);
 		getVao(viewer)->program->setUniformValue("near", (GLfloat)viewer->camera()->zNear());
 		getVao(viewer)->program->setUniformValue("far", (GLfloat)viewer->camera()->zFar());
-		getVao(viewer)->program->setUniformValue("width", GLfloat(1.0f));
+		getVao(viewer)->program->setUniformValue("width", GLfloat(1.0f));//segment border width
 		getVao(viewer)->bind();
 		/*************************************************************/
 		getVbo(Indices)->bind();
