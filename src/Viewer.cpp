@@ -580,11 +580,44 @@ void Viewer::mousePressEvent(QMouseEvent* event)
 	{
 		//Do nothing, SHIFT + LEFT Button has been triggered by selection in Scene_facegraph_item_k_ring_selection.h 
 	}
+	//-------------for testing only-----------------//
+	else if (event->modifiers().testFlag(Qt::ControlModifier) && event->button() == Qt::RightButton)
+	{
+		
+		QPoint picked_pixel = event->pos();
+		bool found = false;
+		CGAL::qglviewer::Vec point = d->viewer->camera()->pointUnderPixel(picked_pixel, found, d->viewer->devicePixelRatio()) - d->viewer->offset();
+
+		CGAL::Three::Three::information("Pixel = (" + QString::number(picked_pixel.x()) + ", " + QString::number(picked_pixel.y()) +
+			+"); 3D Coordinates = (" + QString::number(point.x) + ", " + QString::number(point.y) + ", " + QString::number(point.z) + ")");
+
+	} 
+	//------------------------------------------//
 	else {
 		makeCurrent();
 		CGAL::QGLViewer::mousePressEvent(event);
 	}
 }
+
+//-------------for testing only-----------------//
+void Viewer::mouseMoveEvent(QMouseEvent* event)
+{
+	if (event->modifiers().testFlag(Qt::AltModifier) && event->type() == QEvent::MouseMove)
+	{
+		//for testing only
+		QPoint picked_pixel = QCursor::pos();
+		bool found = false;
+		CGAL::qglviewer::Vec point = d->viewer->camera()->pointUnderPixel(picked_pixel, found, d->viewer->devicePixelRatio()) - d->viewer->offset();
+
+		CGAL::Three::Three::information("Pixel = (" + QString::number(picked_pixel.x()) + ", " + QString::number(picked_pixel.y()) +
+			+"); 3D Coordinates = (" + QString::number(point.x) + ", " + QString::number(point.y) + ", " + QString::number(point.z) + ")");
+
+	}else {
+		makeCurrent();
+		CGAL::QGLViewer::mouseMoveEvent(event);
+	}
+}
+//------------------------------------------//
 void Viewer::mouseDoubleClickEvent(QMouseEvent* event)
 {
 	makeCurrent();

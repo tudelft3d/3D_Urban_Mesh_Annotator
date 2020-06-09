@@ -135,6 +135,7 @@ protected:
 
 	//!Defines the behaviour for the mouse press events
 	void mousePressEvent(QMouseEvent*)Q_DECL_OVERRIDE;
+	void mouseMoveEvent(QMouseEvent*)Q_DECL_OVERRIDE;
 	void mouseDoubleClickEvent(QMouseEvent*)Q_DECL_OVERRIDE;
 	void wheelEvent(QWheelEvent*)Q_DECL_OVERRIDE;
 	//!Defines the behaviour for the key press events

@@ -566,7 +566,7 @@ public Q_SLOTS:
 
 		ui_widget.labelGrid->addWidget(label_buttons.back().color_button, x, y);
 
-		QAction* add_selection = label_buttons.back().menu->addAction("Assign the label to the selected area");
+		QAction* add_selection = label_buttons.back().menu->addAction("Add selection to the label category");
 
 		add_selection->setShortcut(Qt::SHIFT | (Qt::Key_A + (label_button.shortcut - 'a')));
 		//    add_selection->setShortcut(Qt::Key_0 + label_buttons.size() - 1);

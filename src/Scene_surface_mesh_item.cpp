@@ -1356,6 +1356,7 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 		{
 			//Read image 
 			std::vector<std::string> texture_name_temp = this->texture_name;
+
 			if (this->texture_name.size() == 0) {
 				qWarning("Could not find texture file name!");
 			}
@@ -1365,13 +1366,24 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 			}
 
 			QImage tex, buf;
-			if (!buf.load(texture_name_temp[0].c_str()))//
+			if (this->texture_name.empty())
 			{
-				qWarning("Could not read image file!");
+				//qWarning("The input mesh do not has texture!");
 				QImage dummy(128, 128, QImage::Format_RGB32);
 				dummy.fill(Qt::gray);
 				buf = dummy;
 			}
+			else
+			{
+				buf.load(texture_name_temp[0].c_str());
+			}
+			//if (!buf.load(texture_name_temp[0].c_str()))//
+			//{
+			//	qWarning("Could not read image file!");
+			//	QImage dummy(128, 128, QImage::Format_RGB32);
+			//	dummy.fill(Qt::gray);
+			//	buf = dummy;
+			//}
 
 			tex = QGLWidget::convertToGLFormat(buf);
 
