@@ -181,7 +181,7 @@ void Scene_group_item::renderChildren(Viewer_interface *viewer,
     {
       getChild(id)->selection_changed(false);
     }
-    if(getChild(id)->visible() &&
+    if(getChild(id)->visible() && (
        getChild(id)->renderingMode() == Flat ||
         getChild(id)->renderingMode() == FlatPlusEdges ||
         getChild(id)->renderingMode() == Gouraud ||
@@ -189,7 +189,7 @@ void Scene_group_item::renderChildren(Viewer_interface *viewer,
 		   getChild(id)->renderingMode() == TextureMode ||
 		   getChild(id)->renderingMode() == TextureModePlusFlatEdges ||
 		//***********************Zi qian + gwx*******************************//
-			getChild(id)->renderingMode() == Emphasizing)
+			getChild(id)->renderingMode() == Emphasizing))
     {    //*******************************************************************//
       getChild(id)->draw(viewer);
     }
