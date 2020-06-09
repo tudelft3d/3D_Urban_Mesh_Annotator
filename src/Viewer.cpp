@@ -286,7 +286,7 @@ Viewer::Viewer(QWidget* parent, bool antialiasing)
 	//use the new API for these
 	//********************Weixiao Update************************//
 	//setMouseBinding(Qt::ShiftModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
-	setMouseBinding(Qt::ControlModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
+	setMouseBinding(Qt::ControlModifier, Qt::LeftButton, CGAL::qglviewer::RAP_FROM_PIXEL);//RAP_FROM_PIXEL, SELECT
 	setMouseBindingDescription(Qt::ControlModifier, Qt::LeftButton,
 		tr("Recenter to the selected position."));
 

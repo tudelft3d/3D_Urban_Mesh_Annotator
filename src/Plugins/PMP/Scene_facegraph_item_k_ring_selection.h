@@ -855,8 +855,11 @@ protected:
 
 			if (mouse_event->button() == Qt::LeftButton || mouse_event->button() == Qt::RightButton) 
 			{
-				state.left_button_pressing = event->type() == QEvent::MouseButtonPress;
-				state.right_button_pressing = event->type() == QEvent::MouseButtonPress;
+				if (mouse_event->button() == Qt::LeftButton)
+					state.left_button_pressing = event->type() == QEvent::MouseButtonPress;
+				if (mouse_event->button() == Qt::RightButton)
+					state.right_button_pressing = event->type() == QEvent::MouseButtonPress;
+
 				if (is_edit_mode)
 					Q_EMIT clearHL();
 				if (!state.left_button_pressing && !state.right_button_pressing)//MouseButtonRelease

@@ -198,6 +198,8 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 
 				if (fi_segment_id.empty() == false)
 					sm_item->face_segment_id[fd] = fi_segment_id[ind];
+				else
+					sm_item->face_segment_id[fd] = ind;
 
 				face_visited_check[fd] = false;
 				/********************************Ziqian****************************/
@@ -208,8 +210,16 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 			}
 
 			//update face segment id (check if isolated segments are merged as one)
-			int segment_size = sm_item->updateSegmentId(face_visited_check);
-			CGAL::Three::Three::information("The number of segment is " + QString::number(segment_size));
+			int segment_size = sm_item->polyhedron()->number_of_faces();
+			if (fi_segment_id.empty() == false)
+			{
+				segment_size = sm_item->updateSegmentId(face_visited_check);
+				CGAL::Three::Three::information("The number of segment is " + QString::number(segment_size));
+			}
+			else
+			{
+				CGAL::Three::Three::information("The number of facet is " + QString::number(segment_size));
+			}
 
 			sm_item->computeSegmentBoundary();
 
