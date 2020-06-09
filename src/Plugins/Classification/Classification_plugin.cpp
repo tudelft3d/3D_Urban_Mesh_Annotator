@@ -68,7 +68,7 @@ class Polyhedron_demo_classification_plugin :
 		{
 			color_button = new QPushButton(tr("%1 (%2)").arg(name).arg((char)(std::toupper(shortcut))), parent);
 
-			menu = new QMenu("Label Menu", color_button);
+			//menu = new QMenu("Label Menu", color_button);
 
 			QColor text_color(255, 255, 255);
 			if (color.red() * 0.299 + color.green() * 0.587 + color.blue() * 0.114 > 128)
@@ -85,7 +85,7 @@ class Polyhedron_demo_classification_plugin :
 				+ "; }");
 
 			color_button->setStyleSheet(s);
-			color_button->setMenu(menu);
+			//color_button->setMenu(menu);
 
 			label2 = new QLabel(name, parent);
 		}
@@ -311,7 +311,7 @@ public Q_SLOTS:
 			{
 				ui_widget.labelGrid->removeWidget(label_buttons[i].color_button);
 				label_buttons[i].color_button->deleteLater();
-				label_buttons[i].menu->deleteLater();
+				//label_buttons[i].menu->deleteLater();
 				delete label_buttons[i].label2;
 			}
 			label_buttons.clear();
@@ -566,41 +566,48 @@ public Q_SLOTS:
 
 		ui_widget.labelGrid->addWidget(label_buttons.back().color_button, x, y);
 
-		QAction* add_selection = label_buttons.back().menu->addAction("Add selection to the label category");
+		//QAction* add_selection = label_buttons.back().menu->addAction("Add selection to the label category");
+		//add_selection->setShortcut(Qt::SHIFT | (Qt::Key_A + (label_button.shortcut - 'a')));
 
-		add_selection->setShortcut(Qt::SHIFT | (Qt::Key_A + (label_button.shortcut - 'a')));
-		//    add_selection->setShortcut(Qt::Key_0 + label_buttons.size() - 1);
-
-		connect(add_selection, SIGNAL(triggered()), this,
-			SLOT(on_add_selection_to_training_set_clicked()));
+		////add_selection->setShortcut(Qt::Key_0 + label_buttons.size() - 1);
+		//connect(add_selection, SIGNAL(triggered()), this,
+		//	SLOT(on_add_selection_to_training_set_clicked()));
 		
-		label_buttons.back().menu->addSeparator();
-
-		QAction* change_color = label_buttons.back().menu->addAction("Change color");
 		//***********************Weixiao Update menu name*********************//
-		change_color->setDisabled(true);
-		change_color->setVisible(false);
-		//********************************************************************//
-		connect(change_color, SIGNAL(triggered()), this,
-			SLOT(on_color_changed_clicked()));
 
-		QAction* change_name = label_buttons.back().menu->addAction("Change name");
-		//***********************Weixiao Update menu name*********************//
-		change_name->setDisabled(true);
-		change_name->setVisible(false);
-		//********************************************************************//
-		connect(change_name, SIGNAL(triggered()), this,
-			SLOT(on_name_changed_clicked()));
-		
-		label_buttons.back().menu->addSeparator();
+		label_buttons.back().color_button->setShortcut(Qt::SHIFT | (Qt::Key_A + (label_button.shortcut - 'a')));
+		connect(label_buttons.back().color_button, SIGNAL(clicked()),
+			this, SLOT(on_add_selection_to_training_set_clicked()));
 
-		QAction* remove_label = label_buttons.back().menu->addAction("Remove label");
-		//***********************Weixiao Update menu name*********************//
-		remove_label->setDisabled(true);
-		remove_label->setVisible(false);
 		//********************************************************************//
-		connect(remove_label, SIGNAL(triggered()), this,
-			SLOT(on_remove_label_clicked()));
+
+		//label_buttons.back().menu->addSeparator();
+
+		//QAction* change_color = label_buttons.back().menu->addAction("Change color");
+		////***********************Weixiao Update menu name*********************//
+		//change_color->setDisabled(true);
+		//change_color->setVisible(false);
+		////********************************************************************//
+		//connect(change_color, SIGNAL(triggered()), this,
+		//	SLOT(on_color_changed_clicked()));
+
+		//QAction* change_name = label_buttons.back().menu->addAction("Change name");
+		////***********************Weixiao Update menu name*********************//
+		//change_name->setDisabled(true);
+		//change_name->setVisible(false);
+		////********************************************************************//
+		//connect(change_name, SIGNAL(triggered()), this,
+		//	SLOT(on_name_changed_clicked()));
+		//
+		//label_buttons.back().menu->addSeparator();
+
+		//QAction* remove_label = label_buttons.back().menu->addAction("Remove label");
+		////***********************Weixiao Update menu name*********************//
+		//remove_label->setDisabled(true);
+		//remove_label->setVisible(false);
+		////********************************************************************//
+		//connect(remove_label, SIGNAL(triggered()), this,
+		//	SLOT(on_remove_label_clicked()));
 	}
 
 	void add_label_button()
@@ -638,7 +645,7 @@ public Q_SLOTS:
 
 			ui_widget.labelGrid->removeWidget(label_buttons[position].color_button);
 			label_buttons[position].color_button->deleteLater();
-			label_buttons[position].menu->deleteLater();
+			//label_buttons[position].menu->deleteLater();
 
 			delete label_buttons[position].label2;
 
@@ -745,7 +752,10 @@ public Q_SLOTS:
 			return;
 		}
 
-		QPushButton* label_clicked = qobject_cast<QPushButton*>(QObject::sender()->parent()->parent());
+		//QPushButton* label_clicked = qobject_cast<QPushButton*>(QObject::sender()->parent()->parent());
+
+		QPushButton* label_clicked = qobject_cast<QPushButton*>(QObject::sender());
+
 		if (label_clicked == NULL)
 			std::cerr << "Error" << std::endl;
 		else

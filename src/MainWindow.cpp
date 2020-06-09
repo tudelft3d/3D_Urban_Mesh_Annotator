@@ -1096,8 +1096,12 @@ void MainWindow::reloadItem() {
 	{
 		if (a->text().toStdString() == "Annotation")
 			a->trigger();
-		popupHelpMenu();
 	}
+
+	//hide selection layer
+	proxyModel->removeRow(1);
+
+	popupHelpMenu();
 	//*************************//
 }
 
@@ -1249,9 +1253,12 @@ void MainWindow::open(QString filename)
 	{
 		if (a->text().toStdString() == "Annotation")
 			a->trigger();
-		popupHelpMenu();
 	}
 
+	//hide selection layer
+	proxyModel->removeRow(1);
+
+	popupHelpMenu();
 	//disabled loading files
 	ui->actionLoad->setDisabled(true);
 	QStringList files = settings.value("recentFileList").toStringList();
@@ -1439,6 +1446,18 @@ void MainWindow::selectionChanged()
 	scene->setSelectedItemIndex(getSelectedSceneItemIndex());
 	scene->setSelectedItemsList(getSelectedSceneItemIndices());
 	CGAL::Three::Scene_item* item = scene->item(getSelectedSceneItemIndex());
+
+	//if no selected item, then always select the 2nd layer
+	if (item == NULL)
+	{
+		scene->setSelectedItemIndex(1);
+		QList<int> tmp;
+		tmp << 1;
+		scene->setSelectedItemsList(tmp);
+		item = scene->item(getSelectedSceneItemIndex());
+	}
+	//
+
 	if (item != NULL && item->manipulatable()) {
 		viewer->setManipulatedFrame(item->manipulatedFrame());
 	}
