@@ -19,6 +19,21 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="Viewer" name="viewer" native="true">
       <property name="sizePolicy">
@@ -37,7 +52,7 @@
      <x>0</x>
      <y>0</y>
      <width>978</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -246,8 +261,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>541</width>
-            <height>177</height>
+            <width>534</width>
+            <height>174</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout">

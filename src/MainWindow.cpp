@@ -1371,11 +1371,11 @@ void MainWindow::showRecenteredView(double x, double y, double z)
 	viewer->setVisualHintsMask(1);
 	viewer->camera()->setPivotPoint(CGAL::qglviewer::Vec(x, y, z));
 
-	information(
-		QString("Jump to new center of the current view: (%1, %2, %3)").
-		arg(x, 0, 'g', 10).
-		arg(y, 0, 'g', 10).
-		arg(z, 0, 'g', 10));
+//	information(
+//		QString("Jump to new center of the current view: (%1, %2, %3)").
+//		arg(x, 0, 'g', 10).
+//		arg(y, 0, 'g', 10).
+//		arg(z, 0, 'g', 10));
 
 	//warning(QString("If you are in selection mode, you need to click the selection layer for continuing selection."));
 }
