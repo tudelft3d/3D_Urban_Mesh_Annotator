@@ -1600,7 +1600,7 @@ bool Scene_polyhedron_selection_item::treat_selection(const std::set<fg_face_des
 		case 12:
 			set_editing_segment(poly_item->face_segment_id[fh]);
 			poly_item->emphasize_present_segment(seg_id(edited_segment));
-
+			poly_item->showFacetEdges(true);
 			clear_all();
 			set_operation_mode(-1);
 

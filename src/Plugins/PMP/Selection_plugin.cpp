@@ -538,7 +538,8 @@ public Q_SLOTS:
 				ui_widget.comboBox_2->setDisabled(true);
 				ui_widget.lassoCheckBox->setEnabled(true);
 
-				selection_item->poly_item->showFacetEdges(true);
+				//selection_item->k_ring_selector.is_highlighting;
+				//selection_item->poly_item->showFacetEdges(true);
 				//**********************************************************//
 
 				/**********************Ziqian***************************/
