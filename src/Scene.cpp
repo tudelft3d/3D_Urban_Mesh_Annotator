@@ -1493,9 +1493,25 @@ bool SceneDelegate::editorEvent(QEvent* event, QAbstractItemModel* model,
 			QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
 			if (mouseEvent->button() == ::Qt::LeftButton) {
 				// Switch rendering mode
-				/*RenderingMode*/int rendering_mode = model->data(index, ::Qt::EditRole).toInt();
-				rendering_mode = (rendering_mode + 1) % NumberOfRenderingMode;
-				model->setData(index, rendering_mode);
+				///*RenderingMode*/int rendering_mode = model->data(index, ::Qt::EditRole).toInt();
+				//rendering_mode = (rendering_mode + 1) % NumberOfRenderingMode;
+
+				//only allow to switch rendering among Flat(3), Texture(7), TextureFlatEdge(8) 
+				/*RenderingMode*/int current_rendering_mode = model->data(index, ::Qt::EditRole).toInt();
+				switch (current_rendering_mode)
+				{
+				case 3 :
+					current_rendering_mode = 7;
+					break;
+				case 8:
+					current_rendering_mode = 3;
+					break;
+				default:
+					current_rendering_mode = 8;
+					break;
+				}
+
+				model->setData(index, current_rendering_mode);
 			}
 		}
 		else if (event->type() == QEvent::MouseButtonDblClick) {

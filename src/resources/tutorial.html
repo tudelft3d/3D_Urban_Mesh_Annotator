@@ -3,35 +3,115 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 	<title>Menu</title>
         <style type="text/css">
+		.column {
+		  float: left;
+		  width: 33.33%;
+		  padding: 30px;
+		}
+		
+		/* Clearfix (clear floats) */
+		.row::after {
+		  content: "";
+		  clear: both;
+		  display: table;
+		}
+		.auto-style2 {
+			border-style: solid;
+			border-width: 1px;
+			text-align: left;
+		}
+		.auto-style5 {
+			border-width: 0px;
+		}
+		.auto-style7 {
+			text-align: center;
+		}
+		.auto-style8 {
+			text-align: left;
+		}
+		.auto-style9 {
+			text-decoration: underline;
+		}
+		.auto-style10 {
+			border-style: solid;
+			border-width: 1px;
+			text-align: center;
+		}
+		.auto-style11 {
+			border-style: solid;
+			border-width: 1px;
+		}
 		</style>
-        <div>
+        <div class="auto-style8">
         <a name="File">
        
     </head>
     <body style="font-size:12pt;font-family:helvetica">
 
-	<p><h2 align="center">Urban Mesh Annotator Tutorial</h2></p>
-	<h2 align="center"><strong>1. Annotation Pipeline</strong></h3></p>
+	<p><h2 class="auto-style7">Urban Mesh Annotator Tutorial</h2></p>
+	<p><h3 class="auto-style7"><strong>1. Annotation Pipeline</strong></h3></p>
 
-        <table cellspacing="16" align="center" style="width: auto">
+        <table cellspacing="16" class="auto-style5" align="center" style="width: auto">
 	  <tr>
-	    <td style="height: 57px">
-	  <b><i><br>Step 1: Load the *.ply mesh data</i></b></td>
-	  </tr>
-
-	  <tr>
-	    <td style="height: auto">
-	    <div>
-	  <b><i><br>Step 2: Segment selection and deselection</i></b><br>
-		Perform selection (<strong>Shift</strong> + <strong>Mouse Left Button</strong>) and deselection (<strong>Shift</strong> + <strong>Mouse Right Button</strong>) at segment level.&nbsp; <br>Hint: 
-		select the segment with incorrect label (or color).	     
-		<br>	     
-		</div>
+	    <td width="32" valign="top" class="auto-style10" style="height: 57px">
+	      <br>
+	      <img src="pics/plus.png" />  
+	    </td>
+	    <td class="auto-style2" style="height: 57px">
+	  <b><i><br>Step 1: Load the *.ply mesh data<br><br><a name="File1"></a></i></b>
+		<center style="height: 437px">
+		<img src="pics/load_data.png" height="auto" width="817" style="float: center" />
+		</center>
 		</td>
 	  </tr>
 
 	  <tr>
-	    <td>
+	    <td width="32" valign="top" style="height: 557px" class="auto-style2">
+	      <br>
+	      <img src="pics/shift.png" height="42" width="42" /> <br>&nbsp;&nbsp;&nbsp; +<br>
+		  <img src="pics/leftclick.png" height="42" width="42"/><br>&nbsp;&nbsp; or<br>
+		  <img src="pics/rightclick.png" height="42" width="42"/><br>
+	    </td>
+	    <td style="height: 557px" class="auto-style2">
+	    <div>
+	  <b><i><br>Step 2: Segment selection and deselection</i></b><br>
+		Perform selection and deselection at segment level.&nbsp;Hint: 
+		select the segment with incorrect label (or color).	     
+		</div>
+		<ul>
+		<li> Perform selection by holding on
+        <a name="File0">
+    	<strong>Shift</strong> and clicking (can with dragging) the <strong>Mouse Left</strong>
+		<strong>Button</strong></a>.<li> Perform 
+			deselection .by holding on <strong>Shift</strong> and clicking (can with dragging) the 
+			<strong>Mouse Right</strong> <strong>Button</strong>. 
+	    </ul>
+	    <div class="row">
+		  <div class="column">
+		  <figure> 
+		    <img src="pics/select_1.png" height="400" width="400">
+		    <figcaption class="auto-style7" style="width: 400px; height: 3px"> Before selection</figcaption> 
+		  </figure>
+		  </div>
+		  <div class="column">
+		  <figure>
+		    <img src="pics/select_2.png" height="400" width="400">
+		    <figcaption class="auto-style7" style="width: 400px; height: 3px"> After selection (show in red)</figcaption>
+		   </figure>
+		  </div>
+		</div>	   
+		</td>
+	  </tr>
+
+	  <tr>
+	    <td width="32" valign="top" class="auto-style10" style="height: 58px">
+        <br>
+        <a name="File3">
+	      <img src="pics/shift.png" height="42" width="42" /></a> <br>&nbsp;+<br>
+        <a name="File4">
+       
+    	Label</a> capital letter </td>
+	    <td class="auto-style2" style="height: 58px">
         <br>
        
 	  <b><i>
@@ -41,14 +121,18 @@
 		Simply click the label button in the annotation panel for the selected 
 		area or <br>press <strong>Shift</strong> 
 		and (first letter of a label) to assign the new label (e.g., Shift + G for adding to &#8216;ground&#8217;).<br>
-		*Note: If you are not sure which label to assign, you could assign the 
-		selected area with the '<span>unclassified</span>' 
+		Note: If you are not sure which label to assign, you could assign the 
+		selected area with the '<span class="auto-style9">unclassified</span>' 
 		label.<br>
-		<br></td>
+		<br>&nbsp;<a name="File"><center>
+		<img src="pics/annotation_panel.png" height=auto width=50% /><br>
+		<br></center></td>
 	  </tr>
 
 	  <tr>
-	    <td>
+	    <td width="32" valign="top" class="auto-style2" style="height: 58px">
+          </td>
+	    <td class="auto-style2" style="height: 58px">
         <a name="File5">
        
         </a><br>
@@ -62,35 +146,63 @@
 		Hold on the <strong>Shift</strong> and <strong>Mouse Left Button</strong> for selecting the segment you want to edit at the facet level.
 		
 		<br>
+		<br>&nbsp;<a name="File"><center>
+		<img src="pics/selection_edit_inside_one_segment.png" height=auto width=50% /></center></a><br>
 		<br>Select triangle facets by holding on <strong>Shift</strong> and 
 		clicking <strong>Mouse Left Button</strong> or draw with 'Lasso', then 
 		assign a new label to the selected<br> area. After finishing the editing, do 
 		not forget to switch back to the 'Select segments' mode.<br> <br>
+        <div class="row">
+		  <div class="column">
+		  <figure> 
+		    <img src="pics/lasso_select.png" height="400" width="400">
+		    <figcaption class="auto-style7" style="width: 350px; height: 3px"> Lasso selection</figcaption> 
+		  </figure>
+		  </div>
+		  <div class="column">
+		  <figure>
+		    <img src="pics/lasso_select2.png" height="400" width="400">
+		    <figcaption class="auto-style7" style="width: 400px; height: 3px"> Assign the new label</figcaption>
+		   </figure>
+		  </div>
+		</div>
 
 		</td>
 	  </tr>
 
 	  <tr>
-	    <td style="height: 58px">
+	    <td width="32" valign="top" class="auto-style10" style="height: 58px">
+        <a name="File9">
+       
+        <a name="File10">
+	      <img src="pics/ctrl.png" height="42" width="42" /></a> <br>&nbsp;+<br>
+        <strong>S</strong></td>
+	    <td class="auto-style2" style="height: 58px">
         <a name="File7">
        
         <a name="File8">
        
 	  <b><i>Step 5: Save the current work</i></b></a><br>
-		Save the current work by pressing <strong>Ctrl </strong>+ 
-		<strong>S</strong> or click the&nbsp; 'Save as' 
-		under the menu 'file'.<br><br>*Note: On macOS, <strong>Ctrl</strong> is 
-		replaced by <strong>Command</strong>.</td>
+		Save the current work by pressing CTRL + S or click the&nbsp; 'Save as' 
+		under the menu 'file'.</td>
 	  </tr>
 	</table>
 
-	<p><h2 align="center">2. Selection Panel Instruction</h2></p>
+	<p><h3 class="auto-style7"></a>2. <a name="Control">Selection Panel Instruction</h3></p>
 
-	<table cellspacing="16" align="center">
+	<table cellspacing="16" align="center" class="auto-style5">
 	  <tr>
-	  <td style="height: auto">
-        <ul> 
-			<li> <strong>Selection mode: </strong>Activate 'Select segments' mode for selecting at 
+	  <td class="auto-style11" style="height: auto">
+        <a name="File11">
+       
+	    <div>
+	  	  <br>
+	   <a name="File13">
+		<center>
+		<img src="pics/selection_edit_inside_one_segment.png" height=auto width=50% /></center>
+		</a>
+		</div>
+	  <ul> <li> <strong>Selection mode: </strong>Activate 'Select segments' mode for selecting at 
 		  the 
 		  segment level, activate 'Edit inside one segment' mode for selecting
 		   <br> at the triangle facet level.
@@ -98,14 +210,14 @@
 		  <a name="Control0">It's only valid in 'Edit inside one segment' mode. 
 		  The number of rings decides the size of the selected area. </a>
 		  <li> <a name="Control1"><strong>Expand/Reduce:</strong><a name="Control2"> 
-		  </a>Click 'Expand / Reduce' or '<strong>Mouse wheel</strong> forward / backward' with 
+		  </a></a>Click 'Expand / Reduce' or '<strong>Mouse wheel</strong> forward / backward' with 
 		  certain number of rings to exapnd or reduce from the<br> current selected area<a name="Control3">.
 		  </a>
 		  <li> <a name="Control20"> <a name="Control21"><strong>Lasso:</strong><a name="Control22"> 
-		  </a> 
+		  </a></a> 
 		  <a name="Control24">It's only valid in 'Edit inside one segment' mode.</a> 
 		  Holding on <strong>Shift</strong> and<strong> Mouse Left Buton / Mouse Right Button</strong> to 
-		  <span>select / deselect</span> the <br> area with 
+		  <span class="auto-style9">select / deselect</span> the <br> area with 
 		  your drawing<a name="Control23">.
 		  </a>
 		  <li> <a name="Control5"><strong>Select Segment Class:</strong><a name="Control4"><a name="Control6"> 
@@ -137,14 +249,21 @@
 	</div>
 	    <a name="File14">
        
-    <h2 align="center"></a>3. <a name="Control25">Annotation Panel Instruction</h2></p>
+    <h3 class="auto-style7"></a>3. <a name="Control25">Annotation Panel Instruction</h3></p>
 
-	<table cellspacing="16" align="center">
+	<table cellspacing="16" align="center" class="auto-style5">
 	  <tr>
-	  <td style="height: 217px">
+	  <td class="auto-style11" style="height: auto">
         <a name="File15">
-		<ul> 
-			<li> <strong>View: </strong>In the combo box of the view, the 'Real 
+	    <div>
+	   <a name="File16">
+		<center>
+		<br>
+		<img src="pics/annotation_panel.png" height=auto width=50% />		
+		</center>
+		</a>
+		</div>
+	  <ul> <li> <strong>View: </strong>In the combo box of the view, the 'Real 
 		  colors' shows the original facet color of the input mesh; the 'Editing' 
 		  view shows the current labeling <br> view; the 
 		  remaining views present the view only with the selected semantic 
@@ -158,25 +277,33 @@
 		  input data has the probability value of each facet. It can show the 
 		  current labeling <br> progress</a><a name="Control25">.
 		  <center>
-			<img src=":/cgal/Polyhedron_3/resources/pics/progress_bar.png"/>		
+			<img src="pics/progress_bar.png"/>		
 		  </center>
 
 		  <li> <strong> Label panel:</strong><a name="Control26"> </a>
 		  <a name="Control26">The input mesh decides the label and associate 
 		  color, the user cannot change it. </a>By pressing the label button or 
 		  use short cuts <br> <strong>Shift </strong>+ Label capital letter to 
-		  add selection to the label category.</ul>
+		  assign label to the selected area.</ul>
 	      </td></tr>
 		</table>
 
 	</a>
-	<h3 align="center">4. Context Menu<a name="Control52"></h2>
+	<h3 class="auto-style7">4. Context Menu<a name="Control52"></h3>
 	</p>
 
-	<table cellspacing="16" align="center">
+	<table cellspacing="16" align="center" class="auto-style5">
 	  <tr>
-	  <td style="height: auto">
+	  <td class="auto-style11" style="height: auto">
         <a name="File18">
+	    <div>
+	   <a name="File19">
+		<center>
+		<br>
+		<img src="pics/context_menu.png"/>		
+		</center>
+		</a>
+		</div>
 	  <ul> <li> <strong>Set flat Mode: </strong>Set the current rendering mode 
 		  with facet semantic color only.
 		  <li> <strong> Set TextureMode Mode:</strong><a name="Control53"> </a>

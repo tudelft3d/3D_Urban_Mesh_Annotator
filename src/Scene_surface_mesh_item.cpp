@@ -710,11 +710,13 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 					}
 				}
 			}
-			if (has_feature_edges && get(e_is_feature_map, ed))
-			{
-				idx_feature_edge_data_.push_back(source(ed, *smesh_));
-				idx_feature_edge_data_.push_back(target(ed, *smesh_));
-			}
+			//if (has_feature_edges && get(e_is_feature_map, ed))
+			//{
+			//	idx_feature_edge_data_.push_back(source(ed, *smesh_));
+			//	idx_feature_edge_data_.push_back(target(ed, *smesh_));
+			//}
+			idx_feature_edge_data_.push_back(source(ed, *smesh_));
+			idx_feature_edge_data_.push_back(target(ed, *smesh_));
 		}
 		idx_edge_data_.shrink_to_fit();
 		idx_boundary_edge_data_.shrink_to_fit();
@@ -1558,14 +1560,20 @@ void Scene_surface_mesh_item::drawEdges(CGAL::Three::Viewer_interface* viewer) c
 		//getEdgeContainer(2)->setSelected(false);
 		//getEdgeContainer(2)->setColor(color().lighter(50));
 		//getEdgeContainer(2)->draw(viewer, true);
+		if (edgesShow)
+		{
+			getEdgeContainer(1)->setSelected(false);
+			getEdgeContainer(1)->setColor(QColor(Qt::black));
+			getEdgeContainer(1)->draw(viewer, true);
+		}
 	}
 	/***********************************************************/
-	if (d->has_feature_edges)
-	{
-		getEdgeContainer(1)->setSelected(false);
-		getEdgeContainer(1)->setColor(QColor(Qt::red));
-		getEdgeContainer(1)->draw(viewer, true);
-	}
+	//if (d->has_feature_edges)
+	//{
+	//	getEdgeContainer(1)->setSelected(false);
+	//	getEdgeContainer(1)->setColor(QColor(Qt::red));
+	//	getEdgeContainer(1)->draw(viewer, true);
+	//}
 }
 
 void Scene_surface_mesh_item::drawPoints(CGAL::Three::Viewer_interface* viewer) const

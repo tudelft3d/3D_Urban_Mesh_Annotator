@@ -172,6 +172,9 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 		connect(shortcut, SIGNAL(activated()),
 			this, SLOT(toggleFullScreen()));
 		//********************Weixiao Update************************//
+		//shortcut = new QShortcut(QKeySequence(Qt::Key_L + Qt::CTRL), this);
+		//connect(shortcut, SIGNAL(activated()),
+		//	this, SLOT(on_actionLoad_triggered()));
 		shortcut = new QShortcut(QKeySequence(Qt::Key_S + Qt::CTRL), this);
 		//connect(shortcut, SIGNAL(activated()),
 		//	this, SLOT(saved_as_button_pressed()));
@@ -425,6 +428,7 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 	//***********Weixiao************//
 	//ui->menuOperations->setDisabled(true);
 	ui->menuOperations->menuAction()->setVisible(false);
+	ui->infoDockWidget->setVisible(false);
 
 	this->addHelpMenu();
 	//this->addAboutDemo(":/cgal/Polyhedron_3/about.html");
@@ -1101,7 +1105,7 @@ void MainWindow::reloadItem() {
 	}
 
 	//hide selection layer
-	proxyModel->removeRow(1);
+	sceneView->setRowHidden(1, scene->invisibleRootItem()->index(), true);
 
 	popupHelpMenu();
 	//*************************//
@@ -1258,7 +1262,7 @@ void MainWindow::open(QString filename)
 	}
 
 	//hide selection layer
-	proxyModel->removeRow(1);
+	sceneView->setRowHidden(1, scene->invisibleRootItem()->index(), true);
 
 	popupHelpMenu();
 	//disabled loading files
@@ -1339,13 +1343,18 @@ void MainWindow::selectSceneItem(int i)
 		updateInfo();
 		updateDisplayInfo();
 	}
-	else {
+	else 
+	{
 		QItemSelection s =
 			proxyModel->mapSelectionFromSource(scene->createSelection(i));
 		QModelIndex mi = proxyModel->mapFromSource(scene->getModelIndexFromId(i).first());
+
+		//std::cout << "i =" << i << "; mi = row(" << mi.row() <<"), col(" << mi.column() << ")" << std::endl;
+		
+		
+
 		sceneView->setCurrentIndex(mi);
-		sceneView->selectionModel()->select(s,
-			QItemSelectionModel::ClearAndSelect);
+		sceneView->selectionModel()->select(s, QItemSelectionModel::ClearAndSelect);
 		sceneView->scrollTo(s.indexes().first());
 		sceneView->setCurrentIndex(sceneView->selectionModel()->selectedIndexes().first());
 	}
@@ -1495,6 +1504,12 @@ void MainWindow::contextMenuRequested(const QPoint& global_pos) {
 void MainWindow::showSceneContextMenu(int selectedItemIndex,
 	const QPoint& global_pos)
 {
+	scene->setSelectedItemIndex(0);
+	QList<int> tmp;
+	tmp << 0;
+	scene->setSelectedItemsList(tmp);
+	selectedItemIndex = 0;
+
 	CGAL::Three::Scene_item* item = scene->item(selectedItemIndex);
 	if (!item) return;
 
@@ -1556,7 +1571,13 @@ void MainWindow::showSceneContextMenu(int selectedItemIndex,
 		menu->exec(global_pos);
 }
 
-void MainWindow::showSceneContextMenu(const QPoint& p) {
+void MainWindow::showSceneContextMenu(const QPoint& p) 
+{
+	scene->setSelectedItemIndex(0);
+	QList<int> tmp;
+	tmp << 0;
+	scene->setSelectedItemsList(tmp);
+
 	QWidget* sender = qobject_cast<QWidget*>(this->sender());
 	if (!sender) return;
 	if (scene->selectionIndices().isEmpty())return;
@@ -1950,8 +1971,7 @@ void MainWindow::on_actionLoad_triggered()
 {
 	QStringList filters;
 	// we need to special case our way out of this
-	filters << "All Files (*)";
-
+	//filters << "All Files (*)";
 
 	typedef QMap<QString, CGAL::Three::Polyhedron_demo_io_plugin_interface*> FilterPluginMap;
 	FilterPluginMap filterPluginMap;
@@ -1970,6 +1990,8 @@ void MainWindow::on_actionLoad_triggered()
 			else {
 				filterPluginMap[filter] = plugin;
 			}
+			if (filter.toStdString() != "PLY files (*.ply)")
+				continue;
 			filters << filter;
 		}
 	}
@@ -2028,6 +2050,30 @@ void MainWindow::on_actionLoad_triggered()
 			//*****************************//
 		}
 	}
+
+	//********Weixiao**********//
+	//trigger the plugin when loading the data
+	QList<QAction*> as = ui->menuOperations->actions();
+	Q_FOREACH(QAction* a, as)
+	{
+		if (a->text().toStdString() == "Annotation")
+			a->trigger();
+	}
+
+	//hide selection layer
+	sceneView->setRowHidden(1, scene->invisibleRootItem()->index(), true);
+
+	popupHelpMenu();
+	//disabled loading files
+	ui->actionLoad->setDisabled(true);
+	QStringList files = settings.value("recentFileList").toStringList();
+	int numRecentFiles = qMin(files.size(), (int)this->maxNumberOfRecentFiles());
+	for (int i = 0; i < numRecentFiles; ++i)
+	{
+		recentFileActs[i]->setDisabled(true);
+	}
+	//*************************//
+
 }
 
 void MainWindow::on_actionSaveAs_triggered()
@@ -2222,6 +2268,10 @@ bool MainWindow::on_actionErase_triggered()
 	if (scene->numberOfEntries() < next_index + 1)
 		next_index = -1;
 	selectSceneItem(next_index);
+	//*******Weixiao GAO*********//
+	scene->setSelectedItemIndex(-1);
+	scene->setSelectedItemsList(QList<int>());
+	//***************************//
 	return next_index >= 0;
 }
 
