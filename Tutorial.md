@@ -25,6 +25,7 @@
 ### 2.1 Basics
 | Shortcuts                    |     Descriptions         |
 | -----------------------      | ---------------------    |
+| H                            | Help menu.               |
 | Left Button                  | Rotates camera.          |
 | Left Button Double Click     | Aligns camera.           |
 | Right Button                 | Translates camera.       |

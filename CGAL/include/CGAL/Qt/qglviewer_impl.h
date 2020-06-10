@@ -2123,6 +2123,9 @@ The helpRequired() signal is emitted. */
                 QTextEdit *tab = new QTextEdit(NULL);
                 tab->setReadOnly(true);
 
+				if (i == 1 || i == 2)
+					continue;
+
                 helpWidget()->insertTab(i, tab, label[i]);
                 if (i == 3) {
 #include "resources/3d_geoinfo_logo.xpm"
@@ -2136,6 +2139,9 @@ The helpRequired() signal is emitted. */
         }
 
         for (int i = 0; i < 4; ++i) {
+			if (i == 1 || i == 2)
+				continue;
+
             QString text;
             switch (i) {
                 case 0:
