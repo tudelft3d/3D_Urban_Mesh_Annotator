@@ -109,7 +109,7 @@ public Q_SLOTS:
 	//void on_upButton_pressed();
 	////! Is called when the down button is pressed.
 	//void on_downButton_pressed();
-	void saved_as_button_pressed();
+	//void saved_as_button_pressed();
 	//**********************************************************//
 
 	////! COllapses the groups that were before the Geometric Objects view was re-drawn.

@@ -173,8 +173,10 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 			this, SLOT(toggleFullScreen()));
 		//********************Weixiao Update************************//
 		shortcut = new QShortcut(QKeySequence(Qt::Key_S + Qt::CTRL), this);
+		//connect(shortcut, SIGNAL(activated()),
+		//	this, SLOT(saved_as_button_pressed()));
 		connect(shortcut, SIGNAL(activated()),
-			this, SLOT(saved_as_button_pressed()));
+			this, SLOT(on_actionSaveAs_triggered()));
 		//**********************************************************//
 	}
 
@@ -1856,7 +1858,7 @@ void MainWindow::quit()
 		if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work before leave?")
 			== QMessageBox::No)
 		{
-			selectSceneItem(0);
+			//selectSceneItem(0);
 			on_actionSaveAs_triggered();
 		}
 		is_saved = true;
@@ -1874,7 +1876,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work before leave?")
 			== QMessageBox::No)
 		{
-			selectSceneItem(0);
+			//selectSceneItem(0);
 			on_actionSaveAs_triggered();
 		}
 		is_saved = true;
@@ -2030,8 +2032,16 @@ void MainWindow::on_actionLoad_triggered()
 
 void MainWindow::on_actionSaveAs_triggered()
 {
-	Scene_item* item = NULL;
+	int current_index = getSelectedSceneItemIndex();
+	if (current_index != 0)
+	{
+		scene->setSelectedItemIndex(0);
+		QList<int> tmp;
+		tmp << 0;
+		scene->setSelectedItemsList(tmp);
+	}
 
+	Scene_item* item = NULL;
 	Q_FOREACH(Scene::Item_id id, scene->selectionIndices())
 	{
 		item = scene->item(id);
@@ -2230,19 +2240,19 @@ void MainWindow::on_actionEraseAll_triggered()
 //	int index = scene->duplicate(getSelectedSceneItemIndex());
 //	selectSceneItem(index);
 //}
-
-void MainWindow::saved_as_button_pressed()
-{
-	int current_index = getSelectedSceneItemIndex();
-	if (current_index != 0)
-	{
-		scene->setSelectedItemIndex(0);
-		QList<int> tmp;
-		tmp << 0;
-		scene->setSelectedItemsList(tmp);
-	}
-	on_actionSaveAs_triggered();
-}
+//
+//void MainWindow::saved_as_button_pressed()
+//{
+//	int current_index = getSelectedSceneItemIndex();
+//	if (current_index != 0)
+//	{
+//		scene->setSelectedItemIndex(0);
+//		QList<int> tmp;
+//		tmp << 0;
+//		scene->setSelectedItemsList(tmp);
+//	}
+//	on_actionSaveAs_triggered();
+//}
 //**********************************************************//
 
 
@@ -2983,6 +2993,16 @@ void MainWindow::on_action_Save_triggered()
 	if (QMessageBox::question(this, "Save", "Are you sure you want to override these files ?")
 		== QMessageBox::No)
 		return;
+
+	int current_index = getSelectedSceneItemIndex();
+	if (current_index != 0)
+	{
+		scene->setSelectedItemIndex(0);
+		QList<int> tmp;
+		tmp << 0;
+		scene->setSelectedItemsList(tmp);
+	}
+
 	Scene_item* item = nullptr;
 	Q_FOREACH(Scene::Item_id id, scene->selectionIndices())
 	{
