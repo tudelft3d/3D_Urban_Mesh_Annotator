@@ -2138,12 +2138,14 @@ The helpRequired() signal is emitted. */
             }
         }
 
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i)
+		{
 			if (i == 1 || i == 2)
 				continue;
 
             QString text;
-            switch (i) {
+            switch (i) 
+			{
                 case 0:
                     text = helpString();
                     break;
@@ -2167,9 +2169,19 @@ The helpRequired() signal is emitted. */
                     break;
             }
 
-            QTextEdit *textEdit = (QTextEdit *) (helpWidget()->widget(i));
+				
+			//QTextEdit *textEdit = (QTextEdit *)(helpWidget()->widget(i));
+			QTextEdit *textEdit;
+			if (i==3)
+				textEdit = (QTextEdit *)(helpWidget()->widget(1));
+			else
+				textEdit = (QTextEdit *)(helpWidget()->widget(i));
+
+
             textEdit->setHtml(text);
             textEdit->setText(text);
+
+			textEdit->setReadOnly(true);
 
             if (resize && (textEdit->height() > height))
                 height = textEdit->height();
