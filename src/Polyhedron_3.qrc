@@ -34,9 +34,17 @@
 		<file>resources/toplayer.png</file>
     </qresource>
     <qresource prefix="/cgal/Polyhedron_3">
-		<file alias="tutorial.html">resources/tutorial.html</file>
-		<file alias="about.html">resources/about.html</file>
-    <file>resources/Annotator_Tutorial.png</file>
+	<file alias="about.html">resources/about.html</file>
+	<file alias="quick_introduction.html">resources/quick_introduction.html</file>
+	<file alias="shortcuts.html">resources/shortcuts.html</file>
+	<file alias="selection_panel.html">resources/selection_panel.html</file>
+	<file alias="annotation_panel.html">resources/annotation_panel.html</file>
+	<file alias="context_menu.html">resources/context_menu.html</file>
+    <file>resources/quick_introduction.png</file>
+	<file>resources/shortcuts.png</file>
+	<file>resources/selection_panel.png</file>
+	<file>resources/annotation_panel.png</file>
+	<file>resources/context_menu.png</file>
     <file>resources/shader_with_light.vert</file>
     <file>resources/shader_with_light.frag</file>
     <file>resources/shader_without_light.frag</file>

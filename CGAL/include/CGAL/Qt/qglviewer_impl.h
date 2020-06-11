@@ -1772,19 +1772,6 @@ bindings. */
         return res;
     }
 
-//*******************Weixiao update ***********************//
-    CGAL_INLINE_FUNCTION
-    QString CGAL::QGLViewer::helpString() const {
-        QString html_resource_name = ":/cgal/Polyhedron_3/tutorial.html";
-        QFile tutorial(html_resource_name);
-        tutorial.open(QIODevice::ReadOnly);
-        QString about_CGAL_txt = QTextStream(&tutorial).readAll();
-
-        return about_CGAL_txt;
-    }
-
-//*********************************************************//
-
 /*! Returns a QString that describes the application mouse bindings, displayed
 in the help() window \c Mouse tab.
 
@@ -2105,12 +2092,14 @@ The helpRequired() signal is emitted. */
         Q_EMIT helpRequired();
 
         bool resize = false;
-        int width = 600;
-        int height = 400;
+        int width = 1600;
+        int height = 1000;
 
-        static QString label[] = {tr("&Tutorial", "Help window tab title"),
-                                  tr("&Keyboard", "Help window tab title"),
-                                  tr("&Mouse", "Help window tab title"),
+        static QString label[] = {tr("&1. Quick Introduction", "Help window tab title"),
+                                  tr("&2. Short Cuts", "Help window tab title"),
+                                  tr("&3. Selection", "Help window tab title"),
+								  tr("&4. Annotation", "Help window tab title"),
+								  tr("&5. Others", "Help window tab title"),
                                   tr("&About", "Help window about title")};
 
         if (!helpWidget()) {
@@ -2119,15 +2108,13 @@ The helpRequired() signal is emitted. */
             helpWidget()->setWindowTitle(tr("Help", "Help window title"));
 
             resize = true;
-            for (int i = 0; i < 4; ++i) {
+            for (int i = 0; i < 6; ++i) {
                 QTextEdit *tab = new QTextEdit(NULL);
                 tab->setReadOnly(true);
 
-				if (i == 1 || i == 2)
-					continue;
-
                 helpWidget()->insertTab(i, tab, label[i]);
-                if (i == 3) {
+
+                if (i == 5) {
 #include "resources/3d_geoinfo_logo.xpm"
 
                     QPixmap pixmap(qglviewer_icon);
@@ -2138,24 +2125,67 @@ The helpRequired() signal is emitted. */
             }
         }
 
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < 6; ++i)
 		{
-			if (i == 1 || i == 2)
-				continue;
-
-            QString text;
+            QString text, html_resource_name;
             switch (i) 
 			{
-                case 0:
-                    text = helpString();
-                    break;
-                case 1:
-                    text = keyboardString();
-                    break;
-                case 2:
-                    text = mouseString();
-                    break;
-                case 3:
+                //case 0:
+                //    text = helpString();
+                //    break;
+                //case 1:
+                //    text = keyboardString();
+                //    break;
+                //case 2:
+                //    text = mouseString();
+                //    break;
+
+				case 0:
+				{
+					html_resource_name = ":/cgal/Polyhedron_3/quick_introduction.html";
+					QFile tmp_file(html_resource_name);
+					tmp_file.open(QIODevice::ReadOnly);
+					text = QTextStream(&tmp_file).readAll();
+					break;
+				}
+
+				case 1:
+				{
+					html_resource_name = ":/cgal/Polyhedron_3/shortcuts.html";
+					QFile tmp_file(html_resource_name);
+					tmp_file.open(QIODevice::ReadOnly);
+					text = QTextStream(&tmp_file).readAll();
+					break;
+				}
+
+				case 2:
+				{
+					html_resource_name = ":/cgal/Polyhedron_3/selection_panel.html";
+					QFile tmp_file(html_resource_name);
+					tmp_file.open(QIODevice::ReadOnly);
+					text = QTextStream(&tmp_file).readAll();
+					break;
+				}
+
+				case 3:
+				{
+					html_resource_name = ":/cgal/Polyhedron_3/annotation_panel.html";
+					QFile tmp_file(html_resource_name);
+					tmp_file.open(QIODevice::ReadOnly);
+					text = QTextStream(&tmp_file).readAll();
+					break;
+				}
+
+				case 4:
+				{
+					html_resource_name = ":/cgal/Polyhedron_3/context_menu.html";
+					QFile tmp_file(html_resource_name);
+					tmp_file.open(QIODevice::ReadOnly);
+					text = QTextStream(&tmp_file).readAll();
+					break;
+				}
+
+                case 5:
                     text = QString("<center><br><img src=\"mydata://3d_geoinfo_logo.xpm\">") +
                            tr("<h1>Urban Mesh Annotator</h1>"
                               "<h3>Version 1.0</h3><br>"
@@ -2169,26 +2199,24 @@ The helpRequired() signal is emitted. */
                     break;
             }
 
-				
-			//QTextEdit *textEdit = (QTextEdit *)(helpWidget()->widget(i));
-			QTextEdit *textEdit;
-			if (i==3)
-				textEdit = (QTextEdit *)(helpWidget()->widget(1));
-			else
-				textEdit = (QTextEdit *)(helpWidget()->widget(i));
+			QTextEdit *textEdit = (QTextEdit *)(helpWidget()->widget(i));
 
-
-            textEdit->setHtml(text);
-            textEdit->setText(text);
+			textEdit->setHtml(text);
+			textEdit->setText(text);
 
 			textEdit->setReadOnly(true);
 
-            if (resize && (textEdit->height() > height))
-                height = textEdit->height();
+			QTextCursor textCursor = textEdit->textCursor();
+			textCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor, 1);
+			textEdit->setTextCursor(textCursor); // The line to add
+
+			if (resize && (textEdit->height() > height))
+				height = textEdit->height();
         }
 
         if (resize)
             helpWidget()->resize(width, height + 40); // 40 pixels is ~ tabs' height
+
         helpWidget()->show();
         helpWidget()->raise();
     }

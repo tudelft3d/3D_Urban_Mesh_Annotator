@@ -1107,7 +1107,8 @@ void MainWindow::reloadItem() {
 	//hide selection layer
 	sceneView->setRowHidden(1, scene->invisibleRootItem()->index(), true);
 
-	popupHelpMenu();
+	if (!is_help_poped)
+		popupHelpMenu();
 	//*************************//
 }
 
@@ -1264,7 +1265,9 @@ void MainWindow::open(QString filename)
 	//hide selection layer
 	sceneView->setRowHidden(1, scene->invisibleRootItem()->index(), true);
 
-	popupHelpMenu();
+	if (!is_help_poped)
+		popupHelpMenu();
+
 	//disabled loading files
 	ui->actionLoad->setDisabled(true);
 	QStringList files = settings.value("recentFileList").toStringList();
@@ -2063,7 +2066,9 @@ void MainWindow::on_actionLoad_triggered()
 	//hide selection layer
 	sceneView->setRowHidden(1, scene->invisibleRootItem()->index(), true);
 
-	popupHelpMenu();
+	if (!is_help_poped)
+		popupHelpMenu();
+
 	//disabled loading files
 	ui->actionLoad->setDisabled(true);
 	QStringList files = settings.value("recentFileList").toStringList();
@@ -3068,4 +3073,5 @@ void MainWindow::on_action_Save_triggered()
 void MainWindow::popupHelpMenu()
 {
 	this->viewer->help();
+	is_help_poped = true;
 }

@@ -634,7 +634,7 @@ public:
   \endcode
 
   See also mouseString() and keyboardString(). */
-	virtual QString helpString() const;// { return tr("No help available."); }
+   virtual QString helpString() const { return tr("No help available."); }
 
   virtual QString mouseString() const;
   virtual QString keyboardString() const;
@@ -1003,6 +1003,7 @@ private:
   // Prevents everyone from trying to use them
   QGLViewer(const QGLViewer &v);
   QGLViewer &operator=(const QGLViewer &v);
+  int check_show = -1;
 
 protected:
   // Set parameters to their default values. Called by the constructors.

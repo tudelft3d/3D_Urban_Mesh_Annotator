@@ -492,6 +492,7 @@ private:
 	//********************Weixiao Update************************//
 	bool is_saved = false;
 	bool is_erased = false;
+	bool is_help_poped = false;
 	//**********************************************************//
 #ifdef QT_SCRIPT_LIB
 	QScriptEngine* script_engine;
