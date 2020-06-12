@@ -177,9 +177,9 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 		//	this, SLOT(on_actionLoad_triggered()));
 		shortcut = new QShortcut(QKeySequence(Qt::Key_S + Qt::CTRL), this);
 		//connect(shortcut, SIGNAL(activated()),
-		//	this, SLOT(saved_as_button_pressed()));
+		//	this, SLOT(on_actionSaveAs_triggered()));
 		connect(shortcut, SIGNAL(activated()),
-			this, SLOT(on_actionSaveAs_triggered()));
+			this, SLOT(save_check()));
 		//**********************************************************//
 	}
 
@@ -1054,7 +1054,9 @@ void MainWindow::reloadItem() {
 	if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work?")
 		== QMessageBox::No)
 	{
-		on_actionSaveAs_triggered();
+		is_asked = false;
+		//on_actionSaveAs_triggered();
+		on_action_Save_triggered();
 	}
 	//remove plugin in case of ambiguity 
 	for (int i = 0; i < plugins.size(); i++)
@@ -1883,7 +1885,8 @@ void MainWindow::quit()
 			== QMessageBox::No)
 		{
 			//selectSceneItem(0);
-			on_actionSaveAs_triggered();
+			//on_actionSaveAs_triggered();
+			on_action_Save_triggered();
 		}
 		is_saved = true;
 	}
@@ -1900,8 +1903,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work before leave?")
 			== QMessageBox::No)
 		{
+			is_asked = false;
 			//selectSceneItem(0);
-			on_actionSaveAs_triggered();
+			//on_actionSaveAs_triggered();
+			on_action_Save_triggered();
 		}
 		is_saved = true;
 	}
@@ -2243,7 +2248,9 @@ bool MainWindow::on_actionErase_triggered()
 		if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work?")
 			== QMessageBox::No)
 		{
-			on_actionSaveAs_triggered();
+			is_asked = false;
+			//on_actionSaveAs_triggered();
+			on_action_Save_triggered();
 		}
 
 		is_erased = true;
@@ -3040,14 +3047,54 @@ void MainWindow::invalidate_bbox(bool do_recenter)
 	bbox_need_update = true;
 	if (do_recenter)
 		updateViewerBBox(true);
+}
+
+
+void MainWindow::save_check()
+{
+	is_asked = true;
+	if (is_showmsgbox)
+	{
+		QCheckBox *cb = new QCheckBox("Don't show this again!");
+		QMessageBox msgbox;
+		msgbox.setText("Are you sure you want to override these files?");
+		msgbox.setIcon(QMessageBox::Icon::Question);
+		QPushButton* pYES = (QPushButton*)msgbox.addButton(QMessageBox::Yes);
+		QPushButton* pNO = (QPushButton*)msgbox.addButton(QMessageBox::No);
+		msgbox.setDefaultButton(QMessageBox::Cancel);
+		msgbox.setCheckBox(cb);
+
+		QObject::connect(cb, &QCheckBox::stateChanged, [this](int state)
+			{
+				if (static_cast<Qt::CheckState>(state) == Qt::CheckState::Checked)
+				{
+					is_showmsgbox = false;
+				}
+			});
+
+		QObject::connect(pYES, &QPushButton::clicked, this, &MainWindow::on_action_Save_triggered);
+
+		QObject::connect(pNO, &QPushButton::clicked, this, &MainWindow::on_actionSaveAs_triggered);
+
+		msgbox.exec();
+	}
+	else
+	{
+		on_action_Save_triggered();
+	}
 
 }
 
 void MainWindow::on_action_Save_triggered()
 {
-	if (QMessageBox::question(this, "Save", "Are you sure you want to override these files ?")
-		== QMessageBox::No)
-		return;
+	if (!is_asked)
+	{
+		if (QMessageBox::question(this, "Save", "Are you sure you want to override these files ?")
+			== QMessageBox::No)
+		{
+			on_actionSaveAs_triggered();
+		}
+	}
 
 	int current_index = getSelectedSceneItemIndex();
 	if (current_index != 0)

@@ -321,6 +321,7 @@ protected Q_SLOTS:
 	  ////!Duplicates the selected item and selects the new item.
 	  // void on_actionDuplicate_triggered();
 	void popupHelpMenu();
+	void save_check();
 	//**********************************************************//
 	//!If QT_SCRIPT_LIB is defined, opens a dialog to choose a script.
 	void on_actionLoadScript_triggered();
@@ -493,6 +494,8 @@ private:
 	bool is_saved = false;
 	bool is_erased = false;
 	bool is_help_poped = false;
+	bool is_showmsgbox = true;
+	bool is_asked = false;
 	//**********************************************************//
 #ifdef QT_SCRIPT_LIB
 	QScriptEngine* script_engine;
