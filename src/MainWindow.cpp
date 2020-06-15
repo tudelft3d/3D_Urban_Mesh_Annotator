@@ -1851,6 +1851,8 @@ void MainWindow::readSettings()
 	CGAL::Three::Three::s_defaultSMRM = CGAL::Three::Three::modeFromName(
 		settings.value("default_sm_rm", "TextureMode+flat+edges").toString());
 	//Check //******Weixiao Update rendering mode enum**********// Scene_interface.h
+
+	is_questionshow = settings.value("is_questionshow", true).toBool();
 	//***********************************************************************************************//
 	CGAL::Three::Three::s_defaultPSRM = CGAL::Three::Three::modeFromName(
 		settings.value("default_ps_rm", "points").toString());
@@ -1873,7 +1875,9 @@ void MainWindow::writeSettings()
 		if (!blacklist.isEmpty()) settings.setValue("plugin_blacklist", blacklist);
 		else settings.remove("plugin_blacklist");
 	}
-	std::cerr << "Write setting... done.\n";
+	//settings.setPath(QString("/"));
+	//QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "c:\\");
+	std::cerr << "Write setting into " << settings.fileName().toStdString() << std::endl;
 }
 
 void MainWindow::quit()
@@ -1891,7 +1895,7 @@ void MainWindow::quit()
 		is_saved = true;
 	}
 	//**********************************************************//
-
+	
 	close();
 }
 
@@ -1910,12 +1914,38 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		}
 		is_saved = true;
 	}
+
+	if (is_questionshow)
+	{
+		QCheckBox *cb = new QCheckBox("Don't show this again!");
+		QMessageBox msgbox;
+		msgbox.setText("Do you want to give us feedback?");
+		msgbox.setIcon(QMessageBox::Icon::Question);
+		msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		msgbox.setDefaultButton(QMessageBox::Yes);
+		msgbox.setCheckBox(cb);
+
+		QObject::connect(cb, &QCheckBox::stateChanged, [this](int state)
+			{
+				if (static_cast<Qt::CheckState>(state) == Qt::CheckState::Checked)
+				{
+					is_questionshow = false;
+				}
+			});
+
+		QObject::connect(msgbox.button(QMessageBox::Yes), &QPushButton::clicked, this, &MainWindow::OpenLink);
+		msgbox.exec();
+
+		settings.setValue("is_questionshow", is_questionshow);
+	}
+
 	//**********************************************************//
 
 	for (int i = 0; i < plugins.size(); i++)
 	{
 		plugins[i].first->closure();
 	}
+
 	writeSettings();
 	event->accept();
 }
@@ -2508,7 +2538,6 @@ void MainWindow::on_actionPreferences_triggered()
 		settings.setValue("points_size", this->default_point_size);
 		settings.setValue("normals_length", this->default_normal_length);
 		settings.setValue("lines_width", this->default_lines_width);
-
 	}
 }
 
@@ -3121,4 +3150,10 @@ void MainWindow::popupHelpMenu()
 {
 	this->viewer->help();
 	is_help_poped = true;
+}
+
+void MainWindow::OpenLink()
+{
+	QString link = "https://docs.google.com/forms/d/1LfrVqysHu74ZnHUKrwOChvCpcK35hFUMD4LgWE_RM0E/edit";
+	QDesktopServices::openUrl(QUrl(link));
 }

@@ -2190,8 +2190,9 @@ The helpRequired() signal is emitted. */
                            tr("<h1>Urban Mesh Annotator</h1>"
                               "<h3>Version 1.0</h3><br>"
                               "This application is used for annotating triangular mesh of urban scenes.<br>"
+							  "<a href = \"https://docs.google.com/forms/d/1LfrVqysHu74ZnHUKrwOChvCpcK35hFUMD4LgWE_RM0E/edit\">Give us feedback</a><br>"
                               "Copyright &copy;2020 Weixiao GAO<br>"
-                              "<code>%3</code>")
+                              "<a href = \http://3d.bk.tudelft.nl/\"><code >%3</code></a>")
                                    .arg("http://3d.bk.tudelft.nl/") +
                            QString("</center>");
                     break;
@@ -2209,6 +2210,7 @@ The helpRequired() signal is emitted. */
 			QTextCursor textCursor = textEdit->textCursor();
 			textCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor, 1);
 			textEdit->setTextCursor(textCursor); // The line to add
+			
 
 			if (resize && (textEdit->height() > height))
 				height = textEdit->height();

@@ -322,6 +322,7 @@ protected Q_SLOTS:
 	  // void on_actionDuplicate_triggered();
 	void popupHelpMenu();
 	void save_check();
+	void OpenLink();
 	//**********************************************************//
 	//!If QT_SCRIPT_LIB is defined, opens a dialog to choose a script.
 	void on_actionLoadScript_triggered();
@@ -496,6 +497,7 @@ private:
 	bool is_help_poped = false;
 	bool is_showmsgbox = true;
 	bool is_asked = false;
+	bool is_questionshow = true;
 	//**********************************************************//
 #ifdef QT_SCRIPT_LIB
 	QScriptEngine* script_engine;
