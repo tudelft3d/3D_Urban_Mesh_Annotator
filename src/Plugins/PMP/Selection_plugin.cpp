@@ -504,6 +504,8 @@ public Q_SLOTS:
 				//********************Weixiao Update************************//
 				ui_widget.comboBox_2->setCurrentIndex(current_label_index);
 				ui_widget.comboBox_2->setEnabled(true);
+
+				ui_widget.lassoCheckBox->setChecked(false);
 				ui_widget.lassoCheckBox->setDisabled(true);
 
 				selection_item->poly_item->showFacetEdges(false);
@@ -536,7 +538,6 @@ public Q_SLOTS:
 				current_label_index = ui_widget.comboBox_2->currentIndex();
 				ui_widget.comboBox_2->setCurrentIndex(0);
 				ui_widget.comboBox_2->setDisabled(true);
-				ui_widget.lassoCheckBox->setEnabled(true);
 
 				//selection_item->k_ring_selector.is_highlighting;
 				//selection_item->poly_item->showFacetEdges(true);
