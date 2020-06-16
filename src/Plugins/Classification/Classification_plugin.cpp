@@ -767,7 +767,7 @@ public Q_SLOTS:
 			int position = row_index * 3 + column_index;
 			/*****************************Ziqian*******************************/
 			if (!classif->segment_form()) {
-				print_message("Error: can't put faces from different segment into one segment.");
+				//print_message("Error: can't put faces from different segment into one segment.");
 				//return;
 			}
 			/******************************************************************/

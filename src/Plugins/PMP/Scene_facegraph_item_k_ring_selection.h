@@ -874,8 +874,11 @@ protected:
 							Q_EMIT endSelection();
 							is_active = false;
 						}
-						apply_path();
-						lasso_selection();//perform lasso selection
+						if (is_lasso_active)
+						{
+							apply_path();
+							lasso_selection();//perform lasso selection
+						}
 						break;
 						// in recommedation mode
 					case 1:

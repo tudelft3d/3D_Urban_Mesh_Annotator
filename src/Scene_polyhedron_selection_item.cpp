@@ -1023,7 +1023,11 @@ bool Scene_polyhedron_selection_item::treat_classic_selection(const HandleRange&
 		BOOST_FOREACH(HandleType h, selection)
 			any_change |= (tr.container().erase(h) != 0);
 	}
-	if (any_change) { invalidateOpenGLBuffers(); Q_EMIT itemChanged(); }
+	if (any_change) 
+	{ 
+		invalidateOpenGLBuffers(); 
+		Q_EMIT itemChanged();
+	}
 	return any_change;
 
 	//BOOST_FOREACH(HandleType h, selection) {

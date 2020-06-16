@@ -779,7 +779,7 @@ public:
                 /******************Ziqian****************/
                 if (get_active_handle_type() == Active_handle::FACET &&
                     poly_item->face_segment_id[fg_face_descriptor(*it)] != edited_segment) {
-                    Q_EMIT printMessage("can't select faces outside of the chosen segmemt.");
+                    //Q_EMIT printMessage("can't select faces outside of the chosen segmemt.");
                     continue;
                 }
                 /****************************************/
