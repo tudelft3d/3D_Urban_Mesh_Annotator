@@ -1010,7 +1010,7 @@ bool Scene_polyhedron_selection_item::treat_classic_selection(const HandleRange&
 		BOOST_FOREACH(HandleType h, selection) {
 			if (get_active_handle_type() == 1) {
 				if (poly_item->face_segment_id[fg_face_descriptor(h)] != edited_segment) {
-					Q_EMIT printMessage("can't select faces outside of the chosen segment.");
+					//Q_EMIT printMessage("can't select faces outside of the chosen segment.");
 					continue;
 				}
 			}

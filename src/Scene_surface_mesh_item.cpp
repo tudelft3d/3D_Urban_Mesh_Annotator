@@ -1097,7 +1097,7 @@ void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 	m_RMode = renderingMode();
 	d->chosen_segments.clear();
 	d->chosen_segments.insert(seg);
-	d->compute_elements(ALL);
+	//d->compute_elements(ALL);
 	setRenderingMode(Emphasizing);
 
 	tmp_default_renderingmode = CGAL::Three::Three::defaultSurfaceMeshRenderingMode();
@@ -1116,7 +1116,7 @@ void Scene_surface_mesh_item::unemphasize()
 		CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(tmp_default_renderingmode);
 	setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
 	d->chosen_segments.clear();
-	d->compute_elements(ALL);
+	//d->compute_elements(ALL);
 
 	Q_EMIT itemChanged();
 	invalidateOpenGLBuffers();
