@@ -13,7 +13,7 @@
   1. a modified version of CGAL is used (folder `./CGAL/`), and you need to use that one: `export CGAL_DIR=/path/to/CGAL_FOLDER` 
   1. `cd src`
   1. `mkdir build && cd build`
-  1. `cmake -DCMAKE_BUILD_TYPE=true ..` to compile in release mode and not debug
+  1. `cmake -DCMAKE_BUILD_TYPE=Release ..` to compile in release mode and not debug
   1. `make`
   1. `./UrbanMeshAnnotator`
 
