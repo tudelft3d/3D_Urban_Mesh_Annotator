@@ -244,8 +244,8 @@ public Q_SLOTS:
 		on_selected_label_combo_box_changed(ui_widget.comboBox_2->currentIndex());
 		connect(new_item->poly_item, SIGNAL(selection_done()), this, SLOT(reset_highlight_facets_if_selected()));
 		//**********************************************************//
-		if (last_mode == 0)
-			on_Selection_type_combo_box_changed(ui_widget.Selection_type_combo_box->currentIndex());//ui_widget.Selection_type_combo_box->currentIndex());
+		//if (last_mode == 0)
+		//	on_Selection_type_combo_box_changed(ui_widget.Selection_type_combo_box->currentIndex());//ui_widget.Selection_type_combo_box->currentIndex());
 	}
 	// If the selection_item or the polyhedron_item associated to the k-ring_selector is currently selected,
 	// set the k-ring_selector as currently selected. (A k-ring_selector tha tis not "currently selected" will
@@ -286,6 +286,8 @@ public Q_SLOTS:
 		CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
 		poly_item->setRenderingMode(TextureModePlusFlatEdges);
 		//CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
+
+		first_activate = false;
 		//**********************************************************//
 	}
 
@@ -514,8 +516,9 @@ public Q_SLOTS:
 				//ui_widget.Expand_reduce_spin_box->setDisabled(true);
 				//ui_widget.operationsBox->setDisabled(true);
 				//ui_widget.validateButton->setDisabled(true);
-				/**********************Ziqian***************************/
-				check_selection_validation();
+				/**********************Ziqian and Weixiao***************************/
+				if (!first_activate)
+					check_selection_validation();
 				/*******************************************************/
 				it->second->set_active_handle_type(static_cast<Active_handle::Type>(index));
 				Q_EMIT save_handleType();
@@ -717,6 +720,7 @@ private:
 	bool from_plugin;
 	//********************Weixiao Update************************//
 	int current_label_index = 0;
+	bool first_activate = true;
 	//**********************************************************//
 }; // end Polyhedron_demo_selection_plugin
 

@@ -1119,7 +1119,7 @@ void Scene_surface_mesh_item::unemphasize()
 	//d->compute_elements(ALL);
 
 	Q_EMIT itemChanged();
-	invalidateOpenGLBuffers();
+	//invalidateOpenGLBuffers();
 	Q_EMIT redraw();
 }
 

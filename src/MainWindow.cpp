@@ -7,6 +7,7 @@
 #include <CGAL/Three/TextRenderer.h>
 #include <CGAL/Three/exceptions.h>
 #include <CGAL/Qt/debug.h>
+#include <CGAL/Real_timer.h>
 
 #include <QJsonArray>
 #include <QtDebug>
@@ -1063,6 +1064,10 @@ void MainWindow::reloadItem() {
 	{
 		plugins[i].first->closure();
 	}
+
+	CGAL::Three::Three::information("Reloading data ...");
+	CGAL::Real_timer timer;
+	timer.start();
 	//*************************//
 
 	Scene_item* item = NULL;
@@ -1111,6 +1116,9 @@ void MainWindow::reloadItem() {
 
 	if (!is_help_poped)
 		popupHelpMenu();
+
+	timer.stop();
+	CGAL::Three::Three::information("Done in " + QString::number(timer.time()) + "s");
 	//*************************//
 }
 
@@ -1152,6 +1160,10 @@ bool MainWindow::file_matches_filter(const QString& filters,
 
 void MainWindow::open(QString filename)
 {
+	CGAL::Three::Three::information("Loading data ...");
+	CGAL::Real_timer timer;
+	timer.start();
+
 	QFileInfo fileinfo(filename);
 
 #ifdef QT_SCRIPT_LIB
@@ -1242,6 +1254,7 @@ void MainWindow::open(QString filename)
 
 	settings.setValue("OFF open directory",
 		fileinfo.absoluteDir().absolutePath());
+
 	CGAL::Three::Scene_item* scene_item = loadItem(fileinfo, findLoader(load_pair.first));
 
 	if (!scene_item)
@@ -1278,6 +1291,9 @@ void MainWindow::open(QString filename)
 	{
 		recentFileActs[i]->setDisabled(true);
 	}
+
+	timer.stop();
+	CGAL::Three::Three::information("Done in " + QString::number(timer.time()) + "s");
 	//*************************//
 
 }
@@ -2007,6 +2023,10 @@ void MainWindow::on_actionLoadScript_triggered()
 
 void MainWindow::on_actionLoad_triggered()
 {
+	CGAL::Three::Three::information("Loading data ...");
+	CGAL::Real_timer timer;
+	timer.start();
+
 	QStringList filters;
 	// we need to special case our way out of this
 	//filters << "All Files (*)";
@@ -2112,8 +2132,10 @@ void MainWindow::on_actionLoad_triggered()
 	{
 		recentFileActs[i]->setDisabled(true);
 	}
-	//*************************//
 
+	timer.stop();
+	CGAL::Three::Three::information("Done in " + QString::number(timer.time()) + "s");
+	//*************************//
 }
 
 void MainWindow::on_actionSaveAs_triggered()
