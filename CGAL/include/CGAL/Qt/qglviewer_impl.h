@@ -2192,7 +2192,7 @@ The helpRequired() signal is emitted. */
                               "This application is used for annotating triangular mesh of urban scenes.<br>"
 							  "<a href = \"https://docs.google.com/forms/d/1LfrVqysHu74ZnHUKrwOChvCpcK35hFUMD4LgWE_RM0E/edit\">Give us feedback</a><br>"
                               "Copyright &copy;2020 Weixiao GAO<br>"
-                              "<a href = \http://3d.bk.tudelft.nl/\"><code >%3</code></a>")
+                              "<a href = \"http://3d.bk.tudelft.nl/\"><code >%3</code></a>")
                                    .arg("http://3d.bk.tudelft.nl/") +
                            QString("</center>");
                     break;

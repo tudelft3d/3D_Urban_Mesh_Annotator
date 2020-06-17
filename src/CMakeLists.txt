@@ -61,6 +61,8 @@ option( POLYHEDRON_QTSCRIPT_DEBUGGER
 find_package(CGAL COMPONENTS Qt5 ImageIO)
 include(${CGAL_USE_FILE})
 
+set(CMAKE_BUILD_TYPE Release)
+
 SET(CGAL_INCLUDE_DIR ../CGAL/include)
 
 find_package(Qt5
