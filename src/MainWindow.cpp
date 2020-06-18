@@ -3104,6 +3104,10 @@ void MainWindow::invalidate_bbox(bool do_recenter)
 void MainWindow::save_check()
 {
 	is_asked = true;
+
+	//if use, comment out this line
+	is_showmsgbox = false;
+
 	if (is_showmsgbox)
 	{
 		QCheckBox *cb = new QCheckBox("Don't show this again!");

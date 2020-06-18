@@ -81,16 +81,11 @@ area with your drawing.
 ## 4. Annotation Panel Instruction
 <center><img src="pics/annotation_panel.png"></center>
 
-* **View:** In the combo box of the view, the 'Real colors' shows the original facet color of the input mesh; the 'Editing' view shows the current labeling
-view; the remaining views present the view only with the selected semantic labels, the unselected labels will show in white color.
-* **Probability slider:** It will be valid only when the input data has the probability value of each facet. It can present the semantic facet with the label
-color above/below a threshold value.
+* **Label panel:** The input mesh decides the label and associate color, the user cannot change it. By pressing the label button or use short cuts
+Shift + Label capital letter to assign label to the selected area.
 * **Progress bar:** IIt replaces the 'Probability slider' when the input data has the probability value of each facet. It can show the current labeling
 progress.
 <center><img src="pics/progress_bar.png"></center>
-
-* **Label panel:** The input mesh decides the label and associate color, the user cannot change it. By pressing the label button or use short cuts
-Shift + Label capital letter to assign label to the selected area.
 
 ## 5. Context Menu
 <center><img src="pics/context_menu.png"></center>

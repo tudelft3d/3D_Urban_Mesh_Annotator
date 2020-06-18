@@ -3,7 +3,6 @@
 #include <QColorDialog> 
 #include <CGAL/Qt/manipulatedCameraFrame.h>
 #include <CGAL/Qt/manipulatedFrame.h>
-
 #include <fstream>
 
 
@@ -169,6 +168,7 @@ public:
 		ui_widget.help->setVisible(false);
 		connect(ui_widget.close, SIGNAL(clicked()), this,
 			SLOT(ask_for_closing()));
+		ui_widget.close->setVisible(false);
 
 		//***********************Ziqian && Weixiao*******************************//
 		connect(ui_widget.display, SIGNAL(currentIndexChanged(int)), this,
@@ -181,6 +181,12 @@ public:
 		//connect(ui_widget.ProbSlider, SIGNAL(valueChanged(int)), this, SLOT(on_probability_threshold_changed(int)));
 
 		connect(ui_widget.ProbSwitcher, SIGNAL(currentIndexChanged(int)), this, SLOT(on_probability_switcher_changed(int)));
+
+		ui_widget.display->setVisible(false);
+		ui_widget.label->setVisible(false);
+		ui_widget.ProbSwitcher->setVisible(false);
+		ui_widget.ProbSlider->setVisible(false);
+		ui_widget.ProbSpin->setVisible(false);
 		//********************************************************************//
 
 		//*******************************Weixiao **************************************//
@@ -861,11 +867,14 @@ public Q_SLOTS:
 		ui_widget.label_2->setEnabled(true);
 		ui_widget.label->setEnabled(true);
 
-		ui_widget.ProbSlider->setVisible(true);
-		ui_widget.ProbSpin->setVisible(true);
-		ui_widget.ProbSwitcher->setVisible(true);
-		ui_widget.label_2->setVisible(true);
-		ui_widget.label->setVisible(true);
+		ui_widget.ProbSlider->setVisible(/*true*/false);
+		ui_widget.ProbSpin->setVisible(/*true*/false);
+		ui_widget.ProbSwitcher->setVisible(/*true*/false);
+		ui_widget.label_2->setVisible(/*true*/false);
+		ui_widget.label->setVisible(/*true*/false);
+		
+		ui_widget.view->setVisible(/*true*/false);
+
 		//progress bar
 		ui_widget.label_3->setEnabled(false);
 		ui_widget.label_4->setEnabled(false);

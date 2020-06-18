@@ -328,6 +328,9 @@ struct Scene_surface_mesh_item_priv {
 		Scene_item_rendering_helper::Gl_data_names name,
 		bool index) const;
 	void compute_elements(Scene_item_rendering_helper::Gl_data_names name) const;
+	//***********Weixiao****************//
+	void compute_selection_elements(Scene_item_rendering_helper::Gl_data_names name) const;
+	//**********************************//
 	void checkFloat() const;
 	TextListItem* textVItems;
 	TextListItem* textEItems;
@@ -549,6 +552,13 @@ void Scene_surface_mesh_item_priv::addSelectedFlatData(Point p, Kernel::Vector_3
 }
 
 /************************************************/
+void Scene_surface_mesh_item_priv::compute_selection_elements(Scene_item_rendering_helper::Gl_data_names name)const
+{
+	//this->f_selection_map
+
+
+
+}
 
 void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper::Gl_data_names name)const
 {

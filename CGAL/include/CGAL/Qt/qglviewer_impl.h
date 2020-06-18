@@ -1204,9 +1204,15 @@ The previous selectBuffer() is deleted and a new one is created. */
                 break;
             case qglviewer::ZOOM_ON_PIXEL:
                 camera()->interpolateToZoomOnPixel(e->pos(), devicePixelRatio());
+				camera()->setPivotPointFromPixel(e->pos(), devicePixelRatio());
+				setVisualHintsMask(1);
+				update();
                 break;
             case qglviewer::ZOOM_TO_FIT:
                 camera()->interpolateToFitScene();
+				camera()->setPivotPoint(sceneCenter());
+				setVisualHintsMask(1);
+				update();
                 break;
             case qglviewer::SELECT:
                 select(e);
