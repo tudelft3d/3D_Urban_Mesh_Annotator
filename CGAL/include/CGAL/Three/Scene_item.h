@@ -91,6 +91,12 @@ public:
    PROGRAM_HEAT_INTENSITY,      //! Used to render special item in Display_property_plugin
    NB_OF_PROGRAMS               //! Holds the number of different programs in this enum.
   };
+  
+  //**********//
+  int add_label_count = 0;
+  int add_label_count_log = 0;
+  //*********//
+
   typedef CGAL::Bbox_3 Bbox;
   typedef CGAL::qglviewer::ManipulatedFrame ManipulatedFrame;
   //! \brief The default color of a scene_item.

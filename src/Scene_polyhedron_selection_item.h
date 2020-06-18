@@ -676,7 +676,8 @@ public:
                     break;
                     /*******************Ziqian*****************/
                 case Active_handle::SEGMENT:
-                    expand_selection<fg_face_descriptor, boost::face_index_t>(-1);
+					reduce_selection<fg_face_descriptor, boost::face_index_t>(-1);
+                    //expand_selection<fg_face_descriptor, boost::face_index_t>(-1);
                     break;
                     /******************************************/
 

@@ -172,6 +172,7 @@ public:
 
 	std::map<seg_id, Segment> segments;
 	std::map<edge_descriptor, seg_boundary_edge_info> boundary_info;
+	std::pair<int, int> minmax_faces_segment_id = std::make_pair<int,int>(-1, -1);
 	// record the informations about segments into the map "segments" based on the informations
 	// in face_segment_id
 	// this process is finished in PLY reading only, after the scene_surface_mesh is built.

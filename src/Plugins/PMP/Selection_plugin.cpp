@@ -244,8 +244,8 @@ public Q_SLOTS:
 		on_selected_label_combo_box_changed(ui_widget.comboBox_2->currentIndex());
 		connect(new_item->poly_item, SIGNAL(selection_done()), this, SLOT(reset_highlight_facets_if_selected()));
 		//**********************************************************//
-		//if (last_mode == 0)
-		//	on_Selection_type_combo_box_changed(ui_widget.Selection_type_combo_box->currentIndex());//ui_widget.Selection_type_combo_box->currentIndex());
+		if (last_mode == 0)
+			on_Selection_type_combo_box_changed(ui_widget.Selection_type_combo_box->currentIndex());//ui_widget.Selection_type_combo_box->currentIndex());
 	}
 	// If the selection_item or the polyhedron_item associated to the k-ring_selector is currently selected,
 	// set the k-ring_selector as currently selected. (A k-ring_selector tha tis not "currently selected" will
@@ -395,6 +395,7 @@ public Q_SLOTS:
 			return;
 		}
 		selection_item->clear_all();
+		selection_item->poly_item->setRenderingMode(Gouraud);
 	}
 	
 	void on_Recommendation_button_clicked() {
@@ -438,6 +439,14 @@ public Q_SLOTS:
 			ui_widget.comboBox_2->setCurrentIndex(0);
 			on_Selected_class_clicked();
 		}
+
+		if (!selection_item->k_ring_selector.is_highlighting && ui_widget.Selection_type_combo_box->currentIndex() == 1)
+		{
+			ui_widget.lassoCheckBox->setEnabled(true);
+			ui_widget.Brush_size_spin_box->setEnabled(true);
+			ui_widget.Expand_reduce_spin_box->setEnabled(true);
+			ui_widget.Expand_reduce_button->setEnabled(true);
+		}
 	}
 
 	// Create selection item for selected polyhedron item
@@ -480,6 +489,11 @@ public Q_SLOTS:
 					temp_segment_faces.insert(fd);
 			}
 		}
+		if (index != 0)
+			selection_item->poly_item->setRenderingMode(Gouraud);
+		else
+			selection_item->poly_item->setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
+
 		Q_EMIT selection_item->selected_HL(temp_segment_faces);
 	}
 
@@ -533,9 +547,15 @@ public Q_SLOTS:
 			{
 				// disable the conflicting functions
 
-				ui_widget.lassoCheckBox->setEnabled(true);
+				ui_widget.lassoCheckBox->setDisabled(true);
+				ui_widget.Brush_size_spin_box->setDisabled(true);
+				ui_widget.Expand_reduce_spin_box->setDisabled(true);
+				ui_widget.Expand_reduce_button->setDisabled(true);
+				//until highlight been selected, then true
+
 				ui_widget.label->setEnabled(true);
-				ui_widget.Brush_size_spin_box->setEnabled(true);
+
+
 				ui_widget.SelectClasses->setDisabled(true);
 				//********************Weixiao Update************************//
 				current_label_index = ui_widget.comboBox_2->currentIndex();
@@ -665,14 +685,18 @@ public Q_SLOTS:
 		//if (scene_ptr)
 		//  connect(selection_item,SIGNAL(simplicesSelected(CGAL::Three::Scene_item*)), scene_ptr, SLOT(setSelectedItem(CGAL::Three::Scene_item*)));
 		connect(selection_item, SIGNAL(isCurrentlySelected(Scene_facegraph_item_k_ring_selection*)), this, SLOT(isCurrentlySelected(Scene_facegraph_item_k_ring_selection*)));
+		
 		on_LassoCheckBox_changed(ui_widget.lassoCheckBox->isChecked());
-
+		ui_widget.Brush_size_spin_box->setValue(0);
+		ui_widget.Expand_reduce_spin_box->setValue(0);
+		ui_widget.Selection_type_combo_box->setCurrentIndex(0);
 		//if (!from_plugin) {
 		//	ui_widget.selectionOrEuler->setCurrentIndex(0);
 		//}
 		//else
 			from_plugin = false;
 		//on_SelectionOrEuler_changed(ui_widget.selectionOrEuler->currentIndex());
+
 		if (last_mode == 0)
 			on_Selection_type_combo_box_changed(ui_widget.Selection_type_combo_box->currentIndex());
 	}

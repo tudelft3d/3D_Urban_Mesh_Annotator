@@ -655,7 +655,8 @@ void Scene_polyhedron_selection_item::draw(CGAL::Three::Viewer_interface* viewer
 	d->program = getShaderProgram(PROGRAM_WITH_LIGHT);
 	attribBuffers(viewer, PROGRAM_WITH_LIGHT);
 	d->program->bind();
-	d->program->setAttributeValue("colors", QColor(255, 153, 51));
+	//d->program->setAttributeValue("colors", QColor(255, 153, 51));
+	d->program->setAttributeValue("colors", QColor(0, 255, 0));//set highlight facet color
 	viewer->glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(d->positions_HL_facets.size()) / 3);
 	d->program->release();
 	vaos[Scene_polyhedron_selection_item_priv::HLFacets]->release();
@@ -1766,6 +1767,14 @@ void Scene_polyhedron_selection_item::segment_expand_or_reduce(int &steps)
 		}
 		for (int time = 0; time < steps; time++) {
 			expand_or_reduce(steps);
+			if (reduce && selected_facets.empty())
+			{
+				BOOST_FOREACH(face_descriptor j, poly_item->segments[poly_item->minmax_faces_segment_id.first].faces_included)
+				{
+					selected_facets.insert(j);
+					break;
+				}
+			}
 
 			std::set<seg_id> segment_expanded;
 			BOOST_FOREACH(fg_face_descriptor fh, faces(*polyhedron()))

@@ -1052,13 +1052,15 @@ void MainWindow::updateViewerBBox(bool recenter = true)
 
 void MainWindow::reloadItem() {
 	//********Weixiao**********//
-	if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work?")
+	if (scene->item(0)->add_label_count != scene->item(0)->add_label_count_log && 
+		QMessageBox::question(this, "Save", "Are you sure you have saved all your work?")
 		== QMessageBox::No)
 	{
 		is_asked = false;
 		//on_actionSaveAs_triggered();
 		on_action_Save_triggered();
 	}
+
 	//remove plugin in case of ambiguity 
 	for (int i = 0; i < plugins.size(); i++)
 	{
@@ -1901,7 +1903,8 @@ void MainWindow::quit()
 	//********************Weixiao Update************************//
 	if (scene->numberOfEntries() > 0)
 	{
-		if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work before leave?")
+		if (scene->item(0)->add_label_count != scene->item(0)->add_label_count_log && 
+			QMessageBox::question(this, "Save", "Are you sure you have saved all your work before leave?")
 			== QMessageBox::No)
 		{
 			//selectSceneItem(0);
@@ -1920,7 +1923,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	//********************Weixiao Update************************//
 	if (!is_saved && scene->numberOfEntries() > 0)
 	{
-		if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work before leave?")
+		if (scene->item(0)->add_label_count != scene->item(0)->add_label_count_log && 
+			QMessageBox::question(this, "Save", "Are you sure you have saved all your work before leave?")
 			== QMessageBox::No)
 		{
 			is_asked = false;
@@ -2297,7 +2301,8 @@ bool MainWindow::on_actionErase_triggered()
 	//********************Weixiao Update************************//
 	if (scene->numberOfEntries() > 0 && !is_erased)
 	{
-		if (QMessageBox::question(this, "Save", "Are you sure you have saved all your work?")
+		if (scene->item(0)->add_label_count != scene->item(0)->add_label_count_log && 
+			QMessageBox::question(this, "Save", "Are you sure you have saved all your work?")
 			== QMessageBox::No)
 		{
 			is_asked = false;
@@ -3144,11 +3149,12 @@ void MainWindow::on_action_Save_triggered()
 {
 	if (!is_asked)
 	{
-		if (QMessageBox::question(this, "Save", "Are you sure you want to override these files ?")
-			== QMessageBox::No)
-		{
-			on_actionSaveAs_triggered();
-		}
+		//if (QMessageBox::question(this, "Save", "Are you sure you want to override these files ?")
+		//	== QMessageBox::No)
+		//{
+		//	on_actionSaveAs_triggered();
+		//}
+		QMessageBox::information(this, "Info", "Save successfully!", QMessageBox::Ok);
 	}
 
 	int current_index = getSelectedSceneItemIndex();
@@ -3169,7 +3175,9 @@ void MainWindow::on_action_Save_triggered()
 			QString filename = item->property("source filename").toString();
 			save(filename, item);
 		}
+		item->add_label_count_log = item->add_label_count;
 	}
+
 }
 
 void MainWindow::popupHelpMenu()

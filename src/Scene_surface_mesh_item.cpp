@@ -1081,9 +1081,21 @@ void Scene_surface_mesh_item::computeSegments()
 		}
 	}
 
+	std::pair<int, int> minmax_faces_segment = std::make_pair<int, int>(2147483647, 0);
 	for (std::map<seg_id, Segment>::iterator p = segments.begin(); p != segments.end(); p++)
 	{
 		p->second.id = p->first;
+		if (minmax_faces_segment.first > p->second.faces_included.size())
+		{
+			minmax_faces_segment.first = p->second.faces_included.size();
+			minmax_faces_segment_id.first = p->second.id;
+		}
+
+		if (minmax_faces_segment.second < p->second.faces_included.size())
+		{
+			minmax_faces_segment.second = p->second.faces_included.size();
+			minmax_faces_segment_id.second = p->second.id;
+		}
 	}
 }
 
@@ -1275,7 +1287,8 @@ void Scene_surface_mesh_item::draw(CGAL::Three::Viewer_interface* viewer) const
 
 	if (renderingMode() == Gouraud)
 	{
-		getTriangleContainer(0)->setColor(color());
+		//getTriangleContainer(0)->setColor(color());
+		getTriangleContainer(0)->setColor(QColor(128, 128, 128));
 		getTriangleContainer(0)->setSelected(is_selected);
 		getTriangleContainer(0)->setAlpha(alpha());
 		getTriangleContainer(0)->draw(viewer, !d->has_vcolors);

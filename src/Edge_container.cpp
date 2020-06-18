@@ -119,12 +119,13 @@ void Edge_container::draw(Viewer_interface* viewer,
 		if (getVao(viewer)->program->property("hasFMatrix").toBool())
 			getVao(viewer)->program->setUniformValue("f_matrix", getFrameMatrix());
 		/***************************Ziqian****************************/
+		viewer->glPolygonOffset(-1.0f, -1.0f);
 		//parameters needed for rendering.
 		QVector2D vp(viewer->width(), viewer->height());
 		getVao(viewer)->program->setUniformValue("viewport", vp);
 		getVao(viewer)->program->setUniformValue("near", (GLfloat)viewer->camera()->zNear());
 		getVao(viewer)->program->setUniformValue("far", (GLfloat)viewer->camera()->zFar());
-		getVao(viewer)->program->setUniformValue("width", GLfloat(5.0f));//segment border width
+		getVao(viewer)->program->setUniformValue("width", GLfloat(1.0f));//segment border width
 		getVao(viewer)->bind();
 		/*************************************************************/
 		getVbo(Indices)->bind();
