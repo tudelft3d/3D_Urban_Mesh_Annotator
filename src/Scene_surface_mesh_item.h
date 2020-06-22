@@ -41,12 +41,12 @@ class QSlider;
 struct Scene_surface_mesh_item_priv;
 /******************Ziqian && Weixiao*********************/
 typedef std::size_t seg_id;
-class seg_boundary_edge_info;
+//class seg_boundary_edge_info;
 class Segment {
 public:
 	Segment() {}
 	std::set<face_descriptor> faces_included;
-	std::set<seg_boundary_edge_info> boundary_edges;
+	//std::set<seg_boundary_edge_info> boundary_edges;
 	std::size_t id;
 	Segment(std::vector<face_descriptor> faces)
 	{
@@ -58,20 +58,20 @@ public:
 	}
 };
 
-class seg_boundary_edge_info {
-public:
-	
-	seg_boundary_edge_info() {}
-	Segment** adjecent_segs;
-	void set_adjecent_segs(Segment* s1, Segment* s2);
-	Segment* get_adjecent_segs(Segment* s);
-	int boundary_size = 0;
-
-	inline bool operator< (const seg_boundary_edge_info& a) const
-	{
-		return this->boundary_size < a.boundary_size;
-	}
-};
+//class seg_boundary_edge_info {
+//public:
+//	
+//	seg_boundary_edge_info() {}
+//	Segment** adjecent_segs;
+//	void set_adjecent_segs(Segment* s1, Segment* s2);
+//	Segment* get_adjecent_segs(Segment* s);
+//	int boundary_size = 0;
+//
+//	inline bool operator< (const seg_boundary_edge_info& a) const
+//	{
+//		return this->boundary_size < a.boundary_size;
+//	}
+//};
 
 /*********************************************/
 
@@ -163,6 +163,10 @@ public:
 	std::string input_comments;
 	std::string file_path;
 	std::map<int, std::vector<face_descriptor>> semantic_facet_map;
+	std::vector<face_descriptor> selected_facets_for_annotation;
+	bool is_in_anntation = false;
+	bool is_edited_inside_one_segment_init = false;
+	bool is_facet_deleted = false;
 	//*******************************************************************//	
 	//***********************Ziqian && Weixiao*******************************//
 	std::map<face_descriptor, bool> face_shown;
@@ -171,7 +175,7 @@ public:
 	typedef boost::graph_traits<SMesh>::edge_descriptor edge_descriptor;
 
 	std::map<seg_id, Segment> segments;
-	std::map<edge_descriptor, seg_boundary_edge_info> boundary_info;
+	//std::map<edge_descriptor, seg_boundary_edge_info> boundary_info;
 	std::pair<int, int> minmax_faces_segment_id = std::make_pair<int,int>(-1, -1);
 	// record the informations about segments into the map "segments" based on the informations
 	// in face_segment_id
@@ -257,6 +261,8 @@ public:
 	void unemphasize();
 
 	void addChosenSegment(seg_id id);
+
+	void eraseChosenSegment(seg_id id);
 	/******************************************************/
 
 Q_SIGNALS:

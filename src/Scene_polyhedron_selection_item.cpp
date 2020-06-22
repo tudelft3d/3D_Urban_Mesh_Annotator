@@ -1709,7 +1709,9 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
 			}
 
 			if (!catch_largest_segment && selected_facets_copy.empty())
+			{
 				continue;
+			}
 		}
 
 		//delete faces in original segment
@@ -1731,7 +1733,10 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
 
 	poly_item->computeSegments();
 	poly_item->computeSegmentBoundary();
-
+	 
+	//erase the last if empty
+	if (poly_item->segments[poly_item->segments.size() - 1].faces_included.empty())
+		poly_item->eraseChosenSegment(poly_item->segments.size() - 1);
 	int new_segmt_num = poly_item->segments.size();
 	Q_EMIT printMessage("The number of segments increased from " + QString::number(orig_segmt_num) + " to " + QString::number(new_segmt_num) + ". The largest remainder will be the new segment to be edited.");
 

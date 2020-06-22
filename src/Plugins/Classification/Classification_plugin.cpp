@@ -18,7 +18,7 @@
 #include <CGAL/Three/Three.h>
 
 #include <CGAL/Random.h>
-#include <CGAL/Real_timer.h>
+
 
 #include <QMultipleInputDialog.h>
 

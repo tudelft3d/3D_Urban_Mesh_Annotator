@@ -65,8 +65,15 @@ void Primitive_container::initializeBuffers(CGAL::Three::Viewer_interface* viewe
     {
       if(!vbo->allocated)
       {
-        if(vbo->vbo_type == QOpenGLBuffer::IndexBuffer)
-          vbo->vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+		if (vbo->vbo_type == QOpenGLBuffer::IndexBuffer)
+		{
+			vbo->vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+		}
+		else if (vbo->attribute == "colors")
+		{
+			vbo->vbo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+		}
+
 
         vbo->vbo.allocate(vbo->data, vbo->dataSize);
         vbo->allocated = true;

@@ -373,6 +373,7 @@ public Q_SLOTS:
 			return;
 		}
 
+		selection_item->poly_item->is_facet_deleted = true;
 		selection_item->erase_selected_facets();
 	}
 
@@ -513,7 +514,9 @@ public Q_SLOTS:
 				//ui_widget.Add_to_selection_button->hide();
 				//ui_widget.Select_boundaryButton->hide();
 				ui_widget.label->setDisabled(true);
+				ui_widget.Brush_size_spin_box->setValue(0);
 				ui_widget.Brush_size_spin_box->setDisabled(true);
+				ui_widget.Expand_reduce_spin_box->setValue(0);
 				ui_widget.Recommendation_button->setDisabled(true);
 				ui_widget.comboBox->setDisabled(true);
 				ui_widget.SelectClasses->setEnabled(true);
@@ -562,11 +565,13 @@ public Q_SLOTS:
 				ui_widget.comboBox_2->setCurrentIndex(0);
 				ui_widget.comboBox_2->setDisabled(true);
 
+				ui_widget.Brush_size_spin_box->setValue(0);
+				ui_widget.Expand_reduce_spin_box->setValue(0);
 				//selection_item->k_ring_selector.is_highlighting;
 				//selection_item->poly_item->showFacetEdges(true);
 				//**********************************************************//
 
-				/**********************Ziqian***************************/
+				/**********************Ziqian && Weixiao***************************/
 				into_SEGMENT_TO_EDIT_mode();
 				/*******************************************************/
 

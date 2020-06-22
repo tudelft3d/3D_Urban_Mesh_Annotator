@@ -68,14 +68,17 @@ public:
     if (m_selection == NULL)
       return;
 
+	m_selection->polyhedron_item()->selected_facets_for_annotation.clear();
     for (Selection::iterator it = m_selection->selected_facets.begin();
          it != m_selection->selected_facets.end(); ++ it)
     {
       m_classif[*it] = label;
       m_training[*it] = label;
+	  m_selection->polyhedron_item()->selected_facets_for_annotation.push_back(*it);
     }
     m_selection->clear_all();
 
+	m_selection->polyhedron_item()->is_in_anntation = true;
     //if (m_index_color == 1 || m_index_color == 2)
     //  change_color (m_index_color);
 	
