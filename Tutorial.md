@@ -32,7 +32,7 @@
 | Right Button Double Click    | Centers scene            |
 | Wheel                        | Zooms camera.            |
 | Middle Button Double Click   | Shows entire scene.      |
-| Alt+Left                     | Shows context menu.      |
+| Alt+Right                    | Shows context menu.      |
 
 ### 2.2 Load and Save Files
 | Shortcuts               |     Descriptions                                |

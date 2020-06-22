@@ -472,6 +472,11 @@ void Scene::s_itemAboutToBeDestroyed(CGAL::Three::Scene_item* rmv_itm)
 bool
 Scene::keyPressEvent(QKeyEvent* e) {
 	bool res = false;
+	if (m_entries.empty())
+	{
+		CGAL::Three::Three::error("No data loaded. Short cuts are unavailable.");
+		return res;
+	}
 	for (QList<int>::iterator it = selected_items_list.begin(), endit = selected_items_list.end();
 		it != endit; ++it)
 	{
@@ -512,6 +517,11 @@ void Scene::SwitchRenderingMode(CGAL::Three::Viewer_interface *, const int rende
 		it = item(Scene::Item_id(selected_item - 1));
 	else
 		it = item(Scene::Item_id(0));
+	if (!it)
+	{
+		CGAL::Three::Three::error("No data loaded. Switch rendering mode is unavailable.");
+		return;
+	}
 
 	switch (rendering_num)
 	{

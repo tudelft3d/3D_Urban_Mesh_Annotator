@@ -3170,6 +3170,11 @@ void MainWindow::on_action_Save_triggered()
 	Q_FOREACH(Scene::Item_id id, scene->selectionIndices())
 	{
 		item = scene->item(id);
+		if (!item)
+		{
+			CGAL::Three::Three::error("No data loaded. Save is unavailable.");
+			return;
+		}
 		if (!item->property("source filename").toString().isEmpty())
 		{
 			QString filename = item->property("source filename").toString();
