@@ -329,6 +329,8 @@ public Q_SLOTS:
 		}
 		else
 		{
+			selection_item->clearHL();
+
 			std::set<fg_face_descriptor> temp_segment_faces;
 			int ind_new = index == 1 ? -1 : index - 2;
 			if (!selection_item->poly_item->semantic_facet_map.empty() &&
@@ -341,7 +343,8 @@ public Q_SLOTS:
 				}
 			}
 			Q_EMIT selection_item->selected(temp_segment_faces);
-			ui_widget.comboBox_2->setCurrentIndex(0);
+			selection_item->poly_item->setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
+			//ui_widget.comboBox_2->setCurrentIndex(0);
 		}
 	}
 
@@ -495,6 +498,10 @@ public Q_SLOTS:
 		else
 			selection_item->poly_item->setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
 
+		if (!selection_item->selected_facets.empty())
+		{
+			selection_item->clear_all();
+		}
 		Q_EMIT selection_item->selected_HL(temp_segment_faces);
 	}
 
