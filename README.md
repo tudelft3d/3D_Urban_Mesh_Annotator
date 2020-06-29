@@ -4,7 +4,7 @@
 	Mesh annotator for urban scenes
   
 ## Compiling
-### Windos with CMake 
+### Windows with CMake 
 
   1. Install Eigen and Qt(>5.6)
   1. a modified version of CGAL is provided (folder `./CGAL/`), use it in CMake. 
