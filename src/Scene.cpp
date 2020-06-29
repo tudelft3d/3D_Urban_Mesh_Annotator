@@ -474,7 +474,7 @@ Scene::keyPressEvent(QKeyEvent* e) {
 	bool res = false;
 	if (m_entries.empty())
 	{
-		CGAL::Three::Three::error("No data loaded. Short cuts are unavailable.");
+		//CGAL::Three::Three::error("No data loaded. Short cuts are unavailable.");
 		return res;
 	}
 	for (QList<int>::iterator it = selected_items_list.begin(), endit = selected_items_list.end();

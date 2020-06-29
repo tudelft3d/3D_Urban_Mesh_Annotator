@@ -4,10 +4,18 @@
 	Mesh annotator for urban scenes
   
 ## Compiling
+### Windos with CMake 
 
-### Windows and macOS with CMake 
+  1. Install Eigen and Qt(>5.6)
+  1. a modified version of CGAL is provided (folder `./CGAL/`), use it in CMake. 
+  1. `cd src`
+  1. `mkdir build && cd build`
+  1. `cmake -DCMAKE_BUILD_TYPE=Release ..` to compile in release mode and not debug
+  1. `make`
+  1. `./UrbanMeshAnnotator`
 
-  1. install CGAL so that all its dependency are installed: `brew install cgal`
+### macOS with CMake 
+
   1. `brew instal eigen`
   1. `brew install qt5`
   1. a modified version of CGAL is used (folder `./CGAL/`), and you need to use that one: `export CGAL_DIR=/path/to/CGAL_FOLDER` 
