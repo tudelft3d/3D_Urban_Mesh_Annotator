@@ -1666,23 +1666,6 @@ void Scene_surface_mesh_item_priv::initialize_colors() const
 
 void Scene_surface_mesh_item_priv::initializeBuffers(CGAL::Three::Viewer_interface* viewer)const
 {
-	//std::cout << "eariler smooth_vertices size = " << smooth_vertices.size() << std::endl;
-	//std::cout << "eariler smooth_normals size = " << smooth_normals.size() << std::endl;
-
-	//std::cout << "eariler idx_data size = " << idx_data_.size() << std::endl;
-	//std::cout << "eariler idx_edge_data size = " << idx_edge_data_.size() << std::endl;
-	//std::cout << "eariler idx_feature_edge_data size = " << idx_feature_edge_data_.size() << std::endl;
-
-	//std::cout << "eariler flat_vertices size = " << flat_vertices.size() << std::endl;
-	//std::cout << "eariler flat_normals size = " << flat_normals.size() << std::endl;
-
-	//std::cout << "eariler selected_f_colors size = " << selected_f_colors.size() << std::endl;
-	//std::cout << "eariler selected_flat_vertices size = " << selected_flat_vertices.size() << std::endl;
-	//std::cout << "eariler selected_flat_normals size = " << selected_flat_normals.size() << std::endl;
-
-	//std::cout << "eariler f_colors size = " << f_colors.size() << std::endl;
-	//std::cout << "eariler v_colors size = " << v_colors.size() << std::endl;
-
 	item->getTriangleContainer(2)->initializeBuffers(viewer);
 	item->getTriangleContainer(1)->initializeBuffers(viewer);
 	item->getTriangleContainer(0)->initializeBuffers(viewer);
