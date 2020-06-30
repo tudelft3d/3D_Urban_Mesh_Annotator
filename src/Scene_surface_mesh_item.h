@@ -164,7 +164,7 @@ public:
 	std::string file_path;
 	std::map<int, std::vector<face_descriptor>> semantic_facet_map;
 	std::vector<face_descriptor> selected_facets_for_annotation;
-	bool is_in_anntation = false;
+	bool is_in_annotation = false;
 	bool is_edited_inside_one_segment_init = false;
 	bool is_facet_deleted = false;
 	//*******************************************************************//	

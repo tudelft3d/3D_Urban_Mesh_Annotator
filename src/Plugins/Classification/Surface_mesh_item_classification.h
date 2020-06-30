@@ -78,7 +78,7 @@ public:
     }
     m_selection->clear_all();
 
-	m_selection->polyhedron_item()->is_in_anntation = true;
+	m_selection->polyhedron_item()->is_in_annotation = true;
     //if (m_index_color == 1 || m_index_color == 2)
     //  change_color (m_index_color);
 	

@@ -937,7 +937,7 @@ void Scene_surface_mesh_item_priv::compute_selected_elements(Scene_item_renderin
 
 void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper::Gl_data_names name)const
 {
-	if (item->is_in_anntation)
+	if (item->is_in_annotation)
 	{
 		compute_selected_elements(name);
 	}
@@ -1554,7 +1554,7 @@ void Scene_surface_mesh_item::emphasize_present_segment(seg_id seg) {
 	d->chosen_segments.insert(seg);
 	//d->compute_elements(ALL);
 	setRenderingMode(Emphasizing);
-	d->item->is_in_anntation = true;
+	d->item->is_in_annotation = true;
 	d->item->is_edited_inside_one_segment_init = true;
 
 	tmp_default_renderingmode = CGAL::Three::Three::defaultSurfaceMeshRenderingMode();
@@ -1574,7 +1574,7 @@ void Scene_surface_mesh_item::unemphasize()
 	setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
 	d->chosen_segments.clear();
 	//d->compute_elements(ALL);
-	d->item->is_in_anntation = true;
+	d->item->is_in_annotation = true;
 
 	Q_EMIT itemChanged();
 	//invalidateOpenGLBuffers();

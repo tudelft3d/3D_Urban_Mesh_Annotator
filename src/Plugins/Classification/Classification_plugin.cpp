@@ -361,8 +361,6 @@ public Q_SLOTS:
 			}
 			//**********************************************************//
 		}
-
-		first_activate = false;
 	}
 
 	Item_classification_base* get_classification(Scene_item* item = NULL)
@@ -824,8 +822,10 @@ public Q_SLOTS:
 		//	ui_widget.maxDisplay->setText(tr("Max (%1)").arg(vmax));
 		//}
 
-		if (!first_activate)
+		if (first_activate_times > 1)
 			item_changed(classif->item());
+		else
+			++first_activate_times;
 		return true;
 	}
 
@@ -979,7 +979,7 @@ private:
 	typedef std::map<Scene_item*, Item_classification_base*> Item_map;
 	Item_map item_map;
 	//********************Weixiao Update************************//
-	bool first_activate = true;
+	int first_activate_times = 0;
 	//**********************************************************//
 }; // end Polyhedron_demo_classification_plugin
 
