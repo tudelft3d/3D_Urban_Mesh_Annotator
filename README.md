@@ -3,7 +3,7 @@
 
 	Mesh annotator for urban scenes
   
-## Compiling
+## Build from source
 ### Windows with CMake 
 
   1. Install Eigen and Qt(>5.6)
@@ -28,14 +28,13 @@
 
 ## How to annotate data
 
-See the manual in `./docs`
+See the instruction in Tutorial.md
 
 
 # Main entry point  
 	UrbanMeshAnnotator main.cpp  
   
 # Required Plugins  
-	camera_positions_plugin  
 	classification_plugin  
 	selection_plugin  
 	ply_plugin  
