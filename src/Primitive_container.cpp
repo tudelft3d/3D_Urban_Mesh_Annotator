@@ -69,7 +69,7 @@ void Primitive_container::initializeBuffers(CGAL::Three::Viewer_interface* viewe
 		{
 			vbo->vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 		}
-		else if (vbo->attribute == "colors")
+		else if (strcmp(vbo->attribute, "colors") == 0)
 		{
 			vbo->vbo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 		}
