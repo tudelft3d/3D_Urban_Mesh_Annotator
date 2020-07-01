@@ -266,6 +266,7 @@ public Q_SLOTS:
 
 	void close_classification()
 	{
+		first_activate_times = 0;
 		for (Item_map::iterator it = item_map.begin(); it != item_map.end(); ++it)
 		{
 			Item_classification_base* classif = it->second;
