@@ -140,6 +140,8 @@ void Surface_mesh_item_classification::backup_existing_colors_and_add_new()
 		{
 			m_real_color[fd] = m_color[fd];
 			m_color[fd] = CGAL::Color(128, 128, 128);
+			m_face_checked[fd] = false;
+			m_label_updated[fd] = m_mesh->face_label[fd];
 		}
 	}
 	else
@@ -603,5 +605,15 @@ int Surface_mesh_item_classification::get_unlabelled_number_facets()
 		if (m_mesh->face_label[fd] == -1 /*|| m_mesh->face_label[fd] == 0*/) ++unlabelled_num;
 	}
 	return unlabelled_num;
+};
+
+int Surface_mesh_item_classification::get_total_labeled_facets()
+{
+	return m_mesh->total_labeled_faces;
+};
+
+int Surface_mesh_item_classification::get_total_error_facets()
+{
+	return m_mesh->total_error_facets;
 };
 //************************************************************//

@@ -462,6 +462,7 @@ namespace CGAL {
 			std::vector<float>& fi_prob,
 			std::vector<int>& fi_segment_id,
 			std::string &input_comments,
+			int &total_labeled_faces_i,
 			bool /* verbose */ = false)
 	{
 		if (!in)
@@ -487,9 +488,10 @@ namespace CGAL {
 			{
 				std::istringstream temp_stream(line);
 				int space_count = 0;
-				bool is_label = false, is_texture_name = false;
+				bool is_label = false, is_texture_name = false, is_total_labeled_faces = false;
 				while (temp_stream >> word)
 				{
+
 					if (word == "label" && is_label == false)
 						is_label = true;
 
@@ -508,6 +510,16 @@ namespace CGAL {
 					if (is_label == false && is_texture_name == true && word != "TextureFile")
 					{
 						texture_name.push_back(word);
+					}
+
+					if (word == "MyFaces" && is_total_labeled_faces == false)
+						is_total_labeled_faces = true;
+					if (is_total_labeled_faces == true
+						&& is_label == false
+						&& is_texture_name == false
+						&& word != "MyFaces")
+					{
+						total_labeled_faces_i = std::stoi(word);
 					}
 				}
 			}

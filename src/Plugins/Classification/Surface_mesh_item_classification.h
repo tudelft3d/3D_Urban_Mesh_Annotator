@@ -68,6 +68,7 @@ public:
     if (m_selection == NULL)
       return;
 
+	int updated_labeled_faces = 0;
 	m_selection->polyhedron_item()->selected_facets_for_annotation.clear();
     for (Selection::iterator it = m_selection->selected_facets.begin();
          it != m_selection->selected_facets.end(); ++ it)
@@ -75,13 +76,19 @@ public:
       m_classif[*it] = label;
       m_training[*it] = label;
 	  m_selection->polyhedron_item()->selected_facets_for_annotation.push_back(*it);
+	  if (!m_face_checked[*it] && label != m_label_updated[*it])
+	  {
+		  ++updated_labeled_faces;
+		  m_face_checked[*it] = true;
+	  }
     }
     m_selection->clear_all();
 
 	m_selection->polyhedron_item()->is_in_annotation = true;
     //if (m_index_color == 1 || m_index_color == 2)
     //  change_color (m_index_color);
-	
+
+	m_mesh->total_labeled_faces += updated_labeled_faces;
 	//***********************Weixiao Update update color in all views*******************************//
 	change_color(m_index_color);
 	//*******************************************************************//
@@ -157,6 +164,8 @@ public:
   //***********************Weixiao*******************************//
   int get_total_number_facets();
   int get_unlabelled_number_facets();
+  int get_total_labeled_facets();
+  int get_total_error_facets();
   //************************************************************//
   CGAL::Three::Scene_item* generate_one_item (const char* /* name */,
                                               int /* label */) const
@@ -188,7 +197,8 @@ protected:
   Mesh::Property_map<face_descriptor, CGAL::Color> m_real_color;
   //***********************Weixiao Update comment*******************************//
   Mesh::Property_map<face_descriptor, float> m_label_prob;
-
+  std::map<face_descriptor, bool> m_face_checked;
+  std::map<face_descriptor, int> m_label_updated;
   //*****************************************************************************//
   std::vector<std::vector<float> > m_label_probabilities;
 

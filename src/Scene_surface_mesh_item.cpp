@@ -1641,8 +1641,18 @@ int Scene_surface_mesh_item::updateSegmentId(std::map<face_descriptor, bool> &fa
 	}
 
 	for (int ri = 0; ri < all_regions.size(); ++ri)
+	{
+		float prob_accum = 0;
 		for (int fi = 0; fi < all_regions[ri].size(); ++fi)
+		{
 			face_segment_id[all_regions[ri][fi]] = ri;
+			prob_accum += label_probabilities[all_regions[ri][fi]];
+		}
+		//compute error probability
+		prob_accum /= float(all_regions[ri].size());
+		total_error_facets += (1.0f - prob_accum) *  float(all_regions[ri].size());
+	}
+
 
 	return all_regions.size();
 }
@@ -2823,7 +2833,7 @@ bool Scene_surface_mesh_item::write_ply_mesh(std::ostream& stream, bool binary) 
 
 	CGAL::write_PLY(stream, *(d->smesh_), &(d->m_comments), this->vertex_color,
 		this->face_label, this->face_color, this->face_texcoord, this->face_textureid,
-		this->label_probabilities, this->face_segment_id, this->texture_name, used_old_comments);
+		this->label_probabilities, this->face_segment_id, this->texture_name, used_old_comments, this->total_labeled_faces);
 	CGAL::Three::Three::information("Save successfully!");
 	return true;
 }

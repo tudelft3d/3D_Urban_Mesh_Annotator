@@ -350,6 +350,14 @@ public Q_SLOTS:
 				labeling_progress = total_facet_num == unlabelled_num ? 0.0f : labeling_progress * 100.0f;
 				ui_widget.progressBar->setValue(labeling_progress);
 			}
+			else
+			{
+				float labeled_faces_tmp = classif->get_total_labeled_facets();
+				float error_faces_tmp = classif->get_total_error_facets();
+				float labeling_progress_err = labeled_faces_tmp >= error_faces_tmp ? 1.0f : labeled_faces_tmp / error_faces_tmp;
+				labeling_progress_err = labeled_faces_tmp == 0.0f ? 0.0f : labeling_progress_err * 100.0f;
+				ui_widget.progressBar_2->setValue(labeling_progress_err);
+			}
 			//**************************************************************//
 
 			//********************Weixiao Update************************//
@@ -785,14 +793,23 @@ public Q_SLOTS:
 			ui_widget.lineEdit->setText(QString::number(total_facet_num));
 			int unlabelled_num = classif->get_unlabelled_number_facets();
 			ui_widget.lineEdit_2->setText(QString::number(unlabelled_num));
+			//set unlabeled progress
 			float labeling_progress = 1.0f - float(unlabelled_num) / float(total_facet_num);
 			labeling_progress = total_facet_num == unlabelled_num ? 0.0f : labeling_progress * 100.0f;
 			ui_widget.progressBar->setValue(labeling_progress);
+			//set estimated progress
+			float labeled_faces_tmp = classif->get_total_labeled_facets();
+			float error_faces_tmp = classif->get_total_error_facets();
+			float labeling_progress_err = labeled_faces_tmp >= error_faces_tmp ? 1.0f : labeled_faces_tmp / error_faces_tmp;
+			labeling_progress_err = labeled_faces_tmp == 0.0f ? 0.0f : labeling_progress_err * 100.0f;
+			ui_widget.progressBar_2->setValue(labeling_progress_err);
 
 			Scene_polyhedron_selection_item* selection_item
 				= qobject_cast<Scene_polyhedron_selection_item*>(scene->item(scene->mainSelectionIndex()));
 			if (selection_item)
+			{
 				selection_item->polyhedron_item()->update_labels_for_selection();
+			}
 			//**********************************************************//
 			//**********************************************************//
 		}
@@ -838,12 +855,17 @@ public Q_SLOTS:
 		ui_widget.ProbSwitcher->setEnabled(false);
 		ui_widget.label_2->setEnabled(false);
 		ui_widget.label->setEnabled(false);
+		ui_widget.estimated_prg->setEnabled(false);
+		ui_widget.progressBar_2->setEnabled(false);
 
 		ui_widget.ProbSlider->setVisible(false);
 		ui_widget.ProbSpin->setVisible(false);
 		ui_widget.ProbSwitcher->setVisible(false);
 		ui_widget.label_2->setVisible(false);
 		ui_widget.label->setVisible(false);
+		ui_widget.estimated_prg->setVisible(false);
+		ui_widget.progressBar_2->setVisible(false);
+
 		//progress bar
 		ui_widget.label_3->setEnabled(true);
 		ui_widget.label_4->setEnabled(true);
@@ -868,14 +890,17 @@ public Q_SLOTS:
 		ui_widget.ProbSwitcher->setEnabled(true);
 		ui_widget.label_2->setEnabled(true);
 		ui_widget.label->setEnabled(true);
+		ui_widget.estimated_prg->setEnabled(true);
+		ui_widget.progressBar_2->setEnabled(true);
 
 		ui_widget.ProbSlider->setVisible(/*true*/false);
 		ui_widget.ProbSpin->setVisible(/*true*/false);
 		ui_widget.ProbSwitcher->setVisible(/*true*/false);
 		ui_widget.label_2->setVisible(/*true*/false);
 		ui_widget.label->setVisible(/*true*/false);
-		
 		ui_widget.view->setVisible(/*true*/false);
+		ui_widget.estimated_prg->setVisible(true);
+		ui_widget.progressBar_2->setVisible(true);
 
 		//progress bar
 		ui_widget.label_3->setEnabled(false);

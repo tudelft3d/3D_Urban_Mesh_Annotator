@@ -140,7 +140,8 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 		std::vector<float> fi_prob;
 		std::vector<int> fi_segment_id;
 		std::string input_comments;
-		if (!(CGAL::read_PLY(in, points, polygons, fcolors, vcolors, flabels, face_label_comment, fi_texcoord, texture_id, texture_name, fi_prob, fi_segment_id, input_comments)))
+		int total_labeled_faces_i = 0;
+		if (!(CGAL::read_PLY(in, points, polygons, fcolors, vcolors, flabels, face_label_comment, fi_texcoord, texture_id, texture_name, fi_prob, fi_segment_id, input_comments, total_labeled_faces_i)))
 		{
 			QApplication::restoreOverrideCursor();
 			return NULL;
@@ -208,6 +209,9 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 
 				++ind;
 			}
+
+			//update total labeled faces
+			sm_item->total_labeled_faces = total_labeled_faces_i;
 
 			//update face segment id (check if isolated segments are merged as one)
 			int segment_size = sm_item->polyhedron()->number_of_faces();

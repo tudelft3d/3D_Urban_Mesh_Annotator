@@ -51,6 +51,8 @@ public:
  //***********************Weixiao*******************************//
   virtual int get_total_number_facets() = 0;
   virtual int get_unlabelled_number_facets() = 0;
+  virtual int get_total_labeled_facets() = 0;
+  virtual int get_total_error_facets() = 0;
   //************************************************************//
 
   virtual CGAL::Three::Scene_item* generate_one_item (const char* name,

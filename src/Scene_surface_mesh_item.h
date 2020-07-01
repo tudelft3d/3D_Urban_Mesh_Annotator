@@ -167,6 +167,7 @@ public:
 	bool is_in_annotation = false;
 	bool is_edited_inside_one_segment_init = false;
 	bool is_facet_deleted = false;
+	int total_labeled_faces = 0, total_error_facets = 0;
 	//*******************************************************************//	
 	//***********************Ziqian && Weixiao*******************************//
 	std::map<face_descriptor, bool> face_shown;

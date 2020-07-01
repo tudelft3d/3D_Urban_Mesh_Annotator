@@ -1,24 +1,31 @@
 # Urban-Mesh-Annotator-Manual
-## 1. Annotation Pipeline
-### Step 1: Load <img src="pics/plus.png"> the *.ply mesh data.
+## 1. Annotation pipeline
+The annotation consists of two main steps: **Selecting elements** and **Labeling**.
+- Firstly, load <img src="pics/plus.png"> the *.ply mesh data.
+- The elements in ***Selection*** consists of ***segments*** (a group of connected triangle faces) 
+and ***triangle faces***. 
+- The label **<u>Letters</u>** of **Labeling** include: 
+***Unclassified*** **(U)**, 
+***Ground*** <font color=#CD853F>**(G)**</font>, 
+***Vegetation*** <font color=#00FF00>**(V)**</font>, 
+***Building*** <font color=#FFE600>**(B)**</font>,
+***Water*** <font color=#00FFFF>**(W)**</font>,
+ and ***Vehicle*** <font color=#FF00FF>**(E)**</font>.
+- Finally, press **(Ctrl+S)** to save your work.
 
-### Step 2.1: Segment annotation.
+### (1) Segment annotation: 
+
+- Perform selection **(Shift+Left)** and deselection **(Shift+Right)**. 
+- Select the segment with incorrect semantic label.
+- Adds selection to the label category (**Shift + <u>Letters</u>** ).
 <center><img src="pics/segment_select_pipeline.png"></center>
 
-- Perform selection **(Shift+Left)** and deselection **(Shift+Right)** at segment level. 
-- Select the segment with incorrect label (or color).
-- Adds selection to the label category (**Shift+<u>Capital Letter</u>** ). 
-
-
-### Step 2.2: Triangle Facet Annotation.
-<center><img src="pics/segment_inside_pipeline.png"></center>
-
-- Change 'Selection Mode' to ***Edit inside one segment***, then use **(Shift+Left)** 
+### (2) Triangle facets annotation: 
+- Change ***'Selection Mode'*** to ***Edit inside one segment***, then use **(Shift+Left)** 
  to select the highlighted one. 
-- Use ***Lasso*** or **(Shift+Left)** to draw and follow the object boundary as much as possible. 
-- Adds selection to the label category (**Shift+<u>Capital Letter</u>** ). 
-
-### Step 3: Save your work.
+- Press **(Shift+Left)** to select or use ***Lasso*** to draw and follow the object boundary as much as possible. 
+- Adds selection to the label category (**Shift + <u>Letters</u>** ). 
+<center><img src="pics/segment_inside_pipeline.png"></center>
 
 ## 2. Useful Shortcuts
 * **Note :** For shortcuts on macOS, '**Ctrl**' is replaced by '**Command**'.
@@ -83,9 +90,7 @@ area with your drawing.
 
 * **Label panel:** The input mesh decides the label and associate color, the user cannot change it. By pressing the label button or use short cuts
 Shift + Label capital letter to assign label to the selected area.
-* **Progress bar:** IIt replaces the 'Probability slider' when the input data has the probability value of each facet. It can show the current labeling
-progress.
-<center><img src="pics/progress_bar.png"></center>
+* **Progress bar:** It shows the rough labeling progress according to the pre-computed probability.
 
 ## 5. Context Menu
 <center><img src="pics/context_menu.png"></center>
