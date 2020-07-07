@@ -1050,12 +1050,7 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 
 			BOOST_FOREACH(edge_descriptor ed, edges(*smesh_))
 			{
-				if (item->face_segment_id.empty())
-				{
-					idx_edge_data_.push_back(source(ed, *smesh_));
-					idx_edge_data_.push_back(target(ed, *smesh_));
-				}
-				else
+				if (!item->face_segment_id.empty())
 				{
 					face_descriptor fd1, fd2;
 					fd1 = face(halfedge(ed, *smesh_), *smesh_);
@@ -1080,6 +1075,8 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 				//	idx_feature_edge_data_.push_back(source(ed, *smesh_));
 				//	idx_feature_edge_data_.push_back(target(ed, *smesh_));
 				//}
+				idx_edge_data_.push_back(source(ed, *smesh_));
+				idx_edge_data_.push_back(target(ed, *smesh_));
 
 				idx_feature_edge_data_.push_back(source(ed, *smesh_));
 				idx_feature_edge_data_.push_back(target(ed, *smesh_));

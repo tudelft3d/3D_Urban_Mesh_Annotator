@@ -399,6 +399,7 @@ public Q_SLOTS:
 			return;
 		}
 		selection_item->clear_all();
+		selection_item->poly_item->showFacetEdges(false);
 		selection_item->poly_item->setRenderingMode(Gouraud);
 	}
 	
