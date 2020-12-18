@@ -147,9 +147,20 @@ public:
 		  color = QColor(77, 131, 186);
 	  else if (name == "vehicle")
 		  color = QColor(255, 0, 255);
+	  else if (name == "car")
+		  color = QColor(255, 0, 255);
+	  else if (name == "boat")
+		  color = QColor(0, 0, 153);
 	  else if (name == "unclassified")
 		  color = QColor(0, 0, 0);
-
+	  else if (name == "building_unknown")
+		  color = QColor(50, 0, 50);
+	  else if (name == "balcony")
+		  color = QColor(0, 204, 204);
+	  else if (name == "chimney")
+		  color = QColor(255, 0, 127);
+	  else if (name == "dormer")
+		  color = QColor(85, 0, 255);
 	  return color;
   }
 

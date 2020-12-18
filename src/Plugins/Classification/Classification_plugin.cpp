@@ -127,22 +127,16 @@ public:
 		mw = mainWindow;
 		scene = scene_interface;
 		messages = m;
-		//***********************Weixiao Update menu name*******************************//
 		//actionClassification = new QAction(tr("Classification"), mw);
 		actionClassification = new QAction(tr("Annotation"), mw);
-		//********************************************************************//
 		connect(actionClassification, SIGNAL(triggered()), this, SLOT(classification_action()));
-		//***********************Weixiao Update menu name*******************************//
 		//dock_widget = new QDockWidget("Classification", mw);
 		dock_widget = new QDockWidget("Annotation", mw);
-		//********************************************************************//
 		dock_widget->setVisible(false);
 
 		label_button = new QPushButton(QIcon(QString(":/cgal/icons/plus")), "", dock_widget);
-		//***********************Weixiao Update menu name*********************//
 		label_button->setDisabled(true);
 		label_button->setVisible(false);
-		//********************************************************************//
 		QMenu* label_menu = new QMenu("Label Menu", label_button);
 		label_button->setMenu(label_menu);
 		QAction* add_new_label = label_menu->addAction("Add new label(s)");
@@ -150,10 +144,8 @@ public:
 			SLOT(on_add_new_label_clicked()));
 
 		QAction* clear_labels = label_menu->addAction("Clear labels");
-		//***********************Weixiao Update menu name*********************//
 		clear_labels->setDisabled(true);
 		clear_labels->setVisible(false);
-		//********************************************************************//
 		connect(clear_labels, SIGNAL(triggered()), this,
 			SLOT(on_clear_labels_clicked()));
 
@@ -170,7 +162,6 @@ public:
 			SLOT(ask_for_closing()));
 		ui_widget.close->setVisible(false);
 
-		//***********************Ziqian && Weixiao*******************************//
 		connect(ui_widget.display, SIGNAL(currentIndexChanged(int)), this,
 			SLOT(on_display_button_clicked_with_probability(int)));
 
@@ -182,19 +173,15 @@ public:
 
 		connect(ui_widget.ProbSwitcher, SIGNAL(currentIndexChanged(int)), this, SLOT(on_probability_switcher_changed(int)));
 
-		ui_widget.display->setVisible(false);
+		//ui_widget.display->setVisible(false);
 		ui_widget.label->setVisible(false);
 		ui_widget.ProbSwitcher->setVisible(false);
 		ui_widget.ProbSlider->setVisible(false);
 		ui_widget.ProbSpin->setVisible(false);
-		//********************************************************************//
 
-		//*******************************Weixiao **************************************//
 		//connect(ui_widget.lineEdit, SIGNAL(triggered()), this, SLOT(show_total_lables(int))); //Total
 		//connect(ui_widget.lineEdit_2, SIGNAL(on_add_selection_to_training_set_clicked()), this, SLOT(get_unlabelled_number_facets())); //Finished
 		//connect(ui_widget.progressBar, SIGNAL(currentIndexChanged(int)), this, SLOT(show_progress_bar(int)));
-		//********************************************************************//
-
 
 		QObject* scene_obj = dynamic_cast<QObject*>(scene_interface);
 		if (scene_obj)
@@ -202,10 +189,8 @@ public:
 			connect(scene_obj, SIGNAL(itemAboutToBeDestroyed(CGAL::Three::Scene_item*)), this,
 				SLOT(item_about_to_be_destroyed(CGAL::Three::Scene_item*)));
 
-			//*************Weixiao*************//
 			//connect(scene_obj, SIGNAL(itemIndexSelected(int)), this,
 			//	SLOT(update_plugin(int)));
-			//*********************************//
 		}
 	}
 	virtual void closure()
@@ -241,11 +226,9 @@ public Q_SLOTS:
 			else
 				print_message("Warning: can't find Surface Mesh Selection plugin");
 
-			//********************Weixiao Update************************//
 			CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
 			mesh_item->setRenderingMode(TextureModePlusFlatEdges);
 			//CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
-			//**********************************************************//
 		}
 
 		//on_help_clicked();
@@ -339,7 +322,6 @@ public Q_SLOTS:
 			ui_widget.display->setCurrentIndex(1);
 			classif->fill_display_combo_box(ui_widget.display);
 
-			//******************Weixiao**************************//
 			if (!classif->can_show_probability())
 			{
 				int total_facet_num = classif->get_total_number_facets();
@@ -358,9 +340,7 @@ public Q_SLOTS:
 				labeling_progress_err = labeled_faces_tmp == 0.0f ? 0.0f : labeling_progress_err * 100.0f;
 				ui_widget.progressBar_2->setValue(labeling_progress_err);
 			}
-			//**************************************************************//
 
-			//********************Weixiao Update************************//
 			Scene_polyhedron_selection_item* selection_item
 				= qobject_cast<Scene_polyhedron_selection_item*>(scene->item(scene->mainSelectionIndex()));
 			if (selection_item && selection_item->polyhedron_item()->label_selection_combox_tmp != NULL)
@@ -368,7 +348,6 @@ public Q_SLOTS:
 				selection_item->polyhedron_item()->fill_classes_combo_box(selection_item->polyhedron_item()->label_selection_combox_tmp);
 				selection_item->polyhedron_item()->update_labels_for_selection();
 			}
-			//**********************************************************//
 		}
 	}
 
@@ -408,16 +387,6 @@ public Q_SLOTS:
 		item_map.insert(std::make_pair(mesh_item, classif));
 		QApplication::restoreOverrideCursor();
 		update_plugin_from_item(classif);
-
-		/************Weixiao Update************/
-		//if (!classif->can_show_probability())
-		//	print_message("Input data do not have probability or with invalid probability, \
-		//	so the probability slider will not work. The good news is the progress bar will work perfectly!!!");
-		//else
-		//	print_message("Input data have probability and predict labels, so the labeling progress bar will not work. \
-		//	The good news is the probability slider will work perfectly!!!");
-		/**************************************/
-
 		return classif;
 	}
 
@@ -587,40 +556,37 @@ public Q_SLOTS:
 		////add_selection->setShortcut(Qt::Key_0 + label_buttons.size() - 1);
 		//connect(add_selection, SIGNAL(triggered()), this,
 		//	SLOT(on_add_selection_to_training_set_clicked()));
-		
-		//***********************Weixiao Update menu name*********************//
 
 		label_buttons.back().color_button->setShortcut(Qt::SHIFT | (Qt::Key_A + (label_button.shortcut - 'a')));
 		connect(label_buttons.back().color_button, SIGNAL(clicked()),
 			this, SLOT(on_add_selection_to_training_set_clicked()));
 
-		//********************************************************************//
 
 		//label_buttons.back().menu->addSeparator();
 
 		//QAction* change_color = label_buttons.back().menu->addAction("Change color");
-		////***********************Weixiao Update menu name*********************//
+
 		//change_color->setDisabled(true);
 		//change_color->setVisible(false);
-		////********************************************************************//
+
 		//connect(change_color, SIGNAL(triggered()), this,
 		//	SLOT(on_color_changed_clicked()));
 
 		//QAction* change_name = label_buttons.back().menu->addAction("Change name");
-		////***********************Weixiao Update menu name*********************//
+
 		//change_name->setDisabled(true);
 		//change_name->setVisible(false);
-		////********************************************************************//
+
 		//connect(change_name, SIGNAL(triggered()), this,
 		//	SLOT(on_name_changed_clicked()));
 		//
 		//label_buttons.back().menu->addSeparator();
 
 		//QAction* remove_label = label_buttons.back().menu->addAction("Remove label");
-		////***********************Weixiao Update menu name*********************//
+
 		//remove_label->setDisabled(true);
 		//remove_label->setVisible(false);
-		////********************************************************************//
+
 		//connect(remove_label, SIGNAL(triggered()), this,
 		//	SLOT(on_remove_label_clicked()));
 	}
@@ -780,15 +746,12 @@ public Q_SLOTS:
 			ui_widget.labelGrid->getItemPosition(index, &row_index, &column_index, &row_span, &column_span);
 
 			int position = row_index * 3 + column_index;
-			/*****************************Ziqian*******************************/
 			if (!classif->segment_form()) {
 				//print_message("Error: can't put faces from different segment into one segment.");
 				//return;
 			}
-			/******************************************************************/
 
 			classif->add_selection_to_training_set(position);
-			//*****************************Weixiao**********************//
 			int total_facet_num = classif->get_total_number_facets();
 			ui_widget.lineEdit->setText(QString::number(total_facet_num));
 			int unlabelled_num = classif->get_unlabelled_number_facets();
@@ -810,14 +773,11 @@ public Q_SLOTS:
 			{
 				selection_item->polyhedron_item()->update_labels_for_selection();
 			}
-			//**********************************************************//
-			//**********************************************************//
 		}
 		item_changed(classif->item());
 		++classif->item()->add_label_count;
 	}
 
-	//***********************Ziqian*******************************//
 	bool threshold_based_change_color(Item_classification_base* classif, int index, int threshold, bool below)
 	{
 		float vmin = std::numeric_limits<float>::infinity();
@@ -988,7 +948,7 @@ public Q_SLOTS:
 		threshold_based_change_color(classif, index, threshold, below);
 		//print_message("probability_state_changed!");
 	}
-	//********************************************************************//
+
 private:
 	Messages_interface* messages;
 	QAction* actionClassification;
@@ -1004,9 +964,9 @@ private:
 
 	typedef std::map<Scene_item*, Item_classification_base*> Item_map;
 	Item_map item_map;
-	//********************Weixiao Update************************//
+
 	int first_activate_times = 0;
-	//**********************************************************//
+
 }; // end Polyhedron_demo_classification_plugin
 
 #include "Classification_plugin.moc"

@@ -118,8 +118,9 @@ void Edge_container::draw(Viewer_interface* viewer,
 			getVao(viewer)->program->setAttributeValue("colors", getColor());
 		if (getVao(viewer)->program->property("hasFMatrix").toBool())
 			getVao(viewer)->program->setUniformValue("f_matrix", getFrameMatrix());
-		/***************************Ziqian****************************/
-		viewer->glPolygonOffset(-1.0f, -1.0f);
+
+		//viewer->glEnable(GL_POLYGON_OFFSET_FILL);
+		viewer->glPolygonOffset(-1.0f, -1.0f); //viewer->glPolygonOffset(1.0f, 1.0f);
 		//parameters needed for rendering.
 		QVector2D vp(viewer->width(), viewer->height());
 		getVao(viewer)->program->setUniformValue("viewport", vp);
@@ -127,7 +128,7 @@ void Edge_container::draw(Viewer_interface* viewer,
 		getVao(viewer)->program->setUniformValue("far", (GLfloat)viewer->camera()->zFar());
 		getVao(viewer)->program->setUniformValue("width", GLfloat(2.0f));//segment border width
 		getVao(viewer)->bind();
-		/*************************************************************/
+
 		getVbo(Indices)->bind();
 		viewer->glDrawElements(GL_LINES, static_cast<GLuint>(getIdxSize()),
 			GL_UNSIGNED_INT, 0);
@@ -146,9 +147,8 @@ void Edge_container::draw(Viewer_interface* viewer,
 		if (getVao(viewer)->program->property("hasFMatrix").toBool())
 			getVao(viewer)->program->setUniformValue("f_matrix", getFrameMatrix());
 
-		/***************************Ziqian****************************/
 		getVao(viewer)->program->setUniformValue("width", GLfloat(1.0f));
-		/*************************************************************/
+
 		if (viewer->getShaderProgram(getProgram())->property("isInstanced").toBool())
 		{
 			viewer->glDrawArraysInstanced(GL_LINES, 0,

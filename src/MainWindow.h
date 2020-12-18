@@ -491,14 +491,14 @@ private:
 	Ui::Statistics_on_item_dialog* statistics_ui;
 	bool verbose;
 	void insertActionBeforeLoadPlugin(QMenu*, QAction *actionToInsert);
-	//********************Weixiao Update************************//
+
 	bool is_saved = false;
 	bool is_erased = false;
 	bool is_help_poped = false;
 	bool is_showmsgbox = true;
 	bool is_asked = false;
 	bool is_questionshow = true;
-	//**********************************************************//
+
 #ifdef QT_SCRIPT_LIB
 	QScriptEngine* script_engine;
 public:

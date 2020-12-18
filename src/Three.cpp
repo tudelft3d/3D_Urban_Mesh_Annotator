@@ -155,12 +155,10 @@ RenderingMode Three::defaultPointSetRenderingMode()
   return s_defaultPSRM;
 }
 
-//********************Weixiao Update************************//
 void Three::SetdefaultSurfaceMeshRenderingMode(RenderingMode default_renderingmode)
 {
 	s_defaultSMRM = default_renderingmode;
 }
-//**********************************************************//
 
 QString Three::modeName(RenderingMode mode) {
   switch(mode)
@@ -183,10 +181,8 @@ QString Three::modeName(RenderingMode mode) {
 	  return QObject::tr("TextureMode");
   case TextureModePlusFlatEdges:
 	  return QObject::tr("TextureMode+flat+edges");
-	  /******************Ziqian****************/
   case Emphasizing:
 	  return QObject::tr("Emphasizing");
-	  /*********************************************/
   default:
     Q_ASSERT(false);
     return QObject::tr("unknown");
@@ -233,7 +229,6 @@ int Three::getDefaultLinesWidth()
   return default_lines_width;
 }
 
-//********************Weixiao Update************************//
 void Three::setDefaultPointSize(int value)
 {
 	default_point_size = value;
@@ -248,5 +243,3 @@ void Three::setDefaultLinesWidth(int value)
 {
 	default_lines_width = value;
 }
-//**********************************************************//
-

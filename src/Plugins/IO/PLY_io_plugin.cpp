@@ -34,7 +34,7 @@ public:
 	bool save(const CGAL::Three::Scene_item*, QFileInfo fileinfo);
 
 private:
-	void set_vcolors(SMesh* smesh, const std::vector<CGAL::Color>& colors)
+	/*void set_vcolors(SMesh* smesh, const std::vector<CGAL::Color>& colors)
 	{
 		typedef SMesh SMesh;
 		typedef boost::graph_traits<SMesh>::vertex_descriptor vertex_descriptor;
@@ -60,7 +60,28 @@ private:
 		int color_id = 0;
 		BOOST_FOREACH(face_descriptor fd, faces(*smesh))
 			fcolors[fd] = colors[color_id++];
+	}*/
+
+	void set_vcolors(SMesh* smesh, const std::vector<CGAL::Color>& colors, SMesh::Property_map<vertex_descriptor, CGAL::Color> &vcolors)
+	{
+		typedef SMesh SMesh;
+		typedef boost::graph_traits<SMesh>::vertex_descriptor vertex_descriptor;
+		vcolors = smesh->property_map<vertex_descriptor, CGAL::Color >("v:color").first;
+		bool created;
+		boost::tie(vcolors, created) = smesh->add_property_map<SMesh::Vertex_index, CGAL::Color>("v:color", CGAL::Color(0, 0, 0));
+		assert(colors.size() == smesh->number_of_vertices());
 	}
+
+	void set_fcolors(SMesh* smesh, const std::vector<CGAL::Color>& colors, SMesh::Property_map<face_descriptor, CGAL::Color> &fcolors)
+	{
+		typedef SMesh SMesh;
+		typedef boost::graph_traits<SMesh>::face_descriptor face_descriptor;
+		fcolors = smesh->property_map<face_descriptor, CGAL::Color >("f:color").first;
+		bool created;
+		boost::tie(fcolors, created) = smesh->add_property_map<SMesh::Face_index, CGAL::Color>("f:color", CGAL::Color(0, 0, 0));
+		assert(colors.size() == smesh->number_of_faces());
+	}
+	//**************************************************//
 };
 
 bool Polyhedron_demo_ply_plugin::canLoad() const {
@@ -128,7 +149,6 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 		//  return NULL;
 		//}
 
-		//***********************Weixiao Update read ply*******************************//
 		//if (binary)
 		//	CGAL::set_binary_mode(in);
 
@@ -147,83 +167,184 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 			return NULL;
 		}
 		//*******************************************************************//
-
 		if (CGAL::Polygon_mesh_processing::is_polygon_soup_a_polygon_mesh(polygons))
 		{
 			SMesh* surface_mesh = new SMesh();
 			CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(points, polygons,
 				*surface_mesh);
+
+			int v_color_id = 0;
+			SMesh::Property_map<vertex_descriptor, CGAL::Color> vcolors_;
 			if (!(vcolors.empty()))
-				set_vcolors(surface_mesh, vcolors);
+			{
+				set_vcolors(surface_mesh, vcolors, vcolors_);
+			}
+
+			int f_color_id = 0;
+			SMesh::Property_map<face_descriptor, CGAL::Color> fcolors_;
 			if (!(fcolors.empty()))
-				set_fcolors(surface_mesh, fcolors);
+			{
+				set_fcolors(surface_mesh, fcolors, fcolors_);
+			}
 
 			Scene_surface_mesh_item* sm_item = new Scene_surface_mesh_item(surface_mesh);
 			sm_item->setName(fileinfo.completeBaseName());
 
-			QApplication::restoreOverrideCursor();
-
-			//***********************Weixiao Update read ply*******************************//
-			if (vcolors.empty() == false)
+			int v_ind = 0, duplicate_count = 0;
+			bool is_duplicate_points = false;
+			std::map<Kernel::Point_3, int> duplicate_map;
+			BOOST_FOREACH(vertex_descriptor vd, vertices(*(sm_item->polyhedron())))
 			{
-				int ind = 0;
-				BOOST_FOREACH(vertex_descriptor vd, vertices(*(sm_item->polyhedron())))
+				if (vcolors.empty() == false)
 				{
-					sm_item->vertex_color[vd] = QColor(vcolors[ind].red(), vcolors[ind].green(), vcolors[ind].blue());
-					++ind;
+					sm_item->vertex_color[vd] = QColor(vcolors[v_ind].red(), vcolors[v_ind].green(), vcolors[v_ind].blue());
+					vcolors_[vd] = vcolors[v_color_id++];
+				}
+
+				sm_item->vertices_coords[v_ind] = points[v_ind];
+
+				//check duplicate vertices for test if is merged mesh
+				Kernel::Point_3 pd = points[v_ind];
+				auto it = duplicate_map.find(pd);
+				if (it == duplicate_map.end())
+				{
+					duplicate_map[pd] = v_ind;
+				}
+				else
+				{
+					++duplicate_count;
+					is_duplicate_points = true;
+				}
+
+				++v_ind;
+			}
+			//test if it is merged mes\h
+			if (is_duplicate_points)
+			{
+				float perc = float(duplicate_count) / float((*(sm_item->polyhedron())).num_vertices());
+				if (perc > 0.05f)//rough guess. if duplicate vertices > 5% of total vertices 
+				{
+					sm_item->is_merged_batch = true;
+					CGAL::Three::Three::warning("The input data is a merged mesh and it contains " + QString::number(duplicate_count) + " duplicate vertices.");
 				}
 			}
-
+			
 			sm_item->file_path = fileinfo.absolutePath().toStdString();
 			sm_item->texture_name = texture_name;
+			//read texture image 
+			std::vector<std::string> texture_name_temp = texture_name;
+			if (texture_name.empty())
+			{
+				qWarning("Could not read texture files!");
+				CGAL::Three::Three::warning("Could not read texture files!");
+				QImage tex, buf;
+				QImage dummy(128, 128, QImage::Format_RGB32);
+				dummy.fill(Qt::green);
+				buf = dummy;
+				tex = QGLWidget::convertToGLFormat(buf);
+				sm_item->texture_images.push_back(tex);
 
-			int ind = 0;
+				fi_texcoord = std::vector<std::vector<float>>(polygons.size(), std::vector<float>(6, 0.0f));
+			}
+			if (texture_id.empty())
+			{
+				texture_id.clear();
+				texture_id = std::vector<int>(polygons.size(), 0);
+			}
+
+			for (size_t t = 0; t < texture_name.size(); ++t)
+			{
+				texture_name_temp[t] = sm_item->file_path + "/" + texture_name_temp[t];
+				
+				QImage tex, buf;
+				if (!buf.load(texture_name_temp[t].c_str()))//
+				{
+					qWarning("Could not read image file!");
+					CGAL::Three::Three::warning("Could not read the input texture file!");
+					QImage dummy(128, 128, QImage::Format_RGB32);
+					dummy.fill(Qt::green);
+					buf = dummy;
+				}
+				tex = QGLWidget::convertToGLFormat(buf);
+				sm_item->texture_images.push_back(tex);
+			}
+
+			//read facet properties
+			int f_ind = 0, segment_size = -1;
 			std::map<face_descriptor, bool> face_visited_check;
+			std::map<int, std::set<int>> textureID_vertices_grouping;
+			std::map<int, std::vector<face_vind_texcoord>> textureID_facets_grouping;
 			BOOST_FOREACH(face_descriptor fd, faces(*(sm_item->polyhedron())))
 			{
 				if (flabels.empty() == false)
-					sm_item->face_label[fd] = flabels[ind];
+					sm_item->face_label[fd] = flabels[f_ind];
 
 				if (fcolors.empty() == false)
-					sm_item->face_color[fd] = QColor(fcolors[ind].red(), fcolors[ind].green(), fcolors[ind].blue());
+				{
+					sm_item->face_color[fd] = QColor(fcolors[f_ind].red(), fcolors[f_ind].green(), fcolors[f_ind].blue());
+					fcolors_[fd] = fcolors[f_color_id++];
+				}
 
-				if (fi_texcoord.empty() == false)
-					sm_item->face_texcoord[fd] = fi_texcoord[ind];
+				//if (fi_texcoord.empty() == false)
+					sm_item->face_texcoord[fd] = fi_texcoord[f_ind];
 
-				if (texture_id.empty() == false)
-					sm_item->face_textureid[fd] = texture_id[ind];
+				sm_item->face_textureid[fd] = texture_id[f_ind];
+				auto it_tex = textureID_facets_grouping.find(texture_id[f_ind]);
+				if (it_tex == textureID_facets_grouping.end())
+				{
+					textureID_facets_grouping[texture_id[f_ind]] = std::vector<face_vind_texcoord>();
+					textureID_vertices_grouping[texture_id[f_ind]] = std::set<int>();
+				}
+				textureID_facets_grouping[texture_id[f_ind]].emplace_back(std::make_tuple(fd, polygons[f_ind],fi_texcoord[f_ind]));
+				textureID_vertices_grouping[texture_id[f_ind]].insert(polygons[f_ind][0]);
+				textureID_vertices_grouping[texture_id[f_ind]].insert(polygons[f_ind][1]);
+				textureID_vertices_grouping[texture_id[f_ind]].insert(polygons[f_ind][2]);
 
-				if (fi_prob.empty() == false) {
-					sm_item->label_probabilities[fd] = fi_prob[ind];
+				sm_item->face_vinds[fd] = std::vector<int>();
+				sm_item->face_vinds[fd].push_back(polygons[f_ind][0]);
+				sm_item->face_vinds[fd].push_back(polygons[f_ind][1]);
+				sm_item->face_vinds[fd].push_back(polygons[f_ind][2]);
+
+				if (fi_prob.empty() == false) 
+				{
+					sm_item->label_probabilities[fd] = fi_prob[f_ind];
 				}
 
 				if (fi_segment_id.empty() == false)
-					sm_item->face_segment_id[fd] = fi_segment_id[ind];
+					sm_item->face_segment_id[fd] = fi_segment_id[f_ind];
 				else
-					sm_item->face_segment_id[fd] = ind;
+					sm_item->face_segment_id[fd] = 0; //f_ind; merge to one segment
+				segment_size = segment_size < sm_item->face_segment_id[fd] ? sm_item->face_segment_id[fd] : segment_size;
 
+				//get face normal
+				sm_item->face_normals[fd] = surface_mesh->property_map<face_descriptor, Kernel::Vector_3 >("f:normal").first[fd];
 				face_visited_check[fd] = false;
-				/********************************Ziqian****************************/
 				sm_item->face_shown[fd] = true;
-				/******************************************************************/
 
-				++ind;
+				++f_ind;
 			}
-
 			//update total labeled faces
 			sm_item->total_labeled_faces = total_labeled_faces_i;
 
 			//update face segment id (check if isolated segments are merged as one)
-			int segment_size = sm_item->polyhedron()->number_of_faces();
-			if (fi_segment_id.empty() == false)
-			{
-				segment_size = sm_item->updateSegmentId(face_visited_check);
-				CGAL::Three::Three::information("The number of segment is " + QString::number(segment_size));
-			}
-			else
-			{
-				CGAL::Three::Three::information("The number of facet is " + QString::number(segment_size));
-			}
+			//if (fi_segment_id.empty() == false)
+			//{
+				CGAL::Three::Three::information("Pre-processing of input mesh ...");
+				if (!sm_item->is_merged_batch)
+					segment_size = sm_item->updateSegmentId(face_visited_check);
+				else
+					sm_item->findDuplicateVertices(sm_item, points, polygons);
+
+				//grouping facets for texture rendering
+				sm_item->grouping_facets_for_multi_texture_rendering(sm_item, points, textureID_vertices_grouping, textureID_facets_grouping);
+
+				CGAL::Three::Three::information("The number of facet is " + QString::number(polygons.size())
+				+ ", the number of segment is " + QString::number(segment_size));
+			//}
+			//else
+			//{
+			//	CGAL::Three::Three::information("The number of facet is " + QString::number(segment_size));
+			//}
 
 			sm_item->computeSegmentBoundary();
 
@@ -270,7 +391,6 @@ bool Polyhedron_demo_ply_plugin::save(const CGAL::Three::Scene_item* item, QFile
 	if (extension != "ply" && extension != "PLY")
 		return false;
 
-	//*****************Weixiao*********************//
 	//QStringList list;
 	//list << tr("Binary");
 	//list << tr("Ascii");
@@ -282,7 +402,6 @@ bool Polyhedron_demo_ply_plugin::save(const CGAL::Three::Scene_item* item, QFile
 	//	return false;
 
 	QString choice = tr("Ascii");
-	//*********************************************//
 
 	std::ofstream out(fileinfo.filePath().toUtf8().data(), std::ios::binary);
 	out.precision(std::numeric_limits<double>::digits10 + 2);
@@ -299,9 +418,7 @@ bool Polyhedron_demo_ply_plugin::save(const CGAL::Three::Scene_item* item, QFile
 
 	if (sm_item)
 	{
-		//***********************Weixiao Update write ply binary*******************************//
 		return sm_item->write_ply_mesh(out, (choice == tr("Binary")));
-		//*******************************************************************//
 			  //return CGAL::write_PLY (out, *(sm_item->polyhedron()));
 	}
 

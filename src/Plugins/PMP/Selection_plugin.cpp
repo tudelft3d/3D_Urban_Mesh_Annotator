@@ -22,6 +22,7 @@
 #include <CGAL/Polygon_mesh_processing/border.h>
 #include <CGAL/Polygon_mesh_processing/repair.h>
 #include <CGAL/Polygon_mesh_processing/shape_predicates.h>
+#include <CGAL/Polygon_mesh_processing/measure.h>
 #include <Scene.h>
 typedef Scene_surface_mesh_item Scene_face_graph_item;
 
@@ -106,9 +107,9 @@ public:
 	bool save(const CGAL::Three::Scene_item* scene_item, QFileInfo fileinfo) {
 		const Scene_polyhedron_selection_item* item = qobject_cast<const Scene_polyhedron_selection_item*>(scene_item);
 		if (item == NULL) { return false; }
-		//********************Weixiao Update************************//
+
 		//CGAL::Three::Three::warning("You are not saving your labeling work but the selection area. For saving the work, you need to select the first layer! ");
-		//**********************************************************//
+
 		return item->save(fileinfo.filePath().toStdString());
 	}
 
@@ -146,41 +147,27 @@ public:
 		addDockWidget(dock_widget);
 
 		connect(ui_widget.Select_all_button, SIGNAL(clicked()), this, SLOT(on_Select_all_button_clicked()));
-		//********************Weixiao Update************************//
-		connect(ui_widget.Delete_facets_from_selection, SIGNAL(clicked()), this, SLOT(on_Delete_facets_from_selection_clicked()));
-		ui_widget.Delete_facets_from_selection->setEnabled(false);
-
-		connect(ui_widget.Delete_selection_button, SIGNAL(clicked()), this, SLOT(on_Delete_selection_clicked()));
-		connect(ui_widget.SelectClasses, SIGNAL(clicked()), this, SLOT(on_Selected_class_clicked()));
-		connect(ui_widget.comboBox_2, SIGNAL(currentIndexChanged(int)), this, SLOT(on_selected_label_combo_box_changed(int)));
-
-		ui_widget.Create_selection_item_button->setDisabled(true);
-		ui_widget.Create_selection_item_button->setVisible(false);
-
-		ui_widget.Delete_facets_from_selection->setDisabled(true);
-		ui_widget.Delete_facets_from_selection->setVisible(false);
-
-		ui_widget.Delete_selection_button->setDisabled(true);
-		ui_widget.Delete_selection_button->setVisible(false);
-
-		//**********************************************************//
-		/************************Ziqian***************************/
+		//basic selection
 		connect(ui_widget.Clear_all_button, SIGNAL(clicked()), this, SLOT(on_Clear_all_button_clicked()));
 		connect(ui_widget.Inverse_selection_button, SIGNAL(clicked()), this, SLOT(on_Inverse_selection_button_clicked()));
-		connect(ui_widget.Create_selection_item_button, SIGNAL(clicked()), this, SLOT(on_Create_selection_item_button_clicked()));
-		connect(ui_widget.Selection_type_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(on_Selection_type_combo_box_changed(int)));
+
+		connect(ui_widget.SelectClasses, SIGNAL(clicked()), this, SLOT(on_Selected_class_clicked()));
+		connect(ui_widget.select_classes_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(on_selected_label_combo_box_changed(int)));
+
+		connect(ui_widget.Smart_type_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(on_Smart_type_combo_box_changed(int)));
 		connect(ui_widget.lassoCheckBox, &QCheckBox::toggled,
 			this, &Polyhedron_demo_selection_plugin::on_LassoCheckBox_changed);
 		connect(ui_widget.Brush_size_spin_box, SIGNAL(valueChanged(int)), this, SLOT(on_Brush_size_spin_box_changed(int)));
 		connect(ui_widget.Expand_reduce_button, SIGNAL(clicked()), this, SLOT(on_Expand_reduce_button_clicked()));
-		connect(ui_widget.Recommendation_button, SIGNAL(clicked()), this, SLOT(on_Recommendation_button_clicked()));
 
-		ui_widget.Recommendation_button->setDisabled(true);
-		ui_widget.Recommendation_button->setVisible(false);
+		ui_widget.buttonGroup->setId(ui_widget.select_facet_radioButton, 0);
+		ui_widget.buttonGroup->setId(ui_widget.select_segment_radioButton, 1);
+		connect(ui_widget.select_facet_radioButton, SIGNAL(clicked(bool)), this, SLOT(group_selection_type_radio()));
+		connect(ui_widget.select_segment_radioButton, SIGNAL(clicked(bool)), this, SLOT(group_selection_type_radio()));
 
-		ui_widget.comboBox->setDisabled(true);
-		ui_widget.comboBox->setVisible(false);
-		/*********************************************************/
+		ui_widget.Smart_label->hide();
+		ui_widget.Smart_type_combo_box->hide();
+
 		QObject* scene = dynamic_cast<QObject*>(scene_interface);
 		if (scene) {
 			connect(scene, SIGNAL(itemAboutToBeDestroyed(CGAL::Three::Scene_item*)), this, SLOT(item_about_to_be_destroyed(CGAL::Three::Scene_item*)));
@@ -199,10 +186,7 @@ public:
 		  "Convert from Edge Selection to Point Selection"         ,
 		  "Convert from Facet Selection to Boundary Edge Selection",
 		  "Convert from Facet Selection to Point Selection",
-		  /***************************Ziqian****************************/
-		  "Convert selected facets into segment."//10
-		  /*************************************************************/
-
+		  "Convert selected facets into segment."
 		};
 
 		operations_map[operations_strings[0]] = 0;
@@ -215,9 +199,7 @@ public:
 		operations_map[operations_strings[7]] = 7;
 		operations_map[operations_strings[8]] = 8;
 		operations_map[operations_strings[9]] = 9;
-		/***************************Ziqian****************************/
 		operations_map[operations_strings[10]] = 10;
-		/*************************************************************/
 	}
 	virtual void closure()
 	{
@@ -226,6 +208,7 @@ public:
 Q_SIGNALS:
 	void save_handleType();
 	void set_operation_mode(int);
+	void set_selection_mode_index(int);
 public Q_SLOTS:
 
 	void connectItem(Scene_polyhedron_selection_item* new_item)
@@ -240,12 +223,13 @@ public Q_SLOTS:
 		connect(new_item, SIGNAL(isCurrentlySelected(Scene_facegraph_item_k_ring_selection*)), this, SLOT(isCurrentlySelected(Scene_facegraph_item_k_ring_selection*)));
 		scene->setSelectedItem(item_id);
 		//on_SelectionOrEuler_changed(ui_widget.selectionOrEuler->currentIndex());
-		//********************Weixiao Update************************//
-		on_selected_label_combo_box_changed(ui_widget.comboBox_2->currentIndex());
-		connect(new_item->poly_item, SIGNAL(selection_done()), this, SLOT(reset_highlight_facets_if_selected()));
-		//**********************************************************//
+
+		connect(this, SIGNAL(set_selection_mode_index(int)), new_item, SLOT(set_selection_mode_index(int)));
+		on_selected_label_combo_box_changed(ui_widget.select_classes_comboBox->currentIndex());
+		//connect(new_item->poly_item, SIGNAL(selection_done()), this, SLOT(reset_highlight_facets_if_selected()));
+
 		if (last_mode == 0)
-			on_Selection_type_combo_box_changed(ui_widget.Selection_type_combo_box->currentIndex());//ui_widget.Selection_type_combo_box->currentIndex());
+			on_Smart_type_combo_box_changed(ui_widget.Smart_type_combo_box->currentIndex());
 	}
 	// If the selection_item or the polyhedron_item associated to the k-ring_selector is currently selected,
 	// set the k-ring_selector as currently selected. (A k-ring_selector tha tis not "currently selected" will
@@ -278,9 +262,9 @@ public Q_SLOTS:
 		Scene_polyhedron_selection_item* new_item = new Scene_polyhedron_selection_item(poly_item, mw);
 		new_item->setName(QString("%1 (selection)").arg(poly_item->name()));
 		connectItem(new_item);
-		//********************Weixiao Update************************//
+
 		new_item->setColor(QColor(255, 0, 0));
-		poly_item->fill_classes_combo_box(ui_widget.comboBox_2);
+		poly_item->fill_classes_combo_box(ui_widget.select_classes_comboBox);
 		poly_item->update_labels_for_selection();
 
 		CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
@@ -288,7 +272,6 @@ public Q_SLOTS:
 		//CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
 
 		first_activate = false;
-		//**********************************************************//
 	}
 
 	Scene_polyhedron_selection_item* onTheFlyItem() {
@@ -311,18 +294,19 @@ public Q_SLOTS:
 			return;
 		}
 
-		if (ui_widget.Selection_type_combo_box->currentIndex() == 1)
+		if (ui_widget.Smart_type_combo_box->currentIndex() == 2 || 
+			ui_widget.Smart_type_combo_box->currentIndex() == 3)
 		{
 			selection_item->select_all_facets_in_segment();
 		}
 		else
 			selection_item->select_all();
 	}
-	/***************************Ziqian && Weixiao*****************************************/
+
 	void on_Selected_class_clicked()
 	{
 		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
-		int index = ui_widget.comboBox_2->currentIndex();
+		int index = ui_widget.select_classes_comboBox->currentIndex();
 		if (index == 0)
 		{
 			Q_EMIT selection_item->selected_HL(std::set<fg_face_descriptor>());
@@ -342,42 +326,11 @@ public Q_SLOTS:
 						temp_segment_faces.insert(fd);
 				}
 			}
+			selection_item->set_is_insert(true);
 			Q_EMIT selection_item->selected(temp_segment_faces);
 			selection_item->poly_item->setRenderingMode(CGAL::Three::Three::defaultSurfaceMeshRenderingMode());
-			//ui_widget.comboBox_2->setCurrentIndex(0);
+			//ui_widget.select_classes_comboBox->setCurrentIndex(0);
 		}
-	}
-
-	void on_Delete_selection_clicked()
-	{
-		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
-		if (!selection_item)
-		{
-			print_message("Error: there is no selected polyhedron selection item!");
-			return;
-		}
-		int item_id = scene->item_id(selection_item);
-		ui_widget.comboBox_2->setDisabled(true);
-		ui_widget.SelectClasses->setDisabled(true);
-		scene->erase(item_id);
-	}
-
-	void on_Delete_facets_from_selection_clicked()
-	{
-		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
-		if (!selection_item)
-		{
-			print_message("Error: there is no selected polyhedron selection item!");
-			return;
-		}
-		if (selection_item->selected_facets.empty())
-		{
-			print_message("Error: there are no selected facets!");
-			return;
-		}
-
-		selection_item->poly_item->is_facet_deleted = true;
-		selection_item->erase_selected_facets();
 	}
 
 	void check_selection_validation() {
@@ -392,33 +345,75 @@ public Q_SLOTS:
 		//selection_item->segmentifySelection();
 	}
 
-	void into_SEGMENT_TO_EDIT_mode() {
+	void group_selection_type_radio()
+	{
 		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
-		if (!selection_item) {
-			print_message("Error: there is no selected polyhedron selection item!");
-			return;
-		}
-		selection_item->clear_all();
-		selection_item->poly_item->showFacetEdges(false);
-		selection_item->poly_item->setRenderingMode(Gouraud);
-	}
-	
-	void on_Recommendation_button_clicked() {
-		for (Selection_item_map::iterator it = selection_item_map.begin(); it != selection_item_map.end(); ++it)
+		typedef Scene_polyhedron_selection_item::Active_handle Active_handle;
+
+		switch (ui_widget.buttonGroup->checkedId())
 		{
-			it->second->set_lasso_mode(true);
-			it->second->set_recommendation(1);
+			case 0: //triangles
+			{
+				//rendering at first, adpat to later change
+				CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
+				selection_item->poly_item->setRenderingMode(TextureModePlusFlatEdges);
+				selection_item->poly_item->showFacetEdges(true);
+
+				//clear
+				selection_item->clear_all();
+				selection_item->set_active_handle_type(static_cast<Active_handle::Type>(1));//facet selection
+
+				Q_EMIT save_handleType();
+				Q_EMIT set_selection_mode_index(0);
+				Q_EMIT set_operation_mode(-1);
+
+				break;
+			}
+
+			case 1: //segments
+			{
+				//clear
+				selection_item->clear_all();
+				selection_item->set_active_handle_type(static_cast<Active_handle::Type>(0)); //0 segment selection
+
+				//operations
+				if (!first_activate)
+					check_selection_validation();
+
+				if (!original_fid_face_map.empty())
+				{
+					original_fid_face_map.clear();
+					segment_fid_face_map.clear();
+					face_center_point_set.clear();
+					delete segment_mesh;
+				}
+
+				//enabled
+				ui_widget.SelectClasses->setEnabled(true);
+				ui_widget.select_classes_comboBox->setCurrentIndex(0);
+				ui_widget.select_classes_comboBox->setEnabled(true);
+
+				Q_EMIT save_handleType();
+				Q_EMIT set_selection_mode_index(1);
+				Q_EMIT set_operation_mode(-1);
+
+				//rendering at last, use last as final rendering
+				CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
+				selection_item->poly_item->setRenderingMode(TextureModePlusFlatEdges);
+				selection_item->poly_item->showFacetEdges(false);
+
+				break;
+			}
 		}
 	}
-	
-	/**************************************************************************/
+
 	void on_Clear_all_button_clicked() {
 		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
 		if (!selection_item) {
 			print_message("Error: there is no selected polyhedron selection item!");
 			return;
 		}
-
+		selection_item->clearHL();
 		selection_item->clear_all();
 		reset_highlight_facets_if_selected();
 	}
@@ -430,47 +425,18 @@ public Q_SLOTS:
 			print_message("Error: there is no selected polyhedron selection item!");
 			return;
 		}
-		if (ui_widget.Selection_type_combo_box->currentIndex() == 1)
-			selection_item->inverse_selection_in_segment();
-		else
-			selection_item->inverse_selection();
+
+		selection_item->inverse_selection();
 	}
 
 	void reset_highlight_facets_if_selected()
 	{
 		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
-		if (ui_widget.comboBox_2->currentIndex() != 0)
+		if (ui_widget.select_classes_comboBox->currentIndex() != 0)
 		{
-			ui_widget.comboBox_2->setCurrentIndex(0);
+			ui_widget.select_classes_comboBox->setCurrentIndex(0);
 			on_Selected_class_clicked();
 		}
-
-		if (!selection_item->k_ring_selector.is_highlighting && ui_widget.Selection_type_combo_box->currentIndex() == 1)
-		{
-			ui_widget.lassoCheckBox->setEnabled(true);
-			ui_widget.Brush_size_spin_box->setEnabled(true);
-			ui_widget.Expand_reduce_spin_box->setEnabled(true);
-			ui_widget.Expand_reduce_button->setEnabled(true);
-		}
-	}
-
-	// Create selection item for selected polyhedron item
-	void on_Create_selection_item_button_clicked() {
-
-		Scene_face_graph_item* poly_item = qobject_cast<Scene_face_graph_item*>(scene->item(scene->mainSelectionIndex()));
-		if (!poly_item) {
-			print_message("Error: there is no selected "
-				"Surface_mesh "
-				"item!_mark");
-			return;
-		}
-		// all other arrangements (putting inside selection_item_map), setting names etc,
-		// other params (e.g. k_ring) will be set inside new_item_created
-		from_plugin = true;
-		Scene_polyhedron_selection_item* new_item = new Scene_polyhedron_selection_item(poly_item, mw);
-		new_item->setName(QString("%1 (selection)").arg(poly_item->name()));
-		//ui_widget.selectionOrEuler->setCurrentIndex(last_mode);
-		connectItem(new_item);
 	}
 
 	void on_LassoCheckBox_changed(bool b)
@@ -480,7 +446,7 @@ public Q_SLOTS:
 			it->second->set_lasso_mode(b);
 		}
 	}
-
+	
 	void on_selected_label_combo_box_changed(int index)
 	{
 		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
@@ -506,101 +472,54 @@ public Q_SLOTS:
 		Q_EMIT selection_item->selected_HL(temp_segment_faces);
 	}
 
-	void on_Selection_type_combo_box_changed(int index) {
+	void on_Smart_type_combo_box_changed(int index) {
 		
-		Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
+		//Scene_polyhedron_selection_item* selection_item = getSelectedItem<Scene_polyhedron_selection_item>();
 
 		typedef Scene_polyhedron_selection_item::Active_handle Active_handle;
 		for (Selection_item_map::iterator it = selection_item_map.begin(); it != selection_item_map.end(); ++it) {
 
-			/*******************************Ziqian && Weixiao*********************************/
-			
-			if (index == 0)
+			//reset
+			ui_widget.Brush_size_spin_box->setValue(0);
+			ui_widget.Expand_reduce_spin_box->setValue(0);
+			ui_widget.select_classes_comboBox->setCurrentIndex(0);
+
+			//enabled
+			ui_widget.select_facet_radioButton->setEnabled(true);
+			ui_widget.select_segment_radioButton->setEnabled(true);
+
+			//disabled
+			ui_widget.SelectClasses->setDisabled(true);
+			ui_widget.select_classes_comboBox->setDisabled(true);
+			ui_widget.lassoCheckBox->setChecked(false);
+
+			if (index == 0) //no smart functions
 			{
-				ui_widget.lassoCheckBox->show();
-				//ui_widget.Select_all_NTButton->show();
-				//ui_widget.Add_to_selection_button->hide();
-				//ui_widget.Select_boundaryButton->hide();
-				ui_widget.label->setDisabled(true);
-				ui_widget.Brush_size_spin_box->setValue(0);
-				ui_widget.Brush_size_spin_box->setDisabled(true);
-				ui_widget.Expand_reduce_spin_box->setValue(0);
-				ui_widget.Recommendation_button->setDisabled(true);
-				ui_widget.comboBox->setDisabled(true);
-				ui_widget.SelectClasses->setEnabled(true);
-				//********************Weixiao Update************************//
-				ui_widget.comboBox_2->setCurrentIndex(current_label_index);
-				ui_widget.comboBox_2->setEnabled(true);
-
-				ui_widget.lassoCheckBox->setChecked(false);
-				ui_widget.lassoCheckBox->setDisabled(true);
-
-				selection_item->poly_item->showFacetEdges(false);
-				//**********************************************************//
-				//ui_widget.Expand_reduce_button->setDisabled(true);
-				//ui_widget.Expand_reduce_spin_box->setDisabled(true);
-				//ui_widget.operationsBox->setDisabled(true);
-				//ui_widget.validateButton->setDisabled(true);
-				/**********************Ziqian and Weixiao***************************/
-				if (!first_activate)
-					check_selection_validation();
-				/*******************************************************/
-				it->second->set_active_handle_type(static_cast<Active_handle::Type>(index));
-				Q_EMIT save_handleType();
-
-				Q_EMIT set_operation_mode(-1);
-
+				//rendering
 				CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
-				selection_item->poly_item->setRenderingMode(TextureModePlusFlatEdges);
-				//CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
+				it->second->poly_item->setRenderingMode(TextureModePlusFlatEdges);
+				it->second->poly_item->showFacetEdges(false);
+
+				//enabled
+				ui_widget.SelectClasses->setEnabled(true);
+				ui_widget.select_classes_comboBox->setCurrentIndex(0);
+				ui_widget.select_classes_comboBox->setEnabled(true);
+
+				ui_widget.selection_rings_label->setEnabled(true);
+				ui_widget.Brush_size_spin_box->setEnabled(true);
+				ui_widget.Expand_reduce_spin_box->setEnabled(true);
+				ui_widget.Expand_reduce_button->setEnabled(true);
+				ui_widget.lassoCheckBox->setEnabled(true);
+				it->second->check_expand_reduce_enabled(true);
+
+				//clear
+				on_Clear_all_button_clicked();
+
+				//set seleciton mode
+				ui_widget.select_facet_radioButton->setChecked(false);
+				ui_widget.select_segment_radioButton->setChecked(true);
+				group_selection_type_radio();
 			}
-			if (index == 1)
-			{
-				// disable the conflicting functions
-
-				ui_widget.lassoCheckBox->setDisabled(true);
-				ui_widget.Brush_size_spin_box->setDisabled(true);
-				ui_widget.Expand_reduce_spin_box->setDisabled(true);
-				ui_widget.Expand_reduce_button->setDisabled(true);
-				//until highlight been selected, then true
-
-				ui_widget.label->setEnabled(true);
-
-
-				ui_widget.SelectClasses->setDisabled(true);
-				//********************Weixiao Update************************//
-				current_label_index = ui_widget.comboBox_2->currentIndex();
-				ui_widget.comboBox_2->setCurrentIndex(0);
-				ui_widget.comboBox_2->setDisabled(true);
-
-				ui_widget.Brush_size_spin_box->setValue(0);
-				ui_widget.Expand_reduce_spin_box->setValue(0);
-				//selection_item->k_ring_selector.is_highlighting;
-				//selection_item->poly_item->showFacetEdges(true);
-				//**********************************************************//
-
-				/**********************Ziqian && Weixiao***************************/
-				into_SEGMENT_TO_EDIT_mode();
-				/*******************************************************/
-
-				Q_EMIT set_operation_mode(12);
-			}
-			else if (index == 2)
-			{
-				Q_EMIT set_operation_mode(-1);
-			}
-			else if (index == 4)
-			{
-				it->second->setPathSelection(true);
-				Q_EMIT set_operation_mode(-2);
-			}
-			else
-			{
-				it->second->setPathSelection(false);
-				Q_EMIT set_operation_mode(-1);
-			}
-			/**********************************************************************/
-			
 		}
 	}
 
@@ -625,9 +544,7 @@ public Q_SLOTS:
 		}
 
 		int steps = ui_widget.Expand_reduce_spin_box->value();
-		/********************Ziqian********************/
 		selection_item->segment_expand_or_reduce(steps);
-		/**********************************************/
 	}
 	
 	// To handle empty selection items coming from loader
@@ -670,15 +587,11 @@ public Q_SLOTS:
 			return;
 		}
 
-		/***************Ziqian****************/
 		// now set default params both for selection items coming from selection_io, or on_Create_selection_item_button_clicked
-		Active_handle::Type aht = Active_handle::SEGMENT;//static_cast<Active_handle::Type>(ui_widget.Selection_type_combo_box->currentIndex());
+		Active_handle::Type aht = Active_handle::SEGMENT;//static_cast<Active_handle::Type>(ui_widget.Smart_type_combo_box->currentIndex());
 		
 		//bool is_insert = ui_widget.Insertion_radio_button->isChecked();
 		bool is_insert = true;
-
-		/**************************************/
-
 		int k_ring = ui_widget.Brush_size_spin_box->value();
 
 		selection_item->set_active_handle_type(aht);
@@ -694,6 +607,9 @@ public Q_SLOTS:
 		connect(selection_item, SIGNAL(updateInstructions(QString)), this, SLOT(setInstructions(QString)));
 		connect(selection_item, SIGNAL(printMessage(QString)), this, SLOT(printMessage(QString)));
 		connect(this, SIGNAL(set_operation_mode(int)), selection_item, SLOT(set_operation_mode(int)));
+
+		connect(this, SIGNAL(set_selection_mode_index(int)), selection_item, SLOT(set_selection_mode_index(int)));
+
 		//QObject* scene_ptr = dynamic_cast<QObject*>(scene);
 		//if (scene_ptr)
 		//  connect(selection_item,SIGNAL(simplicesSelected(CGAL::Three::Scene_item*)), scene_ptr, SLOT(setSelectedItem(CGAL::Three::Scene_item*)));
@@ -702,7 +618,7 @@ public Q_SLOTS:
 		on_LassoCheckBox_changed(ui_widget.lassoCheckBox->isChecked());
 		ui_widget.Brush_size_spin_box->setValue(0);
 		ui_widget.Expand_reduce_spin_box->setValue(0);
-		ui_widget.Selection_type_combo_box->setCurrentIndex(0);
+		ui_widget.Smart_type_combo_box->setCurrentIndex(0);
 		//if (!from_plugin) {
 		//	ui_widget.selectionOrEuler->setCurrentIndex(0);
 		//}
@@ -711,7 +627,7 @@ public Q_SLOTS:
 		//on_SelectionOrEuler_changed(ui_widget.selectionOrEuler->currentIndex());
 
 		if (last_mode == 0)
-			on_Selection_type_combo_box_changed(ui_widget.Selection_type_combo_box->currentIndex());
+			on_Smart_type_combo_box_changed(ui_widget.Smart_type_combo_box->currentIndex());
 	}
 
 	void item_about_to_be_destroyed(CGAL::Three::Scene_item* scene_item) {
@@ -740,8 +656,6 @@ public Q_SLOTS:
 			}
 		}
 	}
-	
-	/************************************************/
 
 private:
 	Messages_interface* messages;
@@ -755,10 +669,12 @@ private:
 	Selection_item_map selection_item_map;
 	int last_mode;
 	bool from_plugin;
-	//********************Weixiao Update************************//
 	int current_label_index = 0;
-	bool first_activate = true;
-	//**********************************************************//
+	bool first_activate = true, is_split_button_clicked = false;
+	SMesh* segment_mesh;
+	std::map<int, face_descriptor> original_fid_face_map, segment_fid_face_map;
+	Point_range_cgal face_center_point_set;
+	float segment_area = 0.0f;
 }; // end Polyhedron_demo_selection_plugin
 
 //Q_EXPORT_PLUGIN2(Polyhedron_demo_selection_plugin, Polyhedron_demo_selection_plugin)

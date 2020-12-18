@@ -15,17 +15,18 @@ and ***triangle faces***.
 
 ### (1) Segment annotation: 
 
+- Click ***'Segments'*** radio buttion.
 - Perform selection **(Shift+Left)** and deselection **(Shift+Right)**. 
 - Select the segment with incorrect semantic label.
 - Adds selection to the label category (**Shift + <u>Letters</u>** ).
-<center><img src="pics/segment_select_pipeline.png"></center>
+<center><img src="pics/segment_select_pipeline.png" width="1000" height="auto"></center>
 
-### (2) Triangle facets annotation: 
-- Change ***'Selection Mode'*** to ***Edit inside one segment***, then use **(Shift+Left)** 
- to select the highlighted one. 
+### (2) Triangle facets annotation:
+
+- Click ***'Triangles'*** radio buttion.  
 - Press **(Shift+Left)** to select or use ***Lasso*** to draw and follow the object boundary as much as possible. 
 - Adds selection to the label category (**Shift + <u>Letters</u>** ). 
-<center><img src="pics/segment_inside_pipeline.png"></center>
+<center><img src="pics/facet_pipeline.png" width="1000" height="auto"></center>
 
 ## 2. Useful Shortcuts
 * **Note :** For shortcuts on macOS, '**Ctrl**' is replaced by '**Command**'.
@@ -48,7 +49,6 @@ and ***triangle faces***.
 | Ctrl+F1                 | Save snapshot with camera parameters (*.txt).   |
 | Ctrl+F2                 | Load camera parameters(*.txt) and show the view.|
 
-
 ### 2.3 View Operations
 | Shortcuts     |     Descriptions         |
 | --------------| ---------------------    |
@@ -68,22 +68,28 @@ and ***triangle faces***.
 | Shift+(<u>Capital Letter</u>)  |Adds selection to the label category. |
 
 ## 3. Selection Panel Instruction
-<center><img src="pics/selection_edit_inside_one_segment.png"></center>
+<center><img src="pics/selection_modes.png"></center>
 
-* **Selection mode:** Activate 'Select segments' mode for selecting at the segment level, activate 'Edit inside one segment' mode for selecting
-at the triangle facet level.
-* **Multi-selection rings:** It's only valid in 'Edit inside one segment' mode. The number of rings decides the size of the selected area.
+#### 3.1 Selection Mode
+
+* **Selection type:** Click the 'Triangles' radio button for selecting at the triangle level; click the 'Segments' radio button for selecting at the segment level.
+
+#### 3.2 Selection Basics
+
+* **Multi-selection rings:** The number of rings decides the size of the selected area.
 * **Expand/Reduce:** Click 'Expand / Reduce' or 'Mouse wheel forward / backward' with certain number of rings to exapnd or reduce from the
 current selected area.
-* **Lasso:** It's only valid in 'Edit inside one segment' mode. Holding on Shift and Mouse Left Buton / Mouse Right Button to select / deselect the
-area with your drawing.
-* **Select Segment Class:** Select one semantic label from the combo box. The area with the selected label will be highlighted. Then click
+* **Lasso:** Holding on Shift and Mouse Left Buton / Mouse Right Button to select / deselect the area with your drawing (show in green).
+* **Select Segment Class:** It's only valid in 'Select segments'. Select one semantic label from the combo box. The area with the selected label will be highlighted. Then click
 'Select Semantic Class' to confirm the selection.
-* **Select All:** Select all segments in 'Select Segments' mode or select all triangle facet within a segment in 'Edit inside one segment' mode.
+* **Select All:** Select all segments in 'Select Segments' mode or select all triangle facet within a segment in 'Split planar segment with region growing' or 'Split non-planar segment with a stroke' mode.
 * **Inver Selection:** Invert select all segments in 'Select Segments' mode or invert select all triangle facet within a segment in
-'Edit inside one segment' mode.
+'Split planar segment with region growing' or 'Split non-planar segment with a stroke' mode.
 * **Clear Selection:** Clear all selected segments in 'Select Segments' mode or clear all selected triangle facet within a segment in
-'Edit inside one segment' mode
+'Split planar segment with region growing' or 'Split non-planar segment with a stroke' mode.
+
+#### 3.3 Smart Modes
+* **Coming soon:** To do!
 
 ## 4. Annotation Panel Instruction
 <center><img src="pics/annotation_panel.png"></center>

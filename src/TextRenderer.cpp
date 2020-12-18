@@ -4,21 +4,19 @@
 #include "Scene_polyhedron_selection_item.h"
 void TextRenderer::draw(CGAL::Three::Viewer_interface *viewer)
 {
-	//********************Weixiao Update************************//
+
 	viewer->glDisable(GL_DEPTH_TEST);
-	//**********************************************************//
+
 	QPainter *painter = viewer->getPainter();
 	if (!painter->isActive())
 		painter->begin(viewer);
 
-	//********************Weixiao Update************************//
 	//painter->setRenderHint(QPainter::HighQualityAntialiasing);
 	//painter->setRenderHint(QPainter::TextAntialiasing);
 	//painter->rotate(90);
 	//painter->scale(0, 0.75);
 	//painter->translate(5, 5);
 	//painter->shear(0.75, 0.75);//painter->shear(0.75, 0.75);
-	//**********************************************************//
 
 	QRect rect;
 	CGAL::qglviewer::Camera* camera = viewer->camera();
@@ -94,9 +92,7 @@ void TextRenderer::draw(CGAL::Three::Viewer_interface *viewer)
 		painter->drawText(rect, item->text());
 	}
 
-	//********************Weixiao Update************************//
 	viewer->glEnable(GL_DEPTH_TEST);
-	//**********************************************************//
 }
 
 void TextRenderer::addTextList(TextListItem *tl)

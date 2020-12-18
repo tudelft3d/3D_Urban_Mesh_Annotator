@@ -194,7 +194,7 @@ if(CGAL_Qt5_FOUND AND Qt5_FOUND AND OPENGL_FOUND )
     cgal_add_compilation_test(${item_name})
   endmacro(add_item)
 
-
+  add_item(scene_edit_box_item Plugins/PCA/Scene_edit_box_item.cpp )
   add_item(scene_surface_mesh_item Scene_surface_mesh_item.cpp)
 
   add_item(scene_polylines_item Scene_polylines_item.cpp)
@@ -216,6 +216,8 @@ if(CGAL_Qt5_FOUND AND Qt5_FOUND AND OPENGL_FOUND )
 
   add_item(scene_polygon_soup_item Scene_polygon_soup_item.cpp)
   target_link_libraries(scene_polygon_soup_item PUBLIC scene_surface_mesh_item)
+
+  add_item(scene_points_with_normal_item Scene_points_with_normal_item.cpp)
 
   foreach( lib 
       demo_framework
@@ -285,6 +287,7 @@ if(CGAL_Qt5_FOUND AND Qt5_FOUND AND OPENGL_FOUND )
     TARGETS
     demo_framework
     scene_surface_mesh_item
+    scene_points_with_normal_item
     scene_color_ramp
     scene_polylines_item
     scene_selection_item

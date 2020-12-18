@@ -10,6 +10,11 @@
 #include <QMainWindow>
 #include <QObject>
 #include <CGAL/Three/Viewer_interface.h>
+#include <CGAL/Three/Three.h>
+
+//********
+#include <CGAL/linear_least_squares_fitting_3.h>
+#include <CGAL/squared_distance_3.h>
 
 #include <map>
 #include <queue>
@@ -66,10 +71,8 @@ public:
 
 	struct Active_handle {
 		enum Type {
-			/**************************Ziqian********************************/
 			SEGMENT = 0, FACET = 1, VERTEX = 2, EDGE = 3, CONNECTED_COMPONENT = 4,
-			PATH = 5, SEGMENT_TO_EDIT = 6
-			/****************************************************************/
+			PATH = 5
 		};
 	};
 
@@ -90,13 +93,19 @@ public:
 	int                    k_ring;
 	Scene_facegraph_item* poly_item;
 	/*****************/
-	int recommendation_state; // 0:without recommendation  1:in recommendation, waiting for the firt draw
-	//2: in recommendation, waiting for the second draw; 3:second draw done, to back to 0
-	bool hit_once;
-	int count_second_draw;
-	bool in_second;
-	std::set<fg_face_descriptor> front_sel;
-	std::set<fg_face_descriptor> back_sel;
+
+	bool is_new_candiante = false;
+
+	std::map<fg_face_descriptor, bool> selected_facet_map;
+
+	std::map<int, std::vector<int>> face_id_neighbors;
+
+	std::map<int, int> global_local_face_map, local_global_face_map;
+	std::map<int, fg_face_descriptor> globalid_face_map;
+
+	int selection_mode_index = 1; //0: facets; 1: segments
+
+	bool expand_or_reduce_enabled = false;
 	/*****************/
 
 	bool is_active;
@@ -126,22 +135,12 @@ public:
 		this->k_ring = k_ring;
 		polyline = new Polylines(0);
 		polyline->push_back(Polyline_2());
-		/*********************************/
-		polyline2 = new Polylines(0);
-		polyline2->push_back(Polyline_2());
-		/*********************************/
 
 		mainwindow = mw;
 		is_highlighting = false;
 		is_ready_to_highlight = true;
 		is_ready_to_paint_select = true;
 		is_lasso_active = false;
-		/*****************/
-		recommendation_state = 0;
-		hit_once = 0;
-		count_second_draw = 0;
-		in_second = false;
-		/*****************/
 
 		CGAL::QGLViewer* viewer = *CGAL::QGLViewer::QGLViewerPool().begin();
 		viewer->installEventFilter(this);
@@ -157,9 +156,11 @@ public:
 		is_current_selection = b;
 	}
 	void set_lasso_mode(bool b) { is_lasso_active = b; }
-	/********************************/
-	void set_recommendation(int b) { recommendation_state = b; }
-	/********************************/
+
+	void check_expand_reduce_enabled(bool b)
+	{
+		expand_or_reduce_enabled = b;
+	}
 
 public Q_SLOTS:
 	// slots are called by signals of polyhedron_item
@@ -190,14 +191,12 @@ public Q_SLOTS:
 			size_type h = static_cast<size_type>(reinterpret_cast<std::size_t>(void_ptr));
 			process_selection(static_cast<fg_face_descriptor>(h));
 		}
-		/*******************Ziqian*********************/
-		else if (active_handle_type == Active_handle::SEGMENT ||
-			active_handle_type == Active_handle::SEGMENT_TO_EDIT) {
+		else if (active_handle_type == Active_handle::SEGMENT) 
+		{
 			typedef boost::graph_traits<FaceGraph>::faces_size_type size_type;
 			size_type h = static_cast<size_type>(reinterpret_cast<std::size_t>(void_ptr));
 			process_segment_selection(static_cast<fg_face_descriptor>(h));
 		}
-		/**********************************************/
 		updateIsTreated();
 	}
 
@@ -355,12 +354,11 @@ public Q_SLOTS:
 			if (is_cc_done[get(fccmap, f)])
 				final_sel.insert(f);
 		}
+
 		switch (active_handle_type)
 		{
 		case Active_handle::FACET:
-			/**************Ziqian***************/
 			selected(final_sel);
-			/***********************************/
 			break;
 		case Active_handle::EDGE:
 		{
@@ -399,22 +397,23 @@ public Q_SLOTS:
 			selected(v_sel);
 			break;
 		}
-		/**************************Ziqian*************************/
-		case Active_handle::SEGMENT: {
+		case Active_handle::SEGMENT: 
+		{
 			std::set<fg_face_descriptor> seg_sel;
 			BOOST_FOREACH(fg_face_descriptor f, final_sel)
 			{
 				std::set<fg_face_descriptor> pre_segment = get_segment(f);
-				for (std::set<fg_face_descriptor>::iterator p = pre_segment.begin(); p != pre_segment.end(); p++) {
+				for (std::set<fg_face_descriptor>::iterator p = pre_segment.begin(); p != pre_segment.end(); p++) 
+				{
 					seg_sel.insert(*p);
 				}
 			}
 			selected(seg_sel);
 		}
-		/*********************************************************/
 		default:
 			break;
 		}
+
 		contour_2d.clear();
 		Q_EMIT endSelection();
 		qobject_cast<CGAL::Three::Viewer_interface*>(viewer)->set2DSelectionMode(false);
@@ -471,10 +470,7 @@ Q_SIGNALS:
 	void resetIsTreated();
 	void isCurrentlySelected(Scene_facegraph_item_k_ring_selection*);
 	void clearHL();
-	/********************************/
-	void doubleSelect(const std::set<fg_face_descriptor>&,const  std::set<fg_face_descriptor>&);
-	/********************************/
-
+	void clearSL();
 
 protected:
 
@@ -493,7 +489,7 @@ protected:
 	void process_selection(HandleType clicked) {
 		//keeps the highlighting on track if the brush_size is not 0
 		int current_ring = 0;
-		if (active_handle_type != Active_handle::PATH && !is_edit_mode)
+		if ((active_handle_type != Active_handle::PATH && !is_edit_mode))
 			current_ring = k_ring;
 		const std::set<HandleType>& selection = extract_k_ring(clicked, current_ring);
 		if (is_highlighting)
@@ -516,16 +512,6 @@ protected:
 		else
 			Q_EMIT selected(selection);
 	}
-	//void process_segment_selection(fg_face_descriptor clicked) {
-	//	const std::set<fg_face_descriptor>& selection = get_segment(clicked);
-	//	if (is_highlighting)
-	//	{
-	//		Q_EMIT selected_HL(selection);
-	//	}
-	//	else
-	//		Q_EMIT selected(selection);
-	//}
-	/******************************************************/
 
 	template <class Handle>
 	struct Is_selected_from_set {
@@ -590,7 +576,6 @@ protected:
 		return selection;
 	}
 
-	/**********************Ziqian && Weixiao************************/
 	std::set<fg_face_descriptor>
 		get_segment(fg_face_descriptor f)
 	{
@@ -604,221 +589,11 @@ protected:
 		return temp_segment_faces;
 	}
 
-	void treat_first_draw() {
-		std::cerr << "first draw done. " << recommendation_state << std::endl;
-
-		CGAL::QGLViewer* viewer = *CGAL::QGLViewer::QGLViewerPool().begin();
-		const CGAL::qglviewer::Vec offset = static_cast<CGAL::Three::Viewer_interface*>(viewer)->offset();
-
-		CGAL::qglviewer::Camera* camera = viewer->camera();
-		const FaceGraph& poly = *poly_item->polyhedron();
-
-		boost::property_map<FaceGraph, CGAL::vertex_point_t>::const_type vpmap = get(boost::vertex_point, poly);
-		std::set<fg_face_descriptor> temp_sel;
-		//select all faces if their screen projection is inside the lasso
-		BOOST_FOREACH(fg_face_descriptor f, faces(poly))
-		{
-			BOOST_FOREACH(fg_vertex_descriptor v, CGAL::vertices_around_face(halfedge(f, poly), poly))
-			{
-				FG_Traits::Point_3 p = get(vpmap, v);
-				CGAL::qglviewer::Vec vp(p.x(), p.y(), p.z());
-				CGAL::qglviewer::Vec vsp = camera->projectedCoordinatesOf(vp + offset);
-				if (is_vertex_selected(vsp))
-				{
-					temp_sel.insert(f);
-					break;
-				}
-			}
-		}
-		//get border edges of the selected patches
-
-		std::vector<fg_halfedge_descriptor> boundary_edges;
-		CGAL::Polygon_mesh_processing::border_halfedges(temp_sel, poly, std::back_inserter(boundary_edges));
-		std::vector<bool> mark(edges(poly).size(), false);
-		boost::property_map<FaceGraph, boost::edge_index_t>::type edge_index
-			= get(boost::edge_index, poly);
-		FG_is_selected_edge_property_map spmap(mark, &edge_index);
-		BOOST_FOREACH(fg_halfedge_descriptor h, boundary_edges)
-			put(spmap, edge(h, poly), true);
-
-		boost::vector_property_map<int,
-			boost::property_map<FaceGraph, boost::face_index_t>::type>
-			fccmap;
-
-		//get connected componant from the picked face
-		//std::vector<Polyhedron::Face_handle> cc;
-		std::size_t nb_cc = CGAL::Polygon_mesh_processing::connected_components(poly
-			, fccmap
-			, CGAL::Polygon_mesh_processing::parameters::edge_is_constrained_map(spmap));
-		std::vector<bool> is_cc_done(nb_cc, false);
-
-		BOOST_FOREACH(fg_face_descriptor f, temp_sel)
-		{
-			int cc_id = get(fccmap, f);
-			if (is_cc_done[cc_id])
-			{
-				continue;
-			}
-			CGAL::Halfedge_around_face_circulator<FaceGraph> hafc(halfedge(f, poly), poly);
-			CGAL::Halfedge_around_face_circulator<FaceGraph> end = hafc;
-			double x(0), y(0), z(0);
-			int total(0);
-			CGAL_For_all(hafc, end)
-			{
-				FG_Traits::Point_3 p = get(vpmap, target(*hafc, poly));
-				x += p.x(); y += p.y(); z += p.z();
-				total++;
-			}
-			if (total == 0)
-				continue;
-			CGAL::qglviewer::Vec center(x / (double)total, y / (double)total, z / (double)total);
-			CGAL::qglviewer::Vec orig;
-			CGAL::qglviewer::Vec dir;
-			if (camera->type() == CGAL::qglviewer::Camera::PERSPECTIVE)
-			{
-				orig = camera->position() - offset;
-				dir = center - orig;
-			}
-			else
-			{
-				dir = camera->viewDirection();
-				orig = CGAL::qglviewer::Vec(center.x - dir.x,
-					center.y - dir.y,
-					center.z - dir.z);
-			}
-			if (poly_item->intersect_face(orig.x,
-				orig.y,
-				orig.z,
-				dir.x,
-				dir.y,
-				dir.z,
-				f))
-			{
-				is_cc_done[cc_id] = true;
-			}
-		}
-		BOOST_FOREACH(fg_face_descriptor f, faces(poly))
-		{
-			if (is_cc_done[get(fccmap, f)])
-				front_sel.insert(f);
-		}
+	std::size_t	get_segment_id(fg_face_descriptor f)
+	{
+		std::size_t seg_id = poly_item->face_segment_id[f];
+		return seg_id;
 	}
-
-	void treat_second_draw() {
-		std::cerr << "second draw done. " << recommendation_state << std::endl;
-		if (recommendation_state == 0)
-			return;
-		CGAL::QGLViewer* viewer = *CGAL::QGLViewer::QGLViewerPool().begin();
-		const CGAL::qglviewer::Vec offset = static_cast<CGAL::Three::Viewer_interface*>(viewer)->offset();
-		const FaceGraph& poly = *poly_item->polyhedron();
-		CGAL::qglviewer::Camera* camera = viewer->camera();
-
-		boost::property_map<FaceGraph, CGAL::vertex_point_t>::const_type vpmap = get(boost::vertex_point, poly);
-		std::set<fg_face_descriptor> temp_sel;
-		//select all faces if their screen projection is inside the lasso
-		BOOST_FOREACH(fg_face_descriptor f, faces(poly))
-		{
-			BOOST_FOREACH(fg_vertex_descriptor v, CGAL::vertices_around_face(halfedge(f, poly), poly))
-			{
-				FG_Traits::Point_3 p = get(vpmap, v);
-				CGAL::qglviewer::Vec vp(p.x(), p.y(), p.z());
-				CGAL::qglviewer::Vec vsp = camera->projectedCoordinatesOf(vp + offset);
-				if (is_vertex_selected(vsp))
-				{
-					temp_sel.insert(f);
-					break;
-				}
-			}
-		}
-		//get border edges of the selected patches
-
-		std::vector<fg_halfedge_descriptor> boundary_edges;
-		CGAL::Polygon_mesh_processing::border_halfedges(temp_sel, poly, std::back_inserter(boundary_edges));
-		std::vector<bool> mark(edges(poly).size(), false);
-		boost::property_map<FaceGraph, boost::edge_index_t>::type edge_index
-			= get(boost::edge_index, poly);
-		FG_is_selected_edge_property_map spmap(mark, &edge_index);
-		BOOST_FOREACH(fg_halfedge_descriptor h, boundary_edges)
-			put(spmap, edge(h, poly), true);
-
-		boost::vector_property_map<int,
-			boost::property_map<FaceGraph, boost::face_index_t>::type>
-			fccmap;
-
-		//get connected componant from the picked face
-		//std::vector<Polyhedron::Face_handle> cc;
-		std::size_t nb_cc = CGAL::Polygon_mesh_processing::connected_components(poly
-			, fccmap
-			, CGAL::Polygon_mesh_processing::parameters::edge_is_constrained_map(spmap));
-		std::vector<bool> is_cc_done(nb_cc, false);
-
-		BOOST_FOREACH(fg_face_descriptor f, temp_sel)
-		{
-			int cc_id = get(fccmap, f);
-			if (is_cc_done[cc_id])
-			{
-				continue;
-			}
-			CGAL::Halfedge_around_face_circulator<FaceGraph> hafc(halfedge(f, poly), poly);
-			CGAL::Halfedge_around_face_circulator<FaceGraph> end = hafc;
-			double x(0), y(0), z(0);
-			int total(0);
-			CGAL_For_all(hafc, end)
-			{
-				FG_Traits::Point_3 p = get(vpmap, target(*hafc, poly));
-				x += p.x(); y += p.y(); z += p.z();
-				total++;
-			}
-			if (total == 0)
-				continue;
-			CGAL::qglviewer::Vec center(x / (double)total, y / (double)total, z / (double)total);
-			CGAL::qglviewer::Vec orig;
-			CGAL::qglviewer::Vec dir;
-			if (camera->type() == CGAL::qglviewer::Camera::PERSPECTIVE)
-			{
-				orig = camera->position() - offset;
-				dir = center - orig;
-			}
-			else
-			{
-				dir = camera->viewDirection();
-				orig = CGAL::qglviewer::Vec(center.x - dir.x,
-					center.y - dir.y,
-					center.z - dir.z);
-			}
-			if (poly_item->intersect_face(orig.x,
-				orig.y,
-				orig.z,
-				dir.x,
-				dir.y,
-				dir.z,
-				f))
-			{
-				is_cc_done[cc_id] = true;
-			}
-		}
-		BOOST_FOREACH(fg_face_descriptor f, faces(poly))
-		{
-			if (is_cc_done[get(fccmap, f)])
-				back_sel.insert(f);
-		}
-		
-		process_recommendation();
-		is_lasso_active = false;
-		contour_2d.clear();
-		contour_2d_2.clear();
-		Q_EMIT endSelection();
-		qobject_cast<CGAL::Three::Viewer_interface*>(viewer)->set2DSelectionMode(false);
-	}
-
-	void process_recommendation() {
-		if (front_sel.empty() || back_sel.empty()) {
-			std::cerr << "front or back is empty!" << std::endl;
-		}
-
-		doubleSelect(front_sel, back_sel);
-	}
-	/****************************************************/
 
 	bool eventFilter(QObject* target, QEvent* event)
 	{
@@ -864,45 +639,16 @@ protected:
 					Q_EMIT clearHL();
 				if (!state.left_button_pressing && !state.right_button_pressing)//MouseButtonRelease
 				{
-					//std::cerr << "is_active "<< is_active <<" recommendation_state "<< recommendation_state << " lasso_active "<<is_lasso_active<<std::endl;
-					/******************************************/
-					switch (recommendation_state)
+					if (is_active)
 					{
-					case 0:
-						if (is_active)
-						{
-							Q_EMIT endSelection();
-							is_active = false;
-						}
-						if (is_lasso_active)
-						{
-							apply_path();
-							lasso_selection();//perform lasso selection
-						}
-						break;
-						// in recommedation mode
-					case 1:
-						if (hit_once == 1)
-							recommendation_state = 2;
-						hit_once = 1 - hit_once;
 						Q_EMIT endSelection();
 						is_active = false;
-						apply_path();
-						treat_first_draw();
-						break;
-					case 2:
-						if (hit_once == 1)
-							recommendation_state = 0;
-						hit_once = 1 - hit_once;
-						Q_EMIT endSelection();
-						is_active = false;
-						apply_path_2();
-						treat_second_draw();
-						break;
-					case 3:
-						break;
 					}
-					/******************************************/
+					if (is_lasso_active)
+					{
+						apply_path();
+						lasso_selection();//perform lasso selection
+					}
 				}
 			}
 			//to avoid the contextual menu to mess up the states.
@@ -938,33 +684,27 @@ protected:
 				{
 					QTimer::singleShot(0, this, SLOT(paint_selection()));//perform paint selection
 				}
-				//std::cout << "here" << std::endl;
 			}
 			else//lasso
 			{
-				if (event->type() != QEvent::MouseMove)
-				{
+				//if (event->type() != QEvent::MouseMove)
+				//{
 					//Create a QImage of the screen and paint the lasso on top of it
 					background = static_cast<CGAL::Three::Viewer_interface*>(*CGAL::QGLViewer::QGLViewerPool().begin())->grabFramebuffer();
-				}
-				/****************************************/
-				switch (recommendation_state) {
-				case 0:
+				//}
+
+				if (!background.isNull())
+				{
 					sample_mouse_path(background);
-					break;
-				case 1:
-					sample_mouse_path(background, Qt::darkRed);
-					break;
-				case 2:
-					sample_mouse_path(background, Qt::darkRed, 2, Qt::darkBlue);
-					break;
 				}
-				/****************************************/
+
 			}
 		}
 		//if in edit_mode and the mouse is moving without left button pressed :
 		// highlight the primitive under cursor
-		else if (is_edit_mode && event->type() == QEvent::MouseMove && (!state.left_button_pressing || !state.right_button_pressing))
+		else if (is_edit_mode && 
+			event->type() == QEvent::MouseMove && 
+			(!state.left_button_pressing || !state.right_button_pressing))
 		{
 			if (target == mainwindow)
 			{
@@ -987,13 +727,9 @@ protected:
 	bool is_lasso_active;
 	QPoint hl_pos;
 	QPoint paint_pos;
-
 	Polyline_2 contour_2d;
-	Polyline_2 contour_2d_2;
 	Polylines* polyline;
-	Polylines* polyline2;
 	Polyline_2& poly() const { return polyline->front(); }
-	Polyline_2& poly2() const { return polyline2->front(); }
 	Polygon_2 lasso;
 	CGAL::Bbox_2 domain_rectangle;
 	bool update_polyline() const
@@ -1013,27 +749,12 @@ protected:
 		return true;
 	}
 
-	bool update_polyline_2() const
-	{
-		if (contour_2d_2.size() < 2 ||
-			(!(poly2().empty()) && contour_2d_2.back() == poly2().back()))
-			return false;
-		poly2().clear();
-		for (unsigned int i = 0; i < contour_2d_2.size(); ++i)
-			poly2().push_back(contour_2d_2[i]);
-		return true;
-	}
-
-	void sample_mouse_path(QImage& background, QColor color = Qt::green, int draw_number = 1, QColor color2 = Qt::yellow)
+	void sample_mouse_path(QImage& background, QColor color = Qt::green)
 	{
 		CGAL::Three::Viewer_interface* viewer = static_cast<CGAL::Three::Viewer_interface*>(*CGAL::QGLViewer::QGLViewerPool().begin());
 		viewer->makeCurrent();
 		const QPoint& p = viewer->mapFromGlobal(QCursor::pos());
-		if (draw_number == 2) {
-			contour_2d_2.push_back(FG_Traits::Point_2(p.x(), p.y()));
-		}
-		else
-			contour_2d.push_back(FG_Traits::Point_2(p.x(), p.y()));
+		contour_2d.push_back(FG_Traits::Point_2(p.x(), p.y()));
 
 		if (update_polyline())
 		{
@@ -1066,66 +787,6 @@ protected:
 			viewer->setStaticImage(temp);
 			viewer->update();
 		}
-		if (recommendation_state == 2) {
-			if (update_polyline_2())
-			{
-				//Create a QImage of the screen and paint the lasso on top of it
-				QImage temp2(background);
-				QPainter* painter2 = new QPainter(&temp2);
-				QPen pen2;
-				pen2.setColor(color2);
-				pen2.setWidth(3);
-				painter2->setPen(pen2);
-				for (std::size_t i = 0; i < polyline2->size(); ++i)
-				{
-					Polyline_2 poly = (*polyline2)[i];
-					if (!poly.empty())
-						for (std::size_t j = 0; j < poly.size() - 1; ++j)
-						{
-							painter2->drawLine(int(poly[j].x()),
-								int(poly[j].y()),
-								int(poly[j + 1].x()),
-								int(poly[j + 1].y()));
-						}
-				}
-				painter2->end();
-				delete painter2;
-				viewer->set2DSelectionMode(true);
-				viewer->setStaticImage(temp2);
-				viewer->update();
-			}
-		}
-		//if (draw_number == 2) {
-		//	if (update_polyline_2())
-		//	{
-		//		//update draw
-		//		QPen pen;
-		//		pen.setColor(color2);
-		//		pen.setWidth(3);
-		//		//Create a QImage of the screen and paint the lasso on top of it
-		//		QImage temp(background);
-		//		QPainter* painter = new QPainter(&temp);
-		//		//painter->begin(&image);
-		//		painter->setPen(pen);
-		//		for (std::size_t i = 0; i < polyline2->size(); ++i)
-		//		{
-		//			Polyline_2 poly = (*polyline2)[i];
-		//			if (!poly.empty())
-		//				for (std::size_t j = 0; j < poly.size() - 1; ++j)
-		//				{
-		//					painter->drawLine(int(poly[j].x()),
-		//						int(poly[j].y()),
-		//						int(poly[j + 1].x()),
-		//						int(poly[j + 1].y()));
-		//				}
-		//		}
-		//		painter->end();
-		//		delete painter;
-		//		viewer->set2DSelectionMode(true);
-		//		viewer->setStaticImage(temp);
-		//		viewer->update();
-		//	}
-		//}
 	}
 
 	void apply_path()
@@ -1133,12 +794,6 @@ protected:
 		update_polyline();
 		domain_rectangle = CGAL::bbox_2(contour_2d.begin(), contour_2d.end());
 		lasso = Polygon_2(contour_2d.begin(), contour_2d.end());
-	}
-	void apply_path_2()
-	{
-		update_polyline_2();
-		domain_rectangle = CGAL::bbox_2(contour_2d_2.begin(), contour_2d_2.end());
-		lasso = Polygon_2(contour_2d_2.begin(), contour_2d_2.end());
 	}
 
 	bool is_vertex_selected(CGAL::qglviewer::Vec& p)

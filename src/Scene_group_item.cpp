@@ -185,12 +185,10 @@ void Scene_group_item::renderChildren(Viewer_interface *viewer,
        getChild(id)->renderingMode() == Flat ||
         getChild(id)->renderingMode() == FlatPlusEdges ||
         getChild(id)->renderingMode() == Gouraud ||
-		   //***********************Weixiao Update add rendering mode*******************************//
 		   getChild(id)->renderingMode() == TextureMode ||
 		   getChild(id)->renderingMode() == TextureModePlusFlatEdges ||
-		//***********************Zi qian + gwx*******************************//
 			getChild(id)->renderingMode() == Emphasizing))
-    {    //*******************************************************************//
+    {    
       getChild(id)->draw(viewer);
     }
 

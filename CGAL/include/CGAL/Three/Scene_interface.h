@@ -44,9 +44,7 @@ enum RenderingMode
 	ShadedPoints, //!Renders only points with lighting.
 	TextureMode = 7,//!Renders faces with texture.
 	TextureModePlusFlatEdges = 8,
-	/*************Ziqian**************/
 	Emphasizing = 9,
-	/*********************************/
 
 	NumberOfRenderingMode //!Number of values in this enum.
 };

@@ -49,7 +49,9 @@ public:
   bool segment_form() {
 	  if (m_selection == NULL)
 		  return true;
-	  if (m_selection->get_active_handle_type_public() == 1) {
+
+	  if (m_selection->get_active_handle_type_public() == 1 || 
+		  m_selection->get_active_handle_type_public() == 7) {
 		  if (!m_selection->put_selected_faces_into_one_segment()) {
 			  return false;
 		  }
@@ -57,12 +59,6 @@ public:
 	  return true;
   }
   /***********************************************************/
-  //***************************Weixiao**********************//
-  //void show_labeling_progress()
-  //{
-
-  //}
-  //*******************************************************//
   void add_selection_to_training_set (std::size_t label)
   {
     if (m_selection == NULL)
@@ -81,8 +77,10 @@ public:
 		  ++updated_labeled_faces;
 		  m_face_checked[*it] = true;
 	  }
+
+	  if (m_mesh->face_label[*it] == -1)
+		  --unlabelled_num_faces_global;
     }
-    m_selection->clear_all();
 
 	m_selection->polyhedron_item()->is_in_annotation = true;
     //if (m_index_color == 1 || m_index_color == 2)
@@ -91,6 +89,7 @@ public:
 	m_mesh->total_labeled_faces += updated_labeled_faces;
 	//***********************Weixiao Update update color in all views*******************************//
 	change_color(m_index_color);
+	m_selection->clear_all();
 	//*******************************************************************//
   }
   
@@ -166,6 +165,7 @@ public:
   int get_unlabelled_number_facets();
   int get_total_labeled_facets();
   int get_total_error_facets();
+  int unlabelled_num_faces_global = 0;
   //************************************************************//
   CGAL::Three::Scene_item* generate_one_item (const char* /* name */,
                                               int /* label */) const

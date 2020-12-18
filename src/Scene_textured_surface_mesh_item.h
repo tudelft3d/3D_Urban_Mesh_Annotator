@@ -4,6 +4,7 @@
 #include <CGAL/Three/Viewer_interface.h>
 #include "SMesh_type.h"
 #include <iostream>
+#include <vector>
 #include "texture.h"
 
 #ifdef scene_textured_item_EXPORTS
@@ -28,8 +29,11 @@ public:
 
   //***********************Weixiao Update add uvmap*******************************//
   //Get texture information
-  SMesh *mesh_in;
+  SMesh *mesh_in = new SMesh;
   SMesh::Property_map<halfedge_descriptor, std::pair<float, float> > uv_map;
+  std::map<int, Kernel::Point_3> vertices_coords_tex;
+  std::map<face_descriptor, std::vector<int>> face_vertex_inds_tex;
+  std::map<face_descriptor, std::vector<float>> face_texcoord;
   QImage texture_image_in;
   ////*******************************************************************//
 

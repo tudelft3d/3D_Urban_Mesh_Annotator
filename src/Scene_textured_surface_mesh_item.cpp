@@ -32,11 +32,9 @@ struct Scene_textured_surface_mesh_item_priv
     //texture.GenerateCheckerBoard(2048,2048,128,0,0,0,250,250,255);
 
 	//uv = sm->add_property_map<halfedge_descriptor, std::pair<float, float> >("h:uv", std::make_pair(0.0f, 0.0f)).first;
-	
-	//***********************Weixiao Update add uv map*******************************//
+
 	if(!sm->null_face())
 		uv = sm->add_property_map<halfedge_descriptor,std::pair<float, float> >("h:uv",std::make_pair(0.0f,0.0f)).first;
-	//*******************************************************************//
   }
 
   ~Scene_textured_surface_mesh_item_priv()
@@ -52,18 +50,14 @@ struct Scene_textured_surface_mesh_item_priv
     Edges,
     Border_edges,
     NbOfVaos,
-	//***********************Weixiao Update vertices =4*******************************//
 	Vertices = 4
-	//*******************************************************************//
   };
   enum VBOs {
     B_Facets=0,
     B_Edges,
     B_Border_Edges,
     NbOfVbos,
-	//***********************Weixiao Update vertices =4*******************************//
 	B_Vertices = 4
-	//*******************************************************************//
   };
 
   SMesh* sm;
@@ -71,10 +65,8 @@ struct Scene_textured_surface_mesh_item_priv
   SMesh::Property_map<halfedge_descriptor,std::pair<float, float> > uv;
   mutable GLuint textureId;
 
-  //***********************Weixiao Update add image*******************************//
   mutable int image_width, image_height;
   mutable uchar *image_data;
-  //*******************************************************************//
 
   mutable QOpenGLShaderProgram* program;
   //[Px][Py][Pz][Nx][Ny][Nz][u][v]
@@ -148,7 +140,7 @@ void Scene_textured_surface_mesh_item_priv::initializeBuffers(CGAL::Three::Viewe
 	 // GL_RGB,
 	 // GL_UNSIGNED_BYTE,
 	 // texture.GetData());
-	//***********************Weixiao Update add image*******************************//
+
   if (image_width == 0 || image_height == 0)
   {
 	  image_data = texture.GetData();
@@ -175,7 +167,6 @@ void Scene_textured_surface_mesh_item_priv::initializeBuffers(CGAL::Three::Viewe
 		 // GL_RGBA,
 		 // GL_UNSIGNED_BYTE,
 		 // image_data);
-  //*******************************************************************//
 
   viewer->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   viewer->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -271,16 +262,6 @@ Scene_textured_surface_mesh_item_priv::compute_normals_and_vertices(void) const
   QApplication::restoreOverrideCursor();
 }
 
-//Scene_textured_surface_mesh_item::Scene_textured_surface_mesh_item()
-//  : Scene_item(Scene_textured_surface_mesh_item_priv::NbOfVbos,Scene_textured_surface_mesh_item_priv::NbOfVaos)
-//{
-//  cur_shading=FlatPlusEdges;
-//  is_selected=false;
-//  d = new Scene_textured_surface_mesh_item_priv(this);
-//  invalidateOpenGLBuffers();
-//}
-
-//***********************Weixiao Update set image*******************************//
 Scene_textured_surface_mesh_item::Scene_textured_surface_mesh_item
 () : Scene_item(Scene_textured_surface_mesh_item_priv::NbOfVbos, Scene_textured_surface_mesh_item_priv::NbOfVaos)
 {
@@ -288,13 +269,11 @@ Scene_textured_surface_mesh_item::Scene_textured_surface_mesh_item
 	is_selected = false;
 	d = new Scene_textured_surface_mesh_item_priv(mesh_in, this);
 	d->uv = uv_map;
-
 	d->image_data = texture_image_in.bits();
 	d->image_width = texture_image_in.width();
 	d->image_height = texture_image_in.height();
 	//invalidateOpenGLBuffers();
 }
-//*******************************************************************//
 
 Scene_textured_surface_mesh_item::Scene_textured_surface_mesh_item(SMesh* const p)
   : Scene_item(Scene_textured_surface_mesh_item_priv::NbOfVbos,Scene_textured_surface_mesh_item_priv::NbOfVaos)
@@ -387,8 +366,8 @@ void Scene_textured_surface_mesh_item::drawEdges(CGAL::Three::Viewer_interface* 
     d->initializeBuffers(viewer);
 
   vaos[Scene_textured_surface_mesh_item_priv::Edges]->bind();
-  viewer->glActiveTexture(GL_TEXTURE0);
-  viewer->glBindTexture(GL_TEXTURE_2D, d->textureId);
+  //viewer->glActiveTexture(GL_TEXTURE0);
+  //viewer->glBindTexture(GL_TEXTURE_2D, d->textureId);
   attribBuffers(viewer, PROGRAM_WITH_TEXTURED_EDGES);
 
   d->program=getShaderProgram(PROGRAM_WITH_TEXTURED_EDGES);
@@ -450,7 +429,6 @@ Scene_textured_surface_mesh_item::compute_bbox() const {
 void
 Scene_textured_surface_mesh_item::invalidateOpenGLBuffers()
 {
-	//***********************Weixiao Update set image*******************************//
 	if (d->sm->null_face())
 	{
 		d->sm = this->mesh_in;
@@ -459,7 +437,6 @@ Scene_textured_surface_mesh_item::invalidateOpenGLBuffers()
 		d->image_width = this->texture_image_in.width();
 		d->image_height = this->texture_image_in.height();
 	}
-	//*******************************************************************//
   are_buffers_filled = false;
   compute_bbox();
 }

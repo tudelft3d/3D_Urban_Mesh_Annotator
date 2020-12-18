@@ -1,9 +1,8 @@
 #include "config.h"
 #include "Scene.h"
 
-//********************Weixiao Update************************//
 #include <CGAL/Three/Three.h>
-//**********************************************************//
+
 #include <CGAL/Three/Scene_item.h>
 #include <CGAL/Three/Scene_print_item_interface.h>
 #include <CGAL/Three/Scene_transparent_interface.h>
@@ -508,8 +507,6 @@ bool item_should_be_skipped_in_draw(Scene_item* item) {
 	return true;
 }
 
-
-//********************Weixiao Update************************//
 void Scene::SwitchRenderingMode(CGAL::Three::Viewer_interface *, const int rendering_num)
 {
 	Scene_item* it;
@@ -562,7 +559,6 @@ void Scene::SwitchRenderingMode(CGAL::Three::Viewer_interface *, const int rende
 		break;
 	}
 }
-//**********************************************************//
 
 void Scene::renderScene(const QList<Scene_interface::Item_id>& items,
 	Viewer_interface* viewer,
@@ -592,11 +588,8 @@ void Scene::renderScene(const QList<Scene_interface::Item_id>& items,
 		if (group || item.visible())
 		{
 			if (group || item.renderingMode() == Flat || item.renderingMode() == FlatPlusEdges || item.renderingMode() == Gouraud
-				//***********************Weixiao Update add rendering mode*******************************//
 				|| item.renderingMode() == TextureMode || item.renderingMode() == TextureModePlusFlatEdges
-				//*****************************Ziqian********************************//
 				|| item.renderingMode() == Emphasizing)
-				/*********************************************************************/
 			{
 				if (with_names) {
 					viewer->glClearDepthf(1.0);
@@ -614,12 +607,11 @@ void Scene::renderScene(const QList<Scene_interface::Item_id>& items,
 					{
 						//add object to list of picked objects;
 						picked_item_IDs[depth] = index;
-						//********************Weixiao Update************************//
+
 						bool found_tmp = false;
 						CGAL::qglviewer::Vec point = viewer->camera()->pointUnderPixel(picked_pixel, found_tmp, viewer->devicePixelRatio()) - viewer->offset();
 						first_layer_picked_point.clear();
 						first_layer_picked_point[index] = point;
-						//**********************************************************//
 					}
 				}
 			}
@@ -771,7 +763,6 @@ Scene::draw_aux(bool with_names, CGAL::Three::Viewer_interface* viewer)
 		if (has_alpha()) {
 			bool found = false;
 			CGAL::qglviewer::Vec point = viewer->camera()->pointUnderPixel(picked_pixel, found, viewer->devicePixelRatio()) - viewer->offset();
-			//********************Weixiao Update************************//
 			if (!found)
 			{
 				if (!first_layer_picked_point.empty())
@@ -780,7 +771,6 @@ Scene::draw_aux(bool with_names, CGAL::Three::Viewer_interface* viewer)
 					found = true;
 				}
 			}
-			//**********************************************************//
 
 			if (found) {
 				QList<QVariant> picked_point;
@@ -1037,7 +1027,7 @@ Scene::headerData(int section, ::Qt::Orientation orientation, int role) const
 		}
 		else if (role == ::Qt::ToolTipRole) {
 			if (section == RenderingModeColumn) {
-				return tr("Rendering mode (points/wireframe/flat/flat+edges/Gouraud/TextureMode/TextureMode+flat+edges/Emphasizing)");
+				return tr("Rendering mode (points/wireframe/flat/flat+edges/Gouraud/TextureMode/TextureMode+flat+edges/Emphasizing/ScalarField)");
 			}
 			else if (section == ABColumn) {
 				return tr("Selection A/Selection B");

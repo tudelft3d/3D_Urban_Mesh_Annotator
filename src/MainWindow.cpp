@@ -172,7 +172,7 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 		QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_F11), this);
 		connect(shortcut, SIGNAL(activated()),
 			this, SLOT(toggleFullScreen()));
-		//********************Weixiao Update************************//
+
 		//shortcut = new QShortcut(QKeySequence(Qt::Key_L + Qt::CTRL), this);
 		//connect(shortcut, SIGNAL(activated()),
 		//	this, SLOT(on_actionLoad_triggered()));
@@ -181,7 +181,7 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 		//	this, SLOT(on_actionSaveAs_triggered()));
 		connect(shortcut, SIGNAL(activated()),
 			this, SLOT(save_check()));
-		//**********************************************************//
+
 	}
 
 	proxyModel = new QSortFilterProxyModel(this);
@@ -193,10 +193,10 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 
 	connect(ui->searchEdit, SIGNAL(textChanged(QString)),
 		proxyModel, SLOT(setFilterFixedString(QString)));
-	//********************Weixiao Update************************//
+
 	ui->searchEdit->setEnabled(false);
 	ui->searchEdit->setVisible(false);
-	//**********************************************************//
+
 	sceneView->setModel(proxyModel);
 
 	// setup the sceneview: delegation and columns sizing...
@@ -269,10 +269,9 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 	//connect(viewer, SIGNAL(selectedPoint(double, double, double)),
 	//        this, SLOT(showSelectedPoint(double, double, double)));
 
-	//********************Weixiao Update************************//
+
 	connect(viewer, SIGNAL(selectedPoint(double, double, double)),
 		this, SLOT(showRecenteredView(double, double, double)));
-	//**********************************************************//
 
 	connect(viewer, SIGNAL(selectionRay(double, double, double,
 		double, double, double)),
@@ -296,18 +295,18 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 		viewer, SLOT(setTwoSides(bool)));
 	connect(ui->actionSwitchProjection, SIGNAL(toggled(bool)),
 		viewer, SLOT(SetOrthoProjection(bool)));
-	//********************Weixiao Update************************//
+
 	// add the "About CGAL..." and "About demo..." entries
 	//this->addHelpMenu(viewer);
 	//this->addAboutDemo(":/cgal/Polyhedron_3/about.html");
-	//**********************************************************//
+
 	// Connect the button "addButton" with actionLoad
 	ui->addButton->setDefaultAction(ui->actionLoad);
 	// Same with "removeButton" and "duplicateButton"
 	ui->removeButton->setDefaultAction(ui->actionErase);
-	//********************Weixiao Update************************//
+
 	//ui->duplicateButton->setDefaultAction(ui->actionDuplicate);
-  //**********************************************************//
+
 	   
   // Connect actionQuit (Ctrl+Q) and qApp->quit()
 	connect(ui->actionQuit, SIGNAL(triggered()),
@@ -396,10 +395,10 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 
 	//Manages the group_item creation
 	actionAddToGroup = new QAction("Add New Group", this);
-	//********************Weixiao Update************************//
+
 	actionAddToGroup->setEnabled(false);
 	actionAddToGroup->setVisible(false);
-	//**********************************************************//
+
 	if (actionAddToGroup) {
 		connect(actionAddToGroup, SIGNAL(triggered()),
 			this, SLOT(makeNewGroup()));
@@ -426,14 +425,14 @@ MainWindow::MainWindow(const QStringList &keywords, bool verbose, QWidget* paren
 
   // setup menu filtering
 	connect(ui->menuOperations, SIGNAL(aboutToShow()), this, SLOT(filterOperations()));
-	//***********Weixiao************//
+
 	//ui->menuOperations->setDisabled(true);
 	ui->menuOperations->menuAction()->setVisible(false);
 	ui->infoDockWidget->setVisible(false);
 
 	this->addHelpMenu();
 	//this->addAboutDemo(":/cgal/Polyhedron_3/about.html");
-	//*****************************//
+
 }
 
 //Recursive function that do a pass over a menu and its sub-menus(etc.) and hide them when they are empty
@@ -467,11 +466,11 @@ void filterMenuOperations(QMenu* menu, QString filter, bool keep_from_here)
 				action->setVisible(!(submenu->isEmpty()));
 			}
 			else if (action->text().contains(filter, Qt::CaseInsensitive)) {
-				//*************Weixiao update************//
+
 				if (action->objectName().toStdString() == "actionSelection")
 				{
 					action->setVisible(false);
-				}//*******************************//
+				}
 				else
 				{
 					menu->addAction(action);
@@ -1051,7 +1050,6 @@ void MainWindow::updateViewerBBox(bool recenter = true)
 }
 
 void MainWindow::reloadItem() {
-	//********Weixiao**********//
 	if (scene->item(0)->add_label_count != scene->item(0)->add_label_count_log && 
 		QMessageBox::question(this, "Save", "Are you sure you have saved all your work?")
 		== QMessageBox::No)
@@ -1070,7 +1068,6 @@ void MainWindow::reloadItem() {
 	CGAL::Three::Three::information("Reloading data ...");
 	CGAL::Real_timer timer;
 	timer.start();
-	//*************************//
 
 	Scene_item* item = NULL;
 
@@ -1104,7 +1101,6 @@ void MainWindow::reloadItem() {
 		item->deleteLater();
 	}
 
-	//********Weixiao**********//
 	//trigger the plugin when loading the data
 	QList<QAction*> as = ui->menuOperations->actions();
 	Q_FOREACH(QAction* a, as)
@@ -1121,7 +1117,6 @@ void MainWindow::reloadItem() {
 
 	timer.stop();
 	CGAL::Three::Three::information("Done in " + QString::number(timer.time()) + "s");
-	//*************************//
 }
 
 CGAL::Three::Polyhedron_demo_io_plugin_interface* MainWindow::findLoader(const QString& loader_name) const {
@@ -1270,7 +1265,6 @@ void MainWindow::open(QString filename)
 		scene->redraw_model();
 	updateViewerBBox(true);
 
-	//********Weixiao**********//
 	//trigger the plugin when loading the data
 	QList<QAction*> as = ui->menuOperations->actions();
 	Q_FOREACH(QAction* a, as)
@@ -1296,8 +1290,6 @@ void MainWindow::open(QString filename)
 
 	timer.stop();
 	CGAL::Three::Three::information("Done in " + QString::number(timer.time()) + "s");
-	//*************************//
-
 }
 
 bool MainWindow::open(QString filename, QString loader_name) {
@@ -1399,7 +1391,6 @@ void MainWindow::showSelectedPoint(double x, double y, double z)
 	z_prev = z;
 }
 
-//********************Weixiao Update************************//
 void MainWindow::showRecenteredView(double x, double y, double z)
 {
 	if (viewer->camera()->frame()->isSpinning())
@@ -1420,7 +1411,6 @@ void MainWindow::showRecenteredView(double x, double y, double z)
 
 	//warning(QString("If you are in selection mode, you need to click the selection layer for continuing selection."));
 }
-//**********************************************************//
 
 void MainWindow::unSelectSceneItem(int i)
 {
@@ -1570,7 +1560,7 @@ void MainWindow::showSceneContextMenu(int selectedItemIndex,
 		}
 	}
 	menu->addMenu(ui->menuOperations);
-	//***********Weixiao***********//
+
 	Q_FOREACH(QAction* action, scene->item(selectedItemIndex)->contextMenu()->actions())
 	{
 		if (action->text().toStdString() == "Set points Mode")
@@ -1587,8 +1577,10 @@ void MainWindow::showSceneContextMenu(int selectedItemIndex,
 
 		if (action->text().toStdString() == "Set Emphasizing Mode")
 			action->setVisible(false);
+
+		if (action->text().toStdString() == "Set ScalarField Mode")
+			action->setVisible(false);
 	}
-	//*****************************//
 
 	if (menu)
 		menu->exec(global_pos);
@@ -1863,15 +1855,15 @@ void MainWindow::readSettings()
 	scene->enableVisibilityRecentering(settings.value("offset_update", true).toBool());
 	viewer->textRenderer()->setMax(settings.value("max_text_items", 10000).toInt());
 	viewer->setTotalPass(settings.value("transparency_pass_number", 4).toInt());
-	//***********************Weixiao Update default rendering setting*******************************//
+
 	//CGAL::Three::Three::s_defaultSMRM = CGAL::Three::Three::modeFromName(
 	//      settings.value("default_sm_rm", "flat+edges").toString());
 	CGAL::Three::Three::s_defaultSMRM = CGAL::Three::Three::modeFromName(
 		settings.value("default_sm_rm", "TextureMode+flat+edges").toString());
-	//Check //******Weixiao Update rendering mode enum**********// Scene_interface.h
+	//Check Scene_interface.h
 
 	is_questionshow = settings.value("is_questionshow", true).toBool();
-	//***********************************************************************************************//
+
 	CGAL::Three::Three::s_defaultPSRM = CGAL::Three::Three::modeFromName(
 		settings.value("default_ps_rm", "points").toString());
 	// read plugin blacklist
@@ -1900,7 +1892,6 @@ void MainWindow::writeSettings()
 
 void MainWindow::quit()
 {
-	//********************Weixiao Update************************//
 	if (scene->numberOfEntries() > 0)
 	{
 		if (scene->item(0)->add_label_count != scene->item(0)->add_label_count_log && 
@@ -1913,14 +1904,12 @@ void MainWindow::quit()
 		}
 		is_saved = true;
 	}
-	//**********************************************************//
 	
 	close();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	//********************Weixiao Update************************//
 	if (!is_saved && scene->numberOfEntries() > 0)
 	{
 		if (scene->item(0)->add_label_count != scene->item(0)->add_label_count_log && 
@@ -1958,8 +1947,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 		settings.setValue("is_questionshow", is_questionshow);
 	}
-
-	//**********************************************************//
 
 	for (int i = 0; i < plugins.size(); i++)
 	{
@@ -2104,16 +2091,15 @@ void MainWindow::on_actionLoad_triggered()
 		{
 			int scene_size = scene->numberOfEntries();
 			open(filename);
-			//***********Weixiao************//
+
 			if (scene->numberOfEntries() != 2)
 				scene->item(scene->numberOfEntries() - 1)->setColor(colors_[++nb_item]);
 			//if (scene->numberOfEntries() != scene_size)
 			//	scene->item(scene->numberOfEntries() - 1)->setColor(colors_[++nb_item]);
-			//*****************************//
+
 		}
 	}
 
-	//********Weixiao**********//
 	//trigger the plugin when loading the data
 	QList<QAction*> as = ui->menuOperations->actions();
 	Q_FOREACH(QAction* a, as)
@@ -2139,7 +2125,6 @@ void MainWindow::on_actionLoad_triggered()
 
 	timer.stop();
 	CGAL::Three::Three::information("Done in " + QString::number(timer.time()) + "s");
-	//*************************//
 }
 
 void MainWindow::on_actionSaveAs_triggered()
@@ -2298,7 +2283,6 @@ void MainWindow::on_actionSaveSnapshot_triggered()
 
 bool MainWindow::on_actionErase_triggered()
 {
-	//********************Weixiao Update************************//
 	if (scene->numberOfEntries() > 0 && !is_erased)
 	{
 		if (scene->item(0)->add_label_count != scene->item(0)->add_label_count_log && 
@@ -2331,16 +2315,16 @@ bool MainWindow::on_actionErase_triggered()
 			recentFileActs[i]->setEnabled(true);
 		}
 	}
-	//**********************************************************//
+
 	int next_index = scene->erase(scene->selectionIndices());
 	//Secure the case where erase triggers other items deletions
 	if (scene->numberOfEntries() < next_index + 1)
 		next_index = -1;
 	selectSceneItem(next_index);
-	//*******Weixiao GAO*********//
+
 	scene->setSelectedItemIndex(-1);
 	scene->setSelectedItemsList(QList<int>());
-	//***************************//
+
 	return next_index >= 0;
 }
 
@@ -2352,28 +2336,6 @@ void MainWindow::on_actionEraseAll_triggered()
 	scene->setSelectedItemsList(all_ids);
 	on_actionErase_triggered();
 }
-
-//********************Weixiao Update************************//
-//void MainWindow::on_actionDuplicate_triggered()
-//{
-//	int index = scene->duplicate(getSelectedSceneItemIndex());
-//	selectSceneItem(index);
-//}
-//
-//void MainWindow::saved_as_button_pressed()
-//{
-//	int current_index = getSelectedSceneItemIndex();
-//	if (current_index != 0)
-//	{
-//		scene->setSelectedItemIndex(0);
-//		QList<int> tmp;
-//		tmp << 0;
-//		scene->setSelectedItemsList(tmp);
-//	}
-//	on_actionSaveAs_triggered();
-//}
-//**********************************************************//
-
 
 void MainWindow::on_actionShowHide_triggered()
 {
@@ -2707,17 +2669,7 @@ void MainWindow::makeNewGroup()
 	Scene_group_item * group = new Scene_group_item();
 	scene->addItem(group);
 }
-//********************Weixiao Update************************//
-//void MainWindow::on_upButton_pressed()
-//{
-//    scene->moveRowUp();
-//}
-//
-//void MainWindow::on_downButton_pressed()
-//{
-//    scene->moveRowDown();
-//}
-//**********************************************************//
+
 void MainWindow::recenterSceneView(const QModelIndex &id)
 {
 	if (id.isValid())
@@ -2801,8 +2753,6 @@ QString MainWindow::get_item_stats()
 			{
 				str.append(QString("<td>%1</td>").arg(sit->name()));
 			}
-
-
 
 			for (int j = 0; j < data.categories.size(); j++)
 			{

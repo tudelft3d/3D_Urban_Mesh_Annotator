@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>978</width>
-    <height>594</height>
+    <width>645</width>
+    <height>538</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>645</width>
+    <height>538</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>CGAL Three</string>
@@ -42,6 +48,12 @@
         <verstretch>1</verstretch>
        </sizepolicy>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>368</width>
+        <height>264</height>
+       </size>
+      </property>
      </widget>
     </item>
    </layout>
@@ -51,7 +63,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>978</width>
+     <width>645</width>
      <height>21</height>
     </rect>
    </property>
@@ -109,10 +121,16 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="sceneDockWidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>276</width>
+     <height>122</height>
+    </size>
    </property>
    <property name="locale">
     <locale language="English" country="UnitedStates"/>
@@ -124,6 +142,12 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContent">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -176,10 +200,16 @@
        <item>
         <widget class="QTreeView" name="sceneView">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>256</width>
+           <height>50</height>
+          </size>
          </property>
          <property name="editTriggers">
           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
@@ -207,6 +237,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="consoleDockWidget">
+   <property name="minimumSize">
+    <size>
+     <width>274</width>
+     <height>111</height>
+    </size>
+   </property>
    <property name="allowedAreas">
     <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::TopDockWidgetArea</set>
    </property>
@@ -220,6 +256,12 @@
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QTextEdit" name="consoleTextEdit">
+       <property name="minimumSize">
+        <size>
+         <width>256</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -229,6 +271,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="infoDockWidget">
+   <property name="minimumSize">
+    <size>
+     <width>370</width>
+     <height>124</height>
+    </size>
+   </property>
    <property name="windowTitle">
     <string>Infos</string>
    </property>
@@ -261,7 +309,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>541</width>
+            <width>350</width>
             <height>177</height>
            </rect>
           </property>
@@ -273,6 +321,12 @@
                <horstretch>0</horstretch>
                <verstretch>1</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>332</width>
+               <height>0</height>
+              </size>
              </property>
              <property name="contextMenuPolicy">
               <enum>Qt::DefaultContextMenu</enum>
@@ -307,9 +361,6 @@
   <action name="actionQuit">
    <property name="text">
     <string>&amp;Quit</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionLoad">

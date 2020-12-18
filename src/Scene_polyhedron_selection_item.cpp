@@ -882,22 +882,11 @@ void Scene_polyhedron_selection_item::inverse_selection()
 	v->update();
 }
 
-void Scene_polyhedron_selection_item::inverse_selection_in_segment()
-{
-	Selection_set_facet temp_select = selected_facets;
-	select_all_facets_in_segment();
-	Q_FOREACH(fg_face_descriptor fh, temp_select)
-		selected_facets.erase(fh);
-	invalidateOpenGLBuffers();
-	CGAL::QGLViewer* v = *CGAL::QGLViewer::QGLViewerPool().begin();
-	v->update();
-}
-
 void Scene_polyhedron_selection_item::set_operation_mode(int mode)
 {
 	k_ring_selector.setEditMode(true);
 	Q_EMIT updateInstructions(QString("SHIFT + left click to apply operation."));
-	/**************************************************/
+
 	if (mode == 0 || mode == 1) {
 		mode += 12;
 	}
@@ -989,13 +978,9 @@ void Scene_polyhedron_selection_item::set_operation_mode(int mode)
 		//set the selection type to Edge
 		set_active_handle_type(Active_handle::Type::VERTEX);
 		break;
-	case 12:
-		set_active_handle_type(Active_handle::Type::SEGMENT_TO_EDIT);
-		break;
 	default:
 		break;
 	}
-	/**************************************************/
 
 	d->operation_mode = mode;// NOT consistant with combobox, the segment relevent operation are the 12 & 13.
 }
@@ -1007,9 +992,11 @@ bool Scene_polyhedron_selection_item::treat_classic_selection(const HandleRange&
 	Selection_traits<HandleType, Scene_polyhedron_selection_item> tr(this);
 	bool any_change = false;
 	if (is_insert) {
-		/**************************Ziqian && Weixiao**********************/
-		BOOST_FOREACH(HandleType h, selection) {
-			if (get_active_handle_type() == 1) {
+
+		BOOST_FOREACH(HandleType h, selection) 
+		{
+			if ((get_active_handle_type() == 1) && this->selection_mode_index != 0)
+			{
 				if (poly_item->face_segment_id[fg_face_descriptor(h)] != edited_segment) {
 					//Q_EMIT printMessage("can't select faces outside of the chosen segment.");
 					continue;
@@ -1017,8 +1004,6 @@ bool Scene_polyhedron_selection_item::treat_classic_selection(const HandleRange&
 			}
 			any_change |= tr.container().insert(h).second;
 		}
-		/*****************************************************/
-
 	}
 	else {
 		BOOST_FOREACH(HandleType h, selection)
@@ -1601,26 +1586,12 @@ bool Scene_polyhedron_selection_item::treat_selection(const std::set<fg_face_des
 
 			}
 			break;
-			/********************Ziqian********************/
-		case 12:
-			set_editing_segment(poly_item->face_segment_id[fh]);
-			poly_item->emphasize_present_segment(seg_id(edited_segment));
-			poly_item->showFacetEdges(true);
-			clear_all();
-			set_operation_mode(-1);
-
-			invalidateOpenGLBuffers();
-			Q_EMIT itemChanged();
-
-			set_active_handle_type(static_cast<Scene_polyhedron_selection_item::Active_handle::Type>(1));
-			Q_EMIT save_handleType();
-			return true;
-			break;
 		}
 	}
 	d->is_treated = true;
 	//Keeps the item from trying to draw primitive that has just been deleted.
-	clearHL();
+	if (d->operation_mode != 13)
+		clearHL();
 	return false;
 }
 
@@ -1629,7 +1600,6 @@ bool Scene_polyhedron_selection_item::treat_selection(const std::vector<fg_face_
 	return treat_classic_selection(selection);
 }
 
-/**********************Ziqian && Weixiao**************************/
 void Scene_polyhedron_selection_item::extract_connected_component
 (
 	std::set<fg_face_descriptor>& original_face_set,
@@ -1674,13 +1644,14 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
 
 	std::set<seg_id> involvedSegments;
 	std::set<fg_face_descriptor> selected_facets_copy;
-	int orig_segmt_num = poly_item->segments.size();
-	
+	int orig_segment_num = poly_item->segments.size(),
+		update_segment_num = 0;
+
 	Q_FOREACH(fg_face_descriptor fh_1, selected_facets) 
 	{
 		involvedSegments.insert(poly_item->face_segment_id[fh_1]);
 		//std::set not include duplicated values 
-		if (involvedSegments.size() > 1)
+		if (involvedSegments.size() > 1 && this->selection_mode_index != 0)
 			return false;
 		selected_facets_copy.insert(fh_1);
 	}
@@ -1691,11 +1662,20 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
 	{
 		seg_id idForNewSeg = poly_item->segments.size();
 		poly_item->addChosenSegment(idForNewSeg);
+		++update_segment_num;
 
 		std::vector<fg_face_descriptor> connected_componet;
 		connected_componet.push_back(*selected_facets_copy.begin());
 
-		extract_connected_component(selected_facets_copy, connected_componet);
+		if (poly_item->is_merged_batch && check_original_segment)
+		{
+			//allow non-manifold segment exists
+			connected_componet.insert(connected_componet.end(), selected_facets_copy.begin(), selected_facets_copy.end());
+			selected_facets_copy.clear();
+		}
+		else//not allow non-manifold segment exists
+			extract_connected_component(selected_facets_copy, connected_componet);
+
 		const int current_seg_id = poly_item->face_segment_id[connected_componet[0]];
 
 		//left the last component for remaining segment
@@ -1718,6 +1698,7 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
 		Q_FOREACH(fg_face_descriptor fh_2, connected_componet)
 		{
 			poly_item->segments[poly_item->face_segment_id[fh_2]].faces_included.erase(fh_2);
+			poly_item->segments[poly_item->face_segment_id[fh_2]].segment_area -= CGAL::Polygon_mesh_processing::face_area(fh_2, *poly_item->polyhedron());
 			poly_item->face_segment_id[fh_2] = idForNewSeg;
 		}
 		Segment temp(connected_componet);
@@ -1737,8 +1718,25 @@ bool Scene_polyhedron_selection_item::put_selected_faces_into_one_segment()
 	//erase the last if empty
 	if (poly_item->segments[poly_item->segments.size() - 1].faces_included.empty())
 		poly_item->eraseChosenSegment(poly_item->segments.size() - 1);
-	int new_segmt_num = poly_item->segments.size();
-	Q_EMIT printMessage("The number of segments increased from " + QString::number(orig_segmt_num) + " to " + QString::number(new_segmt_num) + ". The largest remainder will be the new segment to be edited.");
+
+	//check if segment empty
+	std::map<seg_id, Segment>::iterator seg_it = poly_item->segments.begin();
+	std::map<seg_id, Segment>::iterator seg_it_end = poly_item->segments.end();
+	int new_segment_num = 0;
+	for (; seg_it != seg_it_end; ++seg_it)
+	{
+		if (!(*seg_it).second.faces_included.empty())
+		{
+			++new_segment_num;
+		}
+	}
+
+	//output msg
+	if (this->selection_mode_index != 0)
+		Q_EMIT printMessage("Update " + QString::number(update_segment_num) + " segments, the total number of segments is " + QString::number(new_segment_num) + ". The largest remainder will be the new segment to be edited.");
+	else
+		Q_EMIT printMessage("Update " + QString::number(update_segment_num) + " segments, the total number of segments is " + QString::number(new_segment_num) + ".");
+	//Q_EMIT printMessage("The number of segments increased from " + QString::number(orig_segmt_num) + " to " + QString::number(new_segmt_num) + ". The largest remainder will be the new segment to be edited.");
 
 	return true;
 }
@@ -1805,7 +1803,6 @@ void Scene_polyhedron_selection_item::segment_expand_or_reduce(int &steps)
 		itemChanged();
 	}
 }
-/******************************************************/
 
 void Scene_polyhedron_selection_item_priv::tempInstructions(QString s1, QString s2)
 {
@@ -2170,10 +2167,10 @@ Scene_polyhedron_selection_item::Scene_polyhedron_selection_item(Scene_face_grap
 	}
 	d->poly = NULL;
 	init(poly_item, mw);
-	//***********************Weixiao Update default selection color*******************************//
+
 	//this->setColor(QColor(87,87,87));
 	this->setColor(QColor(255, 0, 0));
-	//*********************************************************************//
+
 	invalidateOpenGLBuffers();
 	compute_normal_maps();
 	d->first_selected = false;
@@ -2410,6 +2407,12 @@ void Scene_polyhedron_selection_item::clearHL()
 	d->are_HL_buffers_filled = false;
 	Q_EMIT itemChanged();
 }
+
+void Scene_polyhedron_selection_item::clearSL()
+{
+	this->clear_all();
+}
+
 void Scene_polyhedron_selection_item::selected_HL(const std::set<fg_vertex_descriptor>& m)
 {
 	//  HL_selected_edges.clear();
@@ -2427,16 +2430,14 @@ void Scene_polyhedron_selection_item::selected_HL(const std::set<fg_face_descrip
 	HL_selected_facets.clear();
 	HL_selected_vertices.clear();
 
-	/*******************Ziqian**********************/
 	//HL_selected_facets.insert(*m.begin());
 	BOOST_FOREACH(fg_face_descriptor fd, m)
 		HL_selected_facets.insert(fd);
-	/***********************************************/
 
 	d->are_HL_buffers_filled = false;
 	Q_EMIT itemChanged();
 }
-/******************************/
+
 class Mypoint {
 public:
 	double x;
@@ -2467,76 +2468,6 @@ public:
 	}
 };
 
-void Scene_polyhedron_selection_item::doubleSelect(const std::set<fg_face_descriptor>& front_sel, const  std::set<fg_face_descriptor>& back_sel) {
-	
-	std::map<fg_face_descriptor, Mypoint> interoirs;
-	BOOST_FOREACH(fg_face_descriptor fd, poly_item->segments[edited_segment].faces_included) {
-		Mypoint inter = Mypoint(0.0, 0.0, 0.0);
-		BOOST_FOREACH(fg_vertex_descriptor v, CGAL::vertices_around_face(halfedge(fd, *poly_item->polyhedron()), *poly_item->polyhedron())){
-			Point_3 temp = poly_item->polyhedron()->point(v);
-			//std::cout<<temp[0]<<' '<< temp[1] <<' '<< temp[2] << std::endl;
-			Mypoint tep(temp[0], temp[1], temp[2]);
-			if (tep.illegal())
-				std::cerr << "reading illegal data" << std::endl;
-			inter += tep;
-		}
-		inter /= 3.0;
-		interoirs[fd] = inter;
-		if (inter.illegal())
-			std::cerr << "reading illegal data(2)" << std::endl;
-	}
-	std::set<fg_face_descriptor> front;
-	std::set<fg_face_descriptor> back;
-
-	BOOST_FOREACH(fg_face_descriptor fd, front_sel) 
-		front.insert(fd);
-	BOOST_FOREACH(fg_face_descriptor fd, back_sel)
-		back.insert(fd);
-
-	std::cout << front.size() << ' ' << back.size() << std::endl;
-	for (int time = 0; time < 1; time++) {
-		Mypoint front_center = Mypoint(0.0, 0.0, 0.0);
-		BOOST_FOREACH(fg_face_descriptor fd, front) {
-			if (interoirs[fd].illegal())
-				std::cerr << "data illegal" << interoirs[fd].x << ' ' << interoirs[fd].y << ' ' << interoirs[fd].z << std::endl;
-			else if (interoirs.find(fd) == interoirs.end())
-				std::cerr << "no record" << std::endl;
-			else
-				front_center += interoirs[fd];
-		}
-
-		front_center /= front.size();
-
-		Mypoint back_center = Mypoint(0.0, 0.0, 0.0);
-		BOOST_FOREACH(fg_face_descriptor fd, back) {
-			if (interoirs[fd].illegal())
-				std::cerr << "data illegal" << interoirs[fd].x << ' ' << interoirs[fd].y << ' ' << interoirs[fd].z << std::endl;
-			else if (interoirs.find(fd) == interoirs.end())
-				std::cerr << "no record" << std::endl;
-			else
-				back_center += interoirs[fd];
-		}
-		back_center /= back.size();
-
-		front.clear();
-		back.clear();
-
-		std::cout << front_center.x << ' ' << front_center.y << ' ' << front_center.z << "   " << back_center.x << ' ' << back_center.y << ' ' << back_center.z << std::endl;
-
-		BOOST_FOREACH(fg_face_descriptor fd, poly_item->segments[edited_segment].faces_included) {
-			std::cout << Mypoint::norm(interoirs[fd] - front_center) << ' ' << Mypoint::norm(interoirs[fd] - back_center)<< std::endl;
-
-			if (Mypoint::norm(interoirs[fd] - front_center) < Mypoint::norm(interoirs[fd] - back_center)) {
-				front.insert(fd);
-			}
-			else
-				back.insert(fd);
-		}
-		std::cout << front.size() << ' ' << back.size() << std::endl;
-	}
-
-	treat_classic_selection(front);
-}
 
 /******************************/
 
@@ -2576,17 +2507,16 @@ void Scene_polyhedron_selection_item::init(Scene_face_graph_item* poly_item, QMa
 
 	connect(&k_ring_selector, SIGNAL(clearHL()), this,
 		SLOT(clearHL()));
+
+	connect(&k_ring_selector, SIGNAL(clearSL()), this,
+		SLOT(clearSL()));
+
 	connect(poly_item, SIGNAL(selection_done()), this, SLOT(update_poly()));
 	connect(&k_ring_selector, SIGNAL(endSelection()), this, SLOT(endSelection()));
 	connect(&k_ring_selector, SIGNAL(toogle_insert(bool)), this, SLOT(toggle_insert(bool)));
 	connect(&k_ring_selector, SIGNAL(isCurrentlySelected(Scene_facegraph_item_k_ring_selection*)), this, SIGNAL(isCurrentlySelected(Scene_facegraph_item_k_ring_selection*)));
 	k_ring_selector.init(poly_item, mw, Active_handle::VERTEX, -1);
 	connect(&k_ring_selector, SIGNAL(resetIsTreated()), this, SLOT(resetIsTreated()));
-
-	/***********Zi qian**********/
-	connect(&k_ring_selector, SIGNAL(doubleSelect(const std::set<fg_face_descriptor>&, const std::set<fg_face_descriptor>&)),
-		this, SLOT(doubleSelect(const std::set<fg_face_descriptor>&, const std::set<fg_face_descriptor>&)));
-	/*********************/
 	
 	CGAL::QGLViewer* viewer = *CGAL::QGLViewer::QGLViewerPool().begin();
 	d->manipulated_frame = new ManipulatedFrame();

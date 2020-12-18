@@ -264,11 +264,11 @@ Viewer::Viewer(QWidget* parent, bool antialiasing)
 	setShortcut(CGAL::qglviewer::EXIT_VIEWER, 0);
 	setKeyDescription(Qt::Key_T,
 		tr("Turn the camera by 180 degrees"));
-	//********************Weixiao Update************************//
+
 	//setKeyDescription(Qt::Key_M,
 	//	tr("Toggle macro mode: useful to view details very near from the camera, "
 	//		"but decrease the z-buffer precision"));
-	//**********************************************************//
+
 	//setKeyDescription(Qt::Key_I + Qt::CTRL,
 	//	tr("Toggle the primitive IDs visibility of the selected Item."));
 	setKeyDescription(Qt::Key_D,
@@ -284,7 +284,7 @@ Viewer::Viewer(QWidget* parent, bool antialiasing)
 	tr("Select and pop context menu"));
 
 	//use the new API for these
-	//********************Weixiao Update************************//
+
 	//setMouseBinding(Qt::ShiftModifier, Qt::LeftButton, CGAL::qglviewer::SELECT);
 	setMouseBinding(Qt::ControlModifier, Qt::LeftButton, CGAL::qglviewer::RAP_FROM_PIXEL);//RAP_FROM_PIXEL, SELECT
 	setMouseBindingDescription(Qt::ControlModifier, Qt::LeftButton,
@@ -298,7 +298,6 @@ Viewer::Viewer(QWidget* parent, bool antialiasing)
 		tr("Toggle the texture rendering mode."));
 	setKeyDescription(Qt::Key_2 + Qt::CTRL,
 		tr("Toggle the flat rendering mode."));
-	//**********************************************************//
 
 	//setMouseBindingDescription(Qt::Key(0), Qt::ShiftModifier, Qt::LeftButton,
 	//	tr("Selects and display context "
@@ -550,9 +549,9 @@ void Viewer::mousePressEvent(QMouseEvent* event)
 	if (event->button() == Qt::RightButton && 
 		event->modifiers().testFlag(Qt::AltModifier))
 	{
-		//********************Weixiao Update************************//
+
 		//select(event->pos());
-		//**********************************************************//
+
 		requestContextMenu(event->globalPos());
 		event->accept();
 	}
@@ -645,7 +644,7 @@ void Viewer::keyPressEvent(QKeyEvent* e)
 			turnCameraBy180Degres();
 			return;
 		}
-		//********************Weixiao Update************************//
+
 		//else if (e->key() == Qt::Key_M) {
 		//	d->macro_mode = !d->macro_mode;
 
@@ -660,7 +659,6 @@ void Viewer::keyPressEvent(QKeyEvent* e)
 
 		//	return;
 		//}
-		//**********************************************************//
 		//else if (e->key() == Qt::Key_I) {
 		//	d->i_is_pressed = true;
 		//}
@@ -693,7 +691,6 @@ void Viewer::keyPressEvent(QKeyEvent* e)
 		return;
 	}
 
-	//********************Weixiao Update************************//
 	//else if (e->key() == Qt::Key_S && e->modifiers() & Qt::ControlModifier) {
 	//	this->saveSnapshot();
 	//	return;
@@ -720,7 +717,7 @@ void Viewer::keyPressEvent(QKeyEvent* e)
 		d->scene->SwitchRenderingMode(this, 2);
 		return;
 	}
-	//**********************************************************//
+
 	//forward the event to the scene (item handling of the event)
 	if (!d->scene->keyPressEvent(e))
 		CGAL::QGLViewer::keyPressEvent(e);
@@ -758,7 +755,6 @@ void Viewer::turnCameraBy180Degres() {
 	camera->interpolateTo(frame_to, 0.5f);
 }
 
-//********************Weixiao Update************************//
 void Viewer::load_camera_params_and_show_view()
 {
 	QString filename =
@@ -839,7 +835,6 @@ void Viewer::save_snapshot_with_camera_params()
 		<< "\n";
 	cam_file.close();
 }
-//**********************************************************//
 
 void Viewer_impl::draw_aux(bool with_names, Viewer* viewer)
 {

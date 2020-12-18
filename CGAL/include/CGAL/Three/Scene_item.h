@@ -369,7 +369,7 @@ public Q_SLOTS:
   void setPointsPlusNormalsMode(){
     setRenderingMode(PointsPlusNormals);
   }
-  //***********************Weixiao Update rendering texture mode*******************************//
+
   //!Sets the RenderingMode to TextureMode.
   void setTextureModeMode() 
   {
@@ -380,12 +380,11 @@ public Q_SLOTS:
   {
 	  setRenderingMode(TextureModePlusFlatEdges);
   }
-  //**********************Ziqian + gwx*******************************//
+
   void setEmphasizingMode()
   {
 	  setRenderingMode(Emphasizing);
   }
-  //*******************************************************************//
 
   //!Emits an aboutToBeDestroyed() signal.
   //!Override this function to delete what needs to be deleted on destruction.

@@ -13,6 +13,7 @@
 //***********************Weixiao Update*******************************//
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
 #include <CGAL/IO/PLY_reader.h>
+#include <CGAL/Three/Three.h>
 #include "Scene_textured_surface_mesh_item.h"
 //*******************************************************************//	
 
@@ -42,20 +43,24 @@ struct Scene_surface_mesh_item_priv;
 /******************Ziqian && Weixiao*********************/
 typedef std::size_t seg_id;
 //class seg_boundary_edge_info;
-class Segment {
-public:
-	Segment() {}
-	std::set<face_descriptor> faces_included;
-	//std::set<seg_boundary_edge_info> boundary_edges;
-	std::size_t id;
-	Segment(std::vector<face_descriptor> faces)
-	{
-		BOOST_FOREACH(face_descriptor fd, faces)
+class Segment 
+{
+	public:
+		Segment() {}
+		std::set<face_descriptor> faces_included;
+		//std::set<seg_boundary_edge_info> boundary_edges;
+		std::size_t id;
+		float segment_area = 0.0f;
+		Segment(std::vector<face_descriptor> faces)
 		{
-			if (fd.is_valid())
-				faces_included.insert(fd);
+			BOOST_FOREACH(face_descriptor fd, faces)
+			{
+				if (fd.is_valid())
+				{
+					faces_included.insert(fd);
+				}
+			}
 		}
-	}
 };
 
 //class seg_boundary_edge_info {
@@ -72,6 +77,17 @@ public:
 //		return this->boundary_size < a.boundary_size;
 //	}
 //};
+inline bool smaller_coord
+(
+	float x1,
+	float x2
+)
+{
+	if (x1 >= x2)
+		return false;
+	else
+		return true;
+}
 
 /*********************************************/
 
@@ -158,8 +174,15 @@ public:
 	std::map<face_descriptor, std::vector<float>> face_texcoord;
 	std::map<face_descriptor, int> face_textureid;
 	std::vector<std::string> texture_name;
+	std::vector<QImage> texture_images;
+
 	std::map<face_descriptor, float> label_probabilities;
 	std::map<face_descriptor, int> face_segment_id;
+	std::map<int, Kernel::Point_3> vertices_coords;
+	std::map<face_descriptor, std::vector<int>> face_vinds;
+	std::map<face_descriptor, Kernel::Vector_3> face_normals;
+	std::map<face_descriptor, std::vector<face_descriptor>> face_neighbors;
+
 	std::string input_comments;
 	std::string file_path;
 	std::map<int, std::vector<face_descriptor>> semantic_facet_map;
@@ -167,12 +190,15 @@ public:
 	bool is_in_annotation = false;
 	bool is_edited_inside_one_segment_init = false;
 	bool is_facet_deleted = false;
+	bool is_merged_batch = false;
 	int total_labeled_faces = 0, total_error_facets = 0;
 	//*******************************************************************//	
 	//***********************Ziqian && Weixiao*******************************//
 	std::map<face_descriptor, bool> face_shown;
 	std::map<face_descriptor, QColor> face_color_backup;
-
+	std::map<face_descriptor, std::vector<int>> face_non_duplicated_vertices_map;
+	std::map<std::pair<int, int>, std::vector<face_descriptor> > st_faces_map;
+	std::map<int, int> old_new_duplicate_verts_map;
 	typedef boost::graph_traits<SMesh>::edge_descriptor edge_descriptor;
 
 	std::map<seg_id, Segment> segments;
@@ -180,12 +206,12 @@ public:
 	std::pair<int, int> minmax_faces_segment_id = std::make_pair<int,int>(-1, -1);
 	// record the informations about segments into the map "segments" based on the informations
 	// in face_segment_id
-	// this process is finished in PLY reading only, after the scene_surface_mesh is built.
-	void computeSegments();
 	bool segmentBoundryShow = true;
 	bool edgesShow = false;
 	bool pointShow = false;
-	RenderingMode m_RMode, tmp_default_renderingmode;
+	bool meshBoundaryShow = false;
+	RenderingMode m_RMode;
+	const RenderingMode default_renderingmode = CGAL::Three::Three::defaultSurfaceMeshRenderingMode();
 	QComboBox* label_selection_combox_tmp = NULL;
 	//************************************************************//
 	//statistics
@@ -250,6 +276,23 @@ public:
 
 	int updateSegmentId(std::map<face_descriptor, bool> &);
 
+	void findDuplicateVertices(Scene_surface_mesh_item*, std::vector<Kernel::Point_3> &, std::vector<std::vector<std::size_t>> &);
+
+	void grouping_facets_for_multi_texture_rendering
+	(
+		Scene_surface_mesh_item*, 
+		std::vector<Kernel::Point_3> &,
+		std::map<int, std::set<int>> &,
+		std::map<int, std::vector<face_vind_texcoord>>&
+	);
+
+	// this process is finished in PLY reading only, after the scene_surface_mesh is built.
+	void computeSegments();
+
+	void computeUV() const;
+
+	void update_priv();
+
 	void map_garbage_properties(std::map<face_descriptor, face_descriptor> &);
 
 	// Go through all the edges, and pick out all the boundary edge based on the informations
@@ -264,6 +307,10 @@ public:
 	void addChosenSegment(seg_id id);
 
 	void eraseChosenSegment(seg_id id);
+
+	void region_growing_on_mesh(SMesh*, double&, double&, int&, std::map<int, face_descriptor> &, std::vector<int> &);
+
+	void region_growing_on_pcl(Point_range_cgal&, SMesh*, double&, double&, int&, int&, std::map<int, face_descriptor> &, std::vector<int> &);
 	/******************************************************/
 
 Q_SIGNALS:
@@ -298,6 +345,7 @@ public Q_SLOTS:
 		const face_descriptor &f);
 	void resetColors();
 	//********************Weixiao Update************************//
+	void showMeshBoundary(bool);
 	void showSegmentBorders(bool);
 	void showFacetEdges(bool);
 	void showFacetVertices(bool);

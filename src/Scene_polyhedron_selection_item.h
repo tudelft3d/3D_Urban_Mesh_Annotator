@@ -262,10 +262,10 @@ protected:
     }
 
     /******************************/
-    void set_recommendation(int b) {
-        k_ring_selector.set_recommendation(b);
-    }
-
+	void check_expand_reduce_enabled(bool b)
+	{
+		k_ring_selector.check_expand_reduce_enabled(b);
+	}
     /******************************/
 
     int get_k_ring() { return k_ring_selector.k_ring; }
@@ -466,8 +466,6 @@ public:
     // select all of `active_handle_type`(vertex, facet or edge)
     void select_all() {
         switch (get_active_handle_type()) {
-            case Active_handle::SEGMENT_TO_EDIT:
-                break;
             case Active_handle::VERTEX:
                 select_all < fg_vertex_descriptor > ();
                 break;
@@ -480,11 +478,12 @@ public:
                 select_all < fg_face_descriptor > ();
                 break;
             case Active_handle::EDGE:
-            case Active_handle::PATH:
+            case Active_handle::PATH: {
                 selected_edges.insert(edges(*polyhedron()).first, edges(*polyhedron()).second);
                 invalidateOpenGLBuffers();
                 CGAL::QGLViewer *v = *CGAL::QGLViewer::QGLViewerPool().begin();
                 v->update();
+            }
                 break;
         }
     }
@@ -555,8 +554,6 @@ public:
     void clear() {
         switch (get_active_handle_type()) {
             case Active_handle::SEGMENT:
-            case Active_handle::SEGMENT_TO_EDIT:
-                break;
             case Active_handle::VERTEX:
                 clear < fg_vertex_descriptor > ();
                 break;
@@ -637,8 +634,6 @@ public:
     void expand_or_reduce(int steps) {
         if (steps > 0) {
             switch (get_active_handle_type()) {
-                case Active_handle::SEGMENT_TO_EDIT:
-                    break;
                 case Active_handle::VERTEX:
                     expand_selection<fg_vertex_descriptor, boost::vertex_index_t>(steps);
                     break;
@@ -660,8 +655,6 @@ public:
             }
         } else {
             switch (get_active_handle_type()) {
-                case Active_handle::SEGMENT_TO_EDIT:
-                    break;
                 case Active_handle::VERTEX:
                     reduce_selection<fg_vertex_descriptor, boost::vertex_index_t>(-steps);
                     break;
@@ -777,9 +770,11 @@ public:
         bool any_change = false;
         for (typename Tr::Iterator it = tr.iterator_begin(); it != tr.iterator_end(); ++it) {
             if (mark[tr.id(*it)]) {
-                /******************Ziqian****************/
-                if (get_active_handle_type() == Active_handle::FACET &&
-                    poly_item->face_segment_id[fg_face_descriptor(*it)] != edited_segment) {
+                /******************Ziqian && Weixiao****************/
+                if (((get_active_handle_type() == Active_handle::FACET) &&
+                    poly_item->face_segment_id[fg_face_descriptor(*it)] != edited_segment) && 
+					this->selection_mode_index != 0)
+				{
                     //Q_EMIT printMessage("can't select faces outside of the chosen segmemt.");
                     continue;
                 }
@@ -931,7 +926,6 @@ public:
 
     void selection_changed(bool b);
 
-    /***************************Ziqian && Weixiao****************************/
     void delete_properties_of_selected_facets();
 
     void segment_expand_or_reduce(int &);
@@ -947,12 +941,12 @@ public:
 
     void segmentifySelection();
 
-    Active_handle::Type get_active_handle_type_public() {
+    Active_handle::Type get_active_handle_type_public() 
+	{
         return k_ring_selector.active_handle_type;
     }
 
     std::size_t get_editing_segment() { return edited_segment; }
-    /*************************************************************/
 
 Q_SIGNALS:
 
@@ -986,6 +980,8 @@ public Q_SLOTS:
     void compute_normal_maps();
 
     void clearHL();
+
+	void clearSL();
 
     QString toolTip() const;
 
@@ -1027,11 +1023,12 @@ public Q_SLOTS:
 
     void moveVertex();
 
-    /*********************************/
-    void doubleSelect(const std::set<fg_face_descriptor> &, const std::set<fg_face_descriptor> &);
-
     void set_editing_segment(const std::size_t i) { edited_segment = i; }
-    /*********************************/
+	void set_selection_mode_index(int i) 
+	{ 
+		selection_mode_index = i;
+		k_ring_selector.selection_mode_index = i;
+	}
 
 protected:
     bool eventFilter(QObject * /*target*/, QEvent *gen_event) {
@@ -1045,7 +1042,9 @@ protected:
         if (!visible() || !k_ring_selector.state.shift_pressing) { return false; }
         //********************Weixiao Update************************//
         if (gen_event->type() == QEvent::Wheel
-            && k_ring_selector.state.shift_pressing) {
+            && k_ring_selector.state.shift_pressing
+			&& k_ring_selector.expand_or_reduce_enabled)
+		{
             QWheelEvent *event = static_cast<QWheelEvent *>(gen_event);
             int steps = event->delta() / 120;
 
@@ -1204,7 +1203,9 @@ public:
     Selection_set_vertex HL_selected_vertices;
     Selection_set_facet HL_selected_facets;
     Selection_set_edge HL_selected_edges; // stores one halfedge for each pair (halfedge with minimum address)
-
+	//********************Weixiao Update************************//
+	int selection_mode_index = -1;
+	//**********************************************************//
 protected:
     friend struct Scene_polyhedron_selection_item_priv;
     Scene_polyhedron_selection_item_priv *d;
