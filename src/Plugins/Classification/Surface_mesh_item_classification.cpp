@@ -31,21 +31,22 @@ Surface_mesh_item_classification::Surface_mesh_item_classification(Scene_surface
 		}
 
 		m_label_colors.resize(m_labels.size());
+		for (std::size_t i = 0; i < m_labels.size(); ++i)
+		{
+			if (i == 0)
+				m_label_colors.push_back(QColor(0, 0, 0));
+			else
+				m_label_colors.push_back(this->get_new_label_color(m_labels[i]->name()));
+		}
+
 		int face_count = 0, unlabeled_count = 0;
 		BOOST_FOREACH(face_descriptor fd, faces(*(m_mesh->polyhedron())))
 		{
 			++face_count;
 			m_training[fd] = m_mesh->face_label[fd];
 			m_classif[fd] = m_mesh->face_label[fd];
-			if (m_mesh->face_label[fd] != -1)
-			{
-				m_label_colors[m_training[fd]] = m_mesh->face_color[fd];
-			}
-			else
-			{
-				m_label_colors[m_training[fd] + 1] = QColor(0, 0, 0);
+			if (m_mesh->face_label[fd] == -1)
 				++unlabeled_count;
-			}
 
 			m_color[fd] = CGAL::Color(m_mesh->face_color[fd].red(),
 				m_mesh->face_color[fd].green(),
