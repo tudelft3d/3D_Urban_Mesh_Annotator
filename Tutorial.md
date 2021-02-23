@@ -49,6 +49,7 @@ and ***triangle faces***.
 | Ctrl+F1                 | Save snapshot with camera parameters (*.txt).   |
 | Ctrl+F2                 | Load camera parameters(*.txt) and show the view.|
 
+
 ### 2.3 View Operations
 | Shortcuts     |     Descriptions         |
 | --------------| ---------------------    |
@@ -66,15 +67,18 @@ and ***triangle faces***.
 | Shift+Right                    |Deselection.                          |
 | Shift+Wheel                    |Expand/Reduce selection.              |
 | Shift+(<u>Capital Letter</u>)  |Adds selection to the label category. |
+| Alt+S                          |Split planar segment.                 |
 
 ## 3. Selection Panel Instruction
-<center><img src="pics/selection_modes.png"></center>
-
 #### 3.1 Selection Mode
+<center><img src="pics/selection_modes.png"></center>
 
 * **Selection type:** Click the 'Triangles' radio button for selecting at the triangle level; click the 'Segments' radio button for selecting at the segment level.
 
+* **Smart mode:** There are three smart modes: 'Extract small parts with a lasso', 'Split non-planar segment with a stroke', and 'Split planar segment with region growing'. They can recommend some selection regions for the user to use.
+
 #### 3.2 Selection Basics
+<center><img src="pics/selection_basics.png"></center>
 
 * **Multi-selection rings:** The number of rings decides the size of the selected area.
 * **Expand/Reduce:** Click 'Expand / Reduce' or 'Mouse wheel forward / backward' with certain number of rings to exapnd or reduce from the
@@ -89,7 +93,43 @@ current selected area.
 'Split planar segment with region growing' or 'Split non-planar segment with a stroke' mode.
 
 #### 3.3 Smart Modes
-* **Coming soon:** To do!
+
+##### 3.3.1 Split non-planar segment with a stroke
+<center><img src="pics/pnp_pipeline.png"></center>
+
+Consider the **non-planar segment** that can be fitted with mutple planes given a small distance to the plane threshold.
+<center><img src="pics/selection_pnp.png"></center>
+
+* **Max distance to plane:** The maximum distance from a point to a plane.
+* **Cross boundary stroke:** Draw a stroke (show in red) cross a boundary between the planar segment and the non-planar segment. If the stroke it not checked, then the basic selection is activated.
+* **Switch split segment:** Switch the selected planar and non-planar segment.
+
+##### 3.3.2 Extract major planar region within a segment
+
+<center><img src="pics/planar_split_pipeline.png"></center>
+
+Consider the **planar segment** that can be fitted with one large plane (i.e. occupy most of area of a segment) given a small distance to the plane threshold (e.g. 0.5m).
+<center><img src="pics/selection_splits.png"></center>
+
+* **Max distance to plane:** The maximum distance from a point to a plane.
+* **Max accepted angle:** The maximum accepted angle between the normal associated with a point and the normal of a plane.
+* **Min region size:** The minimum number of points a region must have.
+* **K neighbors:** K nearest neighbors of the query point.  It's only valid when input mesh has duplicate vertices (e.g. a mesh merged from multiple tiles).
+* **Split:** Split the selected segment into 'main plane' and 'all parts' according to the input parameters. 
+* **Select main plane/all parts:** After split, select 'main plane' or 'all parts' of a segment.
+* **Next Segment:** Select the next segment to edit. 
+
+##### 3.3.3 Split mesh with region growing
+
+Consider the mesh that can be fitted with mutiple large planes given a small distance to the plane threshold (e.g. 0.5m).
+
+* **Max distance to plane:** The maximum distance from a point to a plane.
+* **Max accepted angle:** The maximum accepted angle between the normal associated with a point and the normal of a plane.
+* **Min region size:** The minimum number of points a region must have.
+* **K neighbors:** K nearest neighbors of the query point.  It's only valid when input mesh has duplicate vertices (e.g. a mesh merged from multiple tiles).
+* **Split:** Split the selected segment into 'main plane' and 'all parts' according to the input parameters. 
+* **Clear segments:** Clear all segments. 
+
 
 ## 4. Annotation Panel Instruction
 <center><img src="pics/annotation_panel.png"></center>

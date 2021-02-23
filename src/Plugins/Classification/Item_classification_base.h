@@ -37,7 +37,7 @@ public:
   virtual void update_color () = 0;
   virtual void change_color (int index, float* vmin = NULL, float* vmax = NULL) = 0;
 
-  //***********************Ziqian Update menu name*******************************//
+  virtual void update_all_label_color(int &) = 0;
   virtual void threshold_based_change_color(int index, int threshold, bool below, float* vmin = NULL, float* vmax = NULL) = 0;
   // presently only implementated the surface_mesh_item_classification class.
   virtual bool can_show_probability() = 0;
@@ -47,13 +47,11 @@ public:
   }
 
   //virtual void show_labeling_progress() = 0;
-  //********************************************************************//
- //***********************Weixiao*******************************//
+
   virtual int get_total_number_facets() = 0;
   virtual int get_unlabelled_number_facets() = 0;
   virtual int get_total_labeled_facets() = 0;
   virtual int get_total_error_facets() = 0;
-  //************************************************************//
 
   virtual CGAL::Three::Scene_item* generate_one_item (const char* name,
                                                       int label) const = 0;

@@ -72,7 +72,7 @@ public:
 	struct Active_handle {
 		enum Type {
 			SEGMENT = 0, FACET = 1, VERTEX = 2, EDGE = 3, CONNECTED_COMPONENT = 4,
-			PATH = 5
+			PATH = 5, SEGMENT_TO_EDIT = 6, PNP_SEGMENT_TO_EDIT = 7
 		};
 	};
 
@@ -92,21 +92,28 @@ public:
 	Active_handle::Type    active_handle_type;
 	int                    k_ring;
 	Scene_facegraph_item* poly_item;
-	/*****************/
+
+	std::pair<int, int> pnp_segment_ids = std::make_pair<int, int>(-1, -1);
+	std::pair<std::set<fg_face_descriptor>, std::set<fg_face_descriptor>> pnp_segments;
+	std::pair<std::pair<float, Plane_3>, std::pair<float, Plane_3>> pnp_segments_plane_params;
 
 	bool is_new_candiante = false;
-
+	Point_3 segment_Lab_median = Point_3(0,0,0);
 	std::map<fg_face_descriptor, bool> selected_facet_map;
-
+	std::vector<float> unary_terms;
 	std::map<int, std::vector<int>> face_id_neighbors;
-
+	std::map<int, std::vector<float>> face_id_pairwise;
 	std::map<int, int> global_local_face_map, local_global_face_map;
 	std::map<int, fg_face_descriptor> globalid_face_map;
+	std::pair<float, float> minmax_dis_lab = std::pair<float, float>(FLT_MAX, -FLT_MAX);
 
+	float pnp_sqrt_dis_thres = 0.0f;
+	int non_planar_ind = -1;
+	int recommendation_state; // 1: split non-planar; 
+	int archived_state = -1; //archived reconmendation state
 	int selection_mode_index = 1; //0: facets; 1: segments
 
 	bool expand_or_reduce_enabled = false;
-	/*****************/
 
 	bool is_active;
 	bool is_current_selection;
@@ -141,6 +148,10 @@ public:
 		is_ready_to_highlight = true;
 		is_ready_to_paint_select = true;
 		is_lasso_active = false;
+		is_pnp_stroke_active = false;
+
+		recommendation_state = 0;
+
 
 		CGAL::QGLViewer* viewer = *CGAL::QGLViewer::QGLViewerPool().begin();
 		viewer->installEventFilter(this);
@@ -156,10 +167,104 @@ public:
 		is_current_selection = b;
 	}
 	void set_lasso_mode(bool b) { is_lasso_active = b; }
-
+	
 	void check_expand_reduce_enabled(bool b)
 	{
 		expand_or_reduce_enabled = b;
+	}
+
+	void call_emphasize_non_planar_segment()
+	{
+		if (is_pnp_stroke_active)
+		{
+			poly_item->unemphasize();
+		}
+		else
+		{
+			int tmp_seg_id = get_non_planar_segment();
+			if (tmp_seg_id != -1 && tmp_seg_id < poly_item->segments.size())
+				poly_item->emphasize_present_segment(seg_id(tmp_seg_id));
+		}
+	}
+
+	void set_pnp_stroke_mode(bool b)
+	{ 
+		is_pnp_stroke_active = b;
+		if (!b)
+		{
+			is_edit_mode = false;
+			recommendation_state = 0;
+		}
+		else
+		{
+			is_edit_mode = true;
+			recommendation_state = 1;
+		}
+		if (selection_mode_index != 1)
+			call_emphasize_non_planar_segment();
+	}
+
+	void set_recommendation(int b) 
+	{ 
+		recommendation_state = b; 
+		archived_state = b;
+	}
+
+	void set_pnp_dis_to_plane_threshold(float thres)
+	{ 
+		pnp_sqrt_dis_thres = thres * thres; 
+	}
+
+	int get_non_planar_segment()
+	{
+		if (non_planar_ind == 0)
+			return pnp_segment_ids.first;
+		else if (non_planar_ind == 1)
+			return pnp_segment_ids.second;
+		else return -1;
+	}
+
+	void call_separate_non_planar_from_planar()
+	{
+		if (non_planar_ind == 0)
+		{
+			separate_non_planar_from_planar(pnp_segments_plane_params.second.second, pnp_segment_ids.first);
+		}
+		else if (non_planar_ind == 1)
+		{
+			separate_non_planar_from_planar(pnp_segments_plane_params.first.second, pnp_segment_ids.second);
+		}
+		else
+		{
+			CGAL::Three::Three::warning("Please draw stroke cross the boundary of two adjacent segments.");
+		}
+	}
+
+	void call_switch_non_planar_and_planar()
+	{
+		Q_EMIT toogle_insert(true);
+		if (non_planar_ind == 0)
+		{
+			non_planar_ind = 1;
+			select_planar_segments(pnp_segment_ids.first);
+			separate_non_planar_from_planar(pnp_segments_plane_params.first.second, pnp_segment_ids.second);
+		}
+		else if (non_planar_ind == 1)
+		{
+			non_planar_ind = 0;
+			select_planar_segments(pnp_segment_ids.second);
+			separate_non_planar_from_planar(pnp_segments_plane_params.second.second, pnp_segment_ids.first);
+		}
+		else
+		{
+			CGAL::Three::Three::warning("Please draw stroke cross the boundary of two adjacent segments.");
+		}
+		call_emphasize_non_planar_segment();
+	}
+
+	void call_clear_pnp_data()
+	{
+		clear_pnp_segments();
 	}
 
 public Q_SLOTS:
@@ -191,11 +296,32 @@ public Q_SLOTS:
 			size_type h = static_cast<size_type>(reinterpret_cast<std::size_t>(void_ptr));
 			process_selection(static_cast<fg_face_descriptor>(h));
 		}
-		else if (active_handle_type == Active_handle::SEGMENT) 
+		else if (active_handle_type == Active_handle::SEGMENT ||
+			active_handle_type == Active_handle::SEGMENT_TO_EDIT) 
 		{
 			typedef boost::graph_traits<FaceGraph>::faces_size_type size_type;
 			size_type h = static_cast<size_type>(reinterpret_cast<std::size_t>(void_ptr));
 			process_segment_selection(static_cast<fg_face_descriptor>(h));
+		}
+		else if (active_handle_type == Active_handle::PNP_SEGMENT_TO_EDIT)
+		{
+			typedef boost::graph_traits<FaceGraph>::faces_size_type size_type;
+			size_type h = static_cast<size_type>(reinterpret_cast<std::size_t>(void_ptr));
+			if (recommendation_state == 1)
+			{
+				// planar and non-planar split
+				if (is_pnp_stroke_active)
+					process_segment_selection_on_non_planar_split(static_cast<fg_face_descriptor>(h));
+			}
+			else if (recommendation_state == 3)
+			{
+				//To do : for boundary refine;
+			}
+			else
+			{
+				if (!is_pnp_stroke_active)
+					process_selection(static_cast<fg_face_descriptor>(h));
+			}
 		}
 		updateIsTreated();
 	}
@@ -410,6 +536,10 @@ public Q_SLOTS:
 			}
 			selected(seg_sel);
 		}
+		case Active_handle::PNP_SEGMENT_TO_EDIT:
+		{
+			selected(final_sel);
+		}
 		default:
 			break;
 		}
@@ -489,7 +619,8 @@ protected:
 	void process_selection(HandleType clicked) {
 		//keeps the highlighting on track if the brush_size is not 0
 		int current_ring = 0;
-		if ((active_handle_type != Active_handle::PATH && !is_edit_mode))
+		if ((active_handle_type != Active_handle::PATH && !is_edit_mode) || 
+			(archived_state == 1 && is_pnp_stroke_active == false))
 			current_ring = k_ring;
 		const std::set<HandleType>& selection = extract_k_ring(clicked, current_ring);
 		if (is_highlighting)
@@ -500,7 +631,6 @@ protected:
 			Q_EMIT selected(selection);
 	}
 
-	/************************Ziqian************************/
 	template<class HandleType>
 	void process_segment_selection(HandleType clicked)
 	{
@@ -511,6 +641,30 @@ protected:
 		}
 		else
 			Q_EMIT selected(selection);
+	}
+	//void process_segment_selection(fg_face_descriptor clicked) {
+	//	const std::set<fg_face_descriptor>& selection = get_segment(clicked);
+	//	if (is_highlighting)
+	//	{
+	//		Q_EMIT selected_HL(selection);
+	//	}
+	//	else
+	//		Q_EMIT selected(selection);
+	//}
+
+	template<class HandleType>
+	void process_segment_selection_on_non_planar_split(HandleType clicked)
+	{
+		int seg_id = get_segment_id(clicked);
+		if (pnp_segment_ids.first == -1)
+			pnp_segment_ids.first = seg_id;
+		else
+		{
+			if (seg_id != pnp_segment_ids.first && pnp_segment_ids.second == -1)
+			{
+				pnp_segment_ids.second = seg_id;
+			}
+		}
 	}
 
 	template <class Handle>
@@ -595,6 +749,139 @@ protected:
 		return seg_id;
 	}
 
+	void get_pnp_segment(const int pnp)
+	{
+		int seg_id = pnp == 0 ? pnp_segment_ids.first : pnp_segment_ids.second;
+		std::set<fg_face_descriptor> temp_segment_faces;
+		std::set<Kernel::Point_3> points_on_segment;
+		BOOST_FOREACH(fg_face_descriptor fd, poly_item->segments[seg_id].faces_included)
+		{
+			if (fd.is_valid())
+			{
+				temp_segment_faces.insert(fd);
+				points_on_segment.insert(poly_item->vertices_coords[poly_item->face_vinds[fd][0]]);
+				points_on_segment.insert(poly_item->vertices_coords[poly_item->face_vinds[fd][1]]);
+				points_on_segment.insert(poly_item->vertices_coords[poly_item->face_vinds[fd][2]]);
+			}
+		}
+
+		Plane_3 plane;
+		double fitting_score = CGAL::linear_least_squares_fitting_3(points_on_segment.begin(), points_on_segment.end(), plane, CGAL::Dimension_tag<0>());
+
+		if (pnp == 0)
+		{
+			pnp_segments.first = temp_segment_faces;
+			pnp_segments_plane_params.first.first = fitting_score;
+			pnp_segments_plane_params.first.second = plane;
+		}
+		else
+		{
+			pnp_segments.second = temp_segment_faces;
+			pnp_segments_plane_params.second.first = fitting_score;
+			pnp_segments_plane_params.second.second = plane;
+		}
+	}
+
+	void clear_pnp_segments()
+	{
+		Q_EMIT clearHL();
+		Q_EMIT clearSL();
+		pnp_segment_ids = std::make_pair<int, int>(-1, -1);
+		pnp_segments.first.clear();
+		pnp_segments.second.clear();
+		pnp_segments_plane_params.first.first = 0.0f;
+		pnp_segments_plane_params.first.second = Plane_3();
+		pnp_segments_plane_params.second.first = 0.0f;
+		pnp_segments_plane_params.second.second = Plane_3();
+		non_planar_ind = -1;
+	}
+
+	void select_planar_segments(int &seg_planar)
+	{
+		Q_EMIT clearHL();//clear previous hightlight
+		std::set<fg_face_descriptor> planar_selected;
+		BOOST_FOREACH(fg_face_descriptor fd, poly_item->segments[seg_planar].faces_included)
+		{
+			if (fd.is_valid())
+				planar_selected.insert(fd);
+		}
+		selected_HL(planar_selected);
+	}
+
+	void separate_non_planar_from_planar(Plane_3 &seg_planar, int &seg_non_planar)
+	{
+		std::set<fg_face_descriptor> non_planar_selected;
+		Q_EMIT clearSL();//clear previous selection
+
+		BOOST_FOREACH(fg_face_descriptor fd, poly_item->segments[seg_non_planar].faces_included)
+		{
+			if (fd.is_valid())
+			{
+				Point_3 v_0 = poly_item->vertices_coords[poly_item->face_vinds[fd][0]];
+				Point_3 v_1 = poly_item->vertices_coords[poly_item->face_vinds[fd][1]];
+				Point_3 v_2 = poly_item->vertices_coords[poly_item->face_vinds[fd][2]];
+
+				float dis_tmp_0 = CGAL::squared_distance(v_0, seg_planar);
+				float dis_tmp_1 = CGAL::squared_distance(v_1, seg_planar);
+				float dis_tmp_2 = CGAL::squared_distance(v_2, seg_planar);
+
+				if (dis_tmp_0 >= pnp_sqrt_dis_thres && //||
+					dis_tmp_1 >= pnp_sqrt_dis_thres && //||
+					dis_tmp_2 >= pnp_sqrt_dis_thres)//use||
+				{
+					non_planar_selected.insert(fd);
+				}
+			}
+		}
+		//select facet mode
+		selected(non_planar_selected);//selected(non_planar_selected);
+
+		CGAL::QGLViewer* viewer = *CGAL::QGLViewer::QGLViewerPool().begin();
+		contour_2d.clear();
+		Q_EMIT endSelection();
+		qobject_cast<CGAL::Three::Viewer_interface*>(viewer)->set2DSelectionMode(false);
+	}
+
+	void treat_non_planar_split_stroke()
+	{
+		//clear all
+		clear_pnp_segments();
+
+		for (unsigned int i = 0; i < contour_2d.size(); ++i)
+		{
+			//QTimer::singleShot(0, this, SLOT(paint_selection()));paint_pos
+			is_ready_to_paint_select = true;
+			paint_pos = QPoint(contour_2d[i].x(), contour_2d[i].y());
+			paint_selection(); //QTimer::singleShot(0, this, SLOT(paint_selection()));
+
+			if (pnp_segment_ids.first != -1 && pnp_segment_ids.second != -1)
+				break;
+		}
+
+		if (pnp_segment_ids.first != -1 && pnp_segment_ids.second == -1)
+		{
+			CGAL::Three::Three::warning("The stroke is not passing through the boundary of two adjacent segments.");
+		}
+		else
+		{
+			get_pnp_segment(0);
+			get_pnp_segment(1);
+
+			if (pnp_segments_plane_params.first.first > pnp_segments_plane_params.second.first)
+			{
+				non_planar_ind = 1;
+				select_planar_segments(pnp_segment_ids.first);
+				separate_non_planar_from_planar(pnp_segments_plane_params.first.second, pnp_segment_ids.second);
+			}
+			else
+			{
+				non_planar_ind = 0;
+				select_planar_segments(pnp_segment_ids.second);
+				separate_non_planar_from_planar(pnp_segments_plane_params.second.second, pnp_segment_ids.first);
+			}
+		}
+	}
+
 	bool eventFilter(QObject* target, QEvent* event)
 	{
 		static QImage background;
@@ -635,19 +922,40 @@ protected:
 				if (mouse_event->button() == Qt::RightButton)
 					state.right_button_pressing = event->type() == QEvent::MouseButtonPress;
 
-				if (is_edit_mode)
+				if (is_edit_mode && (archived_state != 1 && !is_pnp_stroke_active))
 					Q_EMIT clearHL();
 				if (!state.left_button_pressing && !state.right_button_pressing)//MouseButtonRelease
 				{
-					if (is_active)
+					//std::cerr << "is_active "<< is_active <<" recommendation_state "<< recommendation_state << " lasso_active "<<is_lasso_active<<std::endl;
+					
+					switch (recommendation_state)
 					{
-						Q_EMIT endSelection();
-						is_active = false;
-					}
-					if (is_lasso_active)
-					{
-						apply_path();
-						lasso_selection();//perform lasso selection
+					case 0:
+						if (is_active)
+						{
+							Q_EMIT endSelection();
+							is_active = false;
+						}
+						if (is_lasso_active)
+						{
+							apply_path();
+							lasso_selection();//perform lasso selection
+						}
+						break;
+						// in recommedation mode
+					case 1://perform split from non-planar segments
+						if (is_active)
+						{
+							Q_EMIT endSelection();
+							is_active = false;
+						}
+						if (is_pnp_stroke_active && !contour_2d.empty())
+						{
+							clear_pnp_segments();
+							apply_path();
+							treat_non_planar_split_stroke();
+						}
+						break;
 					}
 				}
 			}
@@ -675,7 +983,7 @@ protected:
 				viewer->setFocus();
 				return false;
 			}
-			if (!is_lasso_active)
+			if (!is_lasso_active && !is_pnp_stroke_active)
 			{
 				is_ready_to_paint_select = true;
 				QMouseEvent* mouse_event = static_cast<QMouseEvent*>(event);
@@ -687,24 +995,34 @@ protected:
 			}
 			else//lasso
 			{
-				//if (event->type() != QEvent::MouseMove)
-				//{
+				if (event->type() != QEvent::MouseMove)
+				{
 					//Create a QImage of the screen and paint the lasso on top of it
 					background = static_cast<CGAL::Three::Viewer_interface*>(*CGAL::QGLViewer::QGLViewerPool().begin())->grabFramebuffer();
-				//}
-
+				}
+				
 				if (!background.isNull())
 				{
-					sample_mouse_path(background);
+					switch (recommendation_state)
+					{
+					case 1:
+						if (!state.right_button_pressing)
+							sample_mouse_path(background, Qt::red);
+						break;
+					default:
+						sample_mouse_path(background);
+						break;
+					}
 				}
-
+				
 			}
 		}
 		//if in edit_mode and the mouse is moving without left button pressed :
 		// highlight the primitive under cursor
 		else if (is_edit_mode && 
 			event->type() == QEvent::MouseMove && 
-			(!state.left_button_pressing || !state.right_button_pressing))
+			(!state.left_button_pressing || !state.right_button_pressing)
+			&& archived_state != 1 && archived_state != 2)
 		{
 			if (target == mainwindow)
 			{
@@ -725,8 +1043,10 @@ protected:
 	bool is_ready_to_highlight;
 	bool is_ready_to_paint_select;
 	bool is_lasso_active;
+	bool is_pnp_stroke_active;
 	QPoint hl_pos;
 	QPoint paint_pos;
+
 	Polyline_2 contour_2d;
 	Polylines* polyline;
 	Polyline_2& poly() const { return polyline->front(); }

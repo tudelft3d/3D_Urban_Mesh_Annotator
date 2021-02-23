@@ -181,7 +181,9 @@ struct Scene_surface_mesh_item_priv {
 	typedef Kernel::Point_3 Point;
 	typedef CGAL::Surface_mesh<Point> SMesh;
 	typedef boost::graph_traits<SMesh>::face_descriptor face_descriptor;
+	
 	typedef boost::graph_traits<SMesh>::vertex_descriptor vertex_descriptor;
+
 
 	typedef std::vector<QColor> Color_vector;
 
@@ -197,7 +199,7 @@ struct Scene_surface_mesh_item_priv {
 			false));
 		item->setTriangleContainer(0, new Triangle_container(VI::PROGRAM_WITH_LIGHT,
 			true));
-
+		
 		item->setTriangleContainer(2, new Triangle_container(VI::PROGRAM_WITH_LIGHT,
 			false));
 
@@ -231,7 +233,6 @@ struct Scene_surface_mesh_item_priv {
 		//pointSizeSlider = NULL;
 		texture_item = new Scene_textured_surface_mesh_item();
 		current_rendering_mode = other.renderingMode();
-
 	}
 
 	Scene_surface_mesh_item_priv(SMesh* sm, Scene_surface_mesh_item* parent) :
@@ -242,7 +243,7 @@ struct Scene_surface_mesh_item_priv {
 			false));
 		item->setTriangleContainer(0, new Triangle_container(VI::PROGRAM_WITH_LIGHT,
 			true));
-
+		
 		item->setTriangleContainer(2, new Triangle_container(VI::PROGRAM_WITH_LIGHT,
 			false));
 
@@ -282,9 +283,9 @@ struct Scene_surface_mesh_item_priv {
 	{
 		if (alphaSlider)
 			delete alphaSlider;
-
+		//if (pointSizeSlider)
+		//	delete pointSizeSlider;
 		delete[]texture_items;
-
 		if (smesh_)
 		{
 			delete smesh_;
@@ -331,9 +332,7 @@ struct Scene_surface_mesh_item_priv {
 		Scene_item_rendering_helper::Gl_data_names name,
 		bool index) const;
 	void compute_elements(Scene_item_rendering_helper::Gl_data_names name) const;
-
 	void compute_selected_elements(Scene_item_rendering_helper::Gl_data_names name) const;
-
 	void checkFloat() const;
 	TextListItem* textVItems;
 	TextListItem* textEItems;
@@ -351,13 +350,11 @@ struct Scene_surface_mesh_item_priv {
 	mutable bool has_vcolors;
 	mutable bool has_fcolors;
 	SMesh* smesh_;
-
 	std::string m_comments;
 	Scene_textured_surface_mesh_item* texture_item;
 	Scene_textured_surface_mesh_item** texture_items;
 	bool is_texture_initialized = false;
 	RenderingMode current_rendering_mode;
-
 	mutable bool is_filled;
 	mutable bool isinit;
 	mutable std::vector<unsigned int> idx_data_, idx_data_log;
@@ -367,7 +364,6 @@ struct Scene_surface_mesh_item_priv {
 	mutable std::size_t idx_edge_data_size, idx_edge_data_log_size;
 	mutable std::vector<unsigned int> idx_feature_edge_data_, idx_feature_edge_data_log;
 	mutable std::size_t idx_feature_edge_data_size, idx_feature_edge_data_log_size;
-
 	mutable std::vector<unsigned int> idx_boundary_edge_data_, idx_boundary_edge_data_log;
 	mutable std::size_t idx_boundary_edge_data_size, idx_boundary_edge_data_log_size;
 
@@ -375,7 +371,6 @@ struct Scene_surface_mesh_item_priv {
 	mutable std::size_t selected_flat_vertices_size, selected_flat_vertices_log_size;
 	mutable std::vector<cgal_gl_data> selected_flat_normals, selected_flat_normals_log;
 	mutable std::vector<cgal_gl_data> selected_f_colors, selected_f_colors_log;
-
 	mutable std::vector<cgal_gl_data> smooth_vertices, smooth_vertices_log;
 	mutable std::vector<cgal_gl_data> smooth_normals, smooth_normals_log;
 	mutable std::vector<cgal_gl_data> flat_vertices, flat_vertices_log;
@@ -392,7 +387,6 @@ struct Scene_surface_mesh_item_priv {
 	mutable std::map<std::pair<int, int>, std::vector<face_descriptor> > st_faces_map_;
 	mutable std::map<int, int> old_new_duplicate_verts_map_;
 	mutable std::vector<QImage> texture_images_;
-
 	mutable QOpenGLShaderProgram* program;
 	Scene_surface_mesh_item* item;
 
@@ -409,10 +403,8 @@ struct Scene_surface_mesh_item_priv {
 	int genus;
 	bool self_intersect;
 	mutable QSlider* alphaSlider;
-
 	//mutable QSlider* pointSizeSlider;
 	std::set<std::size_t> chosen_segments;
-
 };
 
 const char* aabb_property_name = "Scene_surface_mesh_item aabb tree";
@@ -454,6 +446,7 @@ void Scene_surface_mesh_item::standard_constructor(SMesh* sm)
 	d->textFItems = new TextListItem(this);
 	are_buffers_filled = false;
 	invalidate(ALL);
+	is_first_construct = false;
 	//get normal
 	sm->add_property_map<face_descriptor, Kernel::Vector_3 >("f:normal").first;
 	sm->property_map<face_descriptor, Kernel::Vector_3 >("f:normal").first = d->fnormals_log;
@@ -990,65 +983,238 @@ void Scene_surface_mesh_item_priv::compute_selected_elements(Scene_item_renderin
 
 void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper::Gl_data_names name)const
 {
-	if (item->is_in_annotation)
+	if (!item->is_first_construct) // avoid several construction and initialize. All init do once with classification activate.
 	{
-		compute_selected_elements(name);
-	}
-	else
-	{
-		QApplication::setOverrideCursor(Qt::WaitCursor);
-		smooth_vertices.clear();
-		smooth_normals.clear();
-		flat_vertices.clear();
-		flat_normals.clear();
-		f_colors.clear();
-		v_colors.clear();
-		idx_data_.clear();
-		idx_data_.shrink_to_fit();
-
-		SMesh::Property_map<vertex_descriptor, Kernel::Vector_3 > vnormals =
-			smesh_->add_property_map<vertex_descriptor, Kernel::Vector_3 >("v:normal").first;
-
-		SMesh::Property_map<face_descriptor, Kernel::Vector_3 > fnormals =
-			smesh_->add_property_map<face_descriptor, Kernel::Vector_3 >("f:normal").first;
-		CGAL::Polygon_mesh_processing::compute_face_normals(*smesh_, fnormals);
-		fnormals_log = fnormals;
-		
-		typedef boost::graph_traits<SMesh>::face_descriptor face_descriptor;
-		CGAL::Polygon_mesh_processing::compute_vertex_normals(*smesh_, vnormals);
-
-		const CGAL::qglviewer::Vec o = static_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first())->offset();
-		Kernel::Vector_3 offset(o.x, o.y, o.z);
-
-		SMesh::Property_map<vertex_descriptor, SMesh::Point> positions = smesh_->points();
-
-		SMesh::Property_map<vertex_descriptor, CGAL::Color> vcolors =
-			smesh_->property_map<vertex_descriptor, CGAL::Color >("v:color").first;
-
-		SMesh::Property_map<face_descriptor, CGAL::Color> fcolors = 
-			smesh_->property_map<face_descriptor, CGAL::Color >("f:color").first;
-
-		///Only for test face color
-		///item->face_color_replace_for_visualization(fcolors);
-
-		boost::property_map< SMesh, boost::vertex_index_t >::type
-			im = get(boost::vertex_index, *smesh_);
-
-		idx_data_.reserve(num_faces(*smesh_) * 3);
-
-		typedef boost::graph_traits<SMesh>::face_descriptor face_descriptor;
-		typedef boost::graph_traits<SMesh>::halfedge_descriptor halfedge_descriptor;
-		typedef boost::graph_traits<SMesh>::edge_descriptor edge_descriptor;
-
-		if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
+		if (item->is_in_annotation)
 		{
+			compute_selected_elements(name);
+		}
+		else
+		{
+			QApplication::setOverrideCursor(Qt::WaitCursor);
+			smooth_vertices.clear();
+			smooth_normals.clear();
+			flat_vertices.clear();
+			flat_normals.clear();
+			f_colors.clear();
+			v_colors.clear();
+			idx_data_.clear();
+			idx_data_.shrink_to_fit();
+
+			SMesh::Property_map<vertex_descriptor, Kernel::Vector_3 > vnormals =
+				smesh_->add_property_map<vertex_descriptor, Kernel::Vector_3 >("v:normal").first;
+
+			SMesh::Property_map<face_descriptor, Kernel::Vector_3 > fnormals =
+				smesh_->add_property_map<face_descriptor, Kernel::Vector_3 >("f:normal").first;
+			CGAL::Polygon_mesh_processing::compute_face_normals(*smesh_, fnormals);
+			fnormals_log = fnormals;
+
+			typedef boost::graph_traits<SMesh>::face_descriptor face_descriptor;
+			CGAL::Polygon_mesh_processing::compute_vertex_normals(*smesh_, vnormals);
+
+			const CGAL::qglviewer::Vec o = static_cast<CGAL::Three::Viewer_interface*>(CGAL::QGLViewer::QGLViewerPool().first())->offset();
+			Kernel::Vector_3 offset(o.x, o.y, o.z);
+
+			SMesh::Property_map<vertex_descriptor, SMesh::Point> positions = smesh_->points();
+
+			SMesh::Property_map<vertex_descriptor, CGAL::Color> vcolors =
+				smesh_->property_map<vertex_descriptor, CGAL::Color >("v:color").first;
+
+			SMesh::Property_map<face_descriptor, CGAL::Color> fcolors =
+				smesh_->property_map<face_descriptor, CGAL::Color >("f:color").first;
+
+			///Only for test face color
+			///item->face_color_replace_for_visualization(fcolors);
+
+			boost::property_map< SMesh, boost::vertex_index_t >::type
+				im = get(boost::vertex_index, *smesh_);
+
+			idx_data_.reserve(num_faces(*smesh_) * 3);
+
+			typedef boost::graph_traits<SMesh>::face_descriptor face_descriptor;
+			typedef boost::graph_traits<SMesh>::halfedge_descriptor halfedge_descriptor;
+			typedef boost::graph_traits<SMesh>::edge_descriptor edge_descriptor;
+			auto itn = item->face_center_point_set.normal_map().begin();
+			if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
+			{
+				BOOST_FOREACH(face_descriptor fd, faces(*smesh_))
+				{
+					//update mesh normal
+					item->face_normals[fd] = fnormals[fd];
+					*(itn++) = fnormals[fd];
+
+					if (is_triangle(halfedge(fd, *smesh_), *smesh_))
+					{
+						BOOST_FOREACH(halfedge_descriptor hd, halfedges_around_face(halfedge(fd, *smesh_), *smesh_))
+						{
+							idx_data_.push_back(source(hd, *smesh_));
+						}
+					}
+					else
+					{
+						std::vector<Point> facet_points;
+						BOOST_FOREACH(halfedge_descriptor hd, halfedges_around_face(halfedge(fd, *smesh_), *smesh_))
+						{
+							facet_points.push_back(positions[target(hd, *smesh_)]);
+						}
+						bool is_convex = is_facet_convex(facet_points, fnormals[fd]);
+
+						if (is_convex && is_quad(halfedge(fd, *smesh_), *smesh_))
+						{
+							halfedge_descriptor hd = halfedge(fd, *smesh_);
+							//1st half
+							idx_data_.push_back(source(hd, *smesh_));
+							idx_data_.push_back(source(next(hd, *smesh_), *smesh_));
+							idx_data_.push_back(source(next(next(hd, *smesh_), *smesh_), *smesh_));
+
+							//2nd half
+							idx_data_.push_back(source(hd, *smesh_));
+							idx_data_.push_back(source(next(next(hd, *smesh_), *smesh_), *smesh_));
+							idx_data_.push_back(source(prev(hd, *smesh_), *smesh_));
+						}
+						else if (is_convex)
+						{
+							triangulate_convex_facet(fd, &fnormals, 0, &im, name, true);
+						}
+						else
+						{
+							triangulate_facet(fd, &fnormals, 0, &im, name, true);
+						}
+					}
+				}
+			}
+
+			if (name.testFlag(Scene_item_rendering_helper::COLORS))
+			{
+
+				has_fpatch_id = smesh_->property_map<face_descriptor, int >("f:patch_id").second;
+				has_fcolors = smesh_->property_map<face_descriptor, CGAL::Color >("f:color").second;
+				has_vcolors = smesh_->property_map<vertex_descriptor, CGAL::Color >("v:color").second;
+			}
+
+			if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
+			{
+				idx_edge_data_.clear();
+				idx_edge_data_.shrink_to_fit();
+				idx_edge_data_.reserve(num_edges(*smesh_) * 2);
+
+				idx_boundary_edge_data_.clear();
+				idx_boundary_edge_data_.shrink_to_fit();
+				idx_boundary_edge_data_.reserve(num_edges(*smesh_) * 2);
+
+				BOOST_FOREACH(edge_descriptor ed, edges(*smesh_))
+				{
+					if (!item->face_segment_id.empty())
+					{
+						face_descriptor fd1, fd2;
+						fd1 = face(halfedge(ed, *smesh_), *smesh_);
+						fd2 = face(opposite(halfedge(ed, *smesh_), *smesh_), *smesh_);
+
+						if (fd1.is_valid() && fd2.is_valid())
+						{
+							if (item->face_segment_id[fd1] != item->face_segment_id[fd2])
+							{
+								idx_boundary_edge_data_.push_back(source(ed, *smesh_));
+								idx_boundary_edge_data_.push_back(target(ed, *smesh_));
+							}
+						}
+						else if (fd1.is_valid() || fd2.is_valid())
+						{
+							//idx_boundary_edge_data_.push_back(source(ed, *smesh_));
+							//idx_boundary_edge_data_.push_back(target(ed, *smesh_));
+							idx_feature_edge_data_.push_back(source(ed, *smesh_));
+							idx_feature_edge_data_.push_back(target(ed, *smesh_));
+
+							if (!this->is_merged_batch_)
+							{
+								idx_boundary_edge_data_.push_back(source(ed, *smesh_));
+								idx_boundary_edge_data_.push_back(target(ed, *smesh_));
+							}
+							else
+							{
+								if (check_neighbor_faces(source(ed, *smesh_), target(ed, *smesh_)))
+								{
+									idx_boundary_edge_data_.push_back(source(ed, *smesh_));
+									idx_boundary_edge_data_.push_back(target(ed, *smesh_));
+								}
+							}
+						}
+					}
+					//if (has_feature_edges && get(e_is_feature_map, ed))
+					//{
+					//	idx_feature_edge_data_.push_back(source(ed, *smesh_));
+					//	idx_feature_edge_data_.push_back(target(ed, *smesh_));
+					//}
+					idx_edge_data_.push_back(source(ed, *smesh_));
+					idx_edge_data_.push_back(target(ed, *smesh_));
+				}
+				idx_edge_data_.shrink_to_fit();
+				idx_boundary_edge_data_.shrink_to_fit();
+				idx_feature_edge_data_.shrink_to_fit();
+			}
+
+			if (name.testFlag(Scene_item_rendering_helper::COLORS) &&
+				has_fpatch_id) {
+				initialize_colors();
+			}
+
+			//compute the Flat data
+			flat_vertices.clear();
+			flat_normals.clear();
+			f_colors.clear();
+			selected_flat_vertices.clear();
+			selected_flat_normals.clear();
+			selected_f_colors.clear();
+
+
 			BOOST_FOREACH(face_descriptor fd, faces(*smesh_))
 			{
-				if (is_triangle(halfedge(fd, *smesh_), *smesh_))
+				if (is_triangle(halfedge(fd, *smesh_), *smesh_) && fd.is_valid())
 				{
+					f_begin_map[fd] = f_colors.size();
 					BOOST_FOREACH(halfedge_descriptor hd, halfedges_around_face(halfedge(fd, *smesh_), *smesh_))
 					{
-						idx_data_.push_back(source(hd, *smesh_));
+						if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
+						{
+							Point p = positions[source(hd, *smesh_)] + offset;
+							if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
+								add_point_in_buffer(p, selected_flat_vertices);
+							}
+							add_point_in_buffer(p, flat_vertices);
+						}
+						if (name.testFlag(Scene_item_rendering_helper::NORMALS))
+						{
+							Kernel::Vector_3 n = fnormals[fd];
+							if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
+								add_normal_in_buffer(n, selected_flat_normals);
+							}
+							add_normal_in_buffer(n, flat_normals);
+						}
+						if (name.testFlag(Scene_item_rendering_helper::COLORS))
+						{
+							if (has_fpatch_id)
+							{
+								//The sharp features detection produces patch ids >=1, this
+								//is meant to insure the wanted id is in the range [min,max]
+								QColor c = item->color_vector()[fpatch_id_map[fd] - min_patch_id];
+								CGAL::Color color(c.red(), c.green(), c.blue());
+
+								if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
+									add_color_in_buffer(color, selected_f_colors);
+								}
+								add_color_in_buffer(color, f_colors);
+
+							}
+							else if (has_fcolors)
+							{
+								CGAL::Color c = fcolors[fd];
+								if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
+								{
+									add_color_in_buffer(c, selected_f_colors);
+								}
+								add_color_in_buffer(c, f_colors);
+							}
+						}
 					}
 				}
 				else
@@ -1059,436 +1225,269 @@ void Scene_surface_mesh_item_priv::compute_elements(Scene_item_rendering_helper:
 						facet_points.push_back(positions[target(hd, *smesh_)]);
 					}
 					bool is_convex = is_facet_convex(facet_points, fnormals[fd]);
-
 					if (is_convex && is_quad(halfedge(fd, *smesh_), *smesh_))
 					{
-						halfedge_descriptor hd = halfedge(fd, *smesh_);
 						//1st half
-						idx_data_.push_back(source(hd, *smesh_));
-						idx_data_.push_back(source(next(hd, *smesh_), *smesh_));
-						idx_data_.push_back(source(next(next(hd, *smesh_), *smesh_), *smesh_));
+						halfedge_descriptor hd = halfedge(fd, *smesh_);
+						Point p = positions[source(hd, *smesh_)];
+						Kernel::Vector_3 n = fnormals[fd];
+						CGAL::Color* c;
+						if (has_fpatch_id)
+						{
+							QColor color = item->color_vector()[fpatch_id_map[fd] - min_patch_id];
+							c = new CGAL::Color(color.red(), color.green(), color.blue());
+						}
+						else if (has_fcolors)
+							c = &fcolors[fd];
+						else
+							c = 0;
+
+						addFlatData(p, n, c, name);
+						if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
+							addSelectedFlatData(p, n, c, name);
+
+
+						hd = next(halfedge(fd, *smesh_), *smesh_);
+						if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
+							addSelectedFlatData(positions[source(hd, *smesh_)], fnormals[fd], c, name);
+						addFlatData(positions[source(hd, *smesh_)], fnormals[fd], c, name);
+
+
+						hd = next(next(halfedge(fd, *smesh_), *smesh_), *smesh_);
+						if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
+							addSelectedFlatData(positions[source(hd, *smesh_)]
+								, fnormals[fd]
+								, c
+								, name);
+						addFlatData(positions[source(hd, *smesh_)]
+							, fnormals[fd]
+							, c
+							, name);
+
 
 						//2nd half
-						idx_data_.push_back(source(hd, *smesh_));
-						idx_data_.push_back(source(next(next(hd, *smesh_), *smesh_), *smesh_));
-						idx_data_.push_back(source(prev(hd, *smesh_), *smesh_));
+						hd = halfedge(fd, *smesh_);
+						if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
+							addSelectedFlatData(positions[source(hd, *smesh_)]
+								, fnormals[fd]
+								, c
+								, name);
+						addFlatData(positions[source(hd, *smesh_)]
+							, fnormals[fd]
+							, c
+							, name);
+
+
+						hd = next(next(halfedge(fd, *smesh_), *smesh_), *smesh_);
+						if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
+							addSelectedFlatData(positions[source(hd, *smesh_)]
+								, fnormals[fd]
+								, c
+								, name);
+						addFlatData(positions[source(hd, *smesh_)]
+							, fnormals[fd]
+							, c
+							, name);
+
+
+						hd = prev(halfedge(fd, *smesh_), *smesh_);
+						if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
+							addSelectedFlatData(positions[source(hd, *smesh_)]
+								, fnormals[fd]
+								, c
+								, name);
+						addFlatData(positions[source(hd, *smesh_)]
+							, fnormals[fd]
+							, c
+							, name);
+
+
+						if (has_fpatch_id)
+							delete c;
 					}
 					else if (is_convex)
 					{
-						triangulate_convex_facet(fd, &fnormals, 0, &im, name, true);
+						triangulate_convex_facet(fd, &fnormals, &fcolors, 0, name, false);
 					}
 					else
 					{
-						triangulate_facet(fd, &fnormals, 0, &im, name, true);
+						triangulate_facet(fd, &fnormals, &fcolors, 0, name, false);
 					}
 				}
 			}
-		}
 
-		if (name.testFlag(Scene_item_rendering_helper::COLORS))
-		{
-
-			has_fpatch_id = smesh_->property_map<face_descriptor, int >("f:patch_id").second;
-			has_fcolors = smesh_->property_map<face_descriptor, CGAL::Color >("f:color").second;
-			//has_vcolors = smesh_->property_map<vertex_descriptor, CGAL::Color >("v:color").second;
-		}
-
-		if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
-		{
-			idx_edge_data_.clear();
-			idx_edge_data_.shrink_to_fit();
-			idx_edge_data_.reserve(num_edges(*smesh_) * 2);
-
-			idx_boundary_edge_data_.clear();
-			idx_boundary_edge_data_.shrink_to_fit();
-			idx_boundary_edge_data_.reserve(num_edges(*smesh_) * 2);
-
-			BOOST_FOREACH(edge_descriptor ed, edges(*smesh_))
+			if (has_vcolors && name.testFlag(Scene_item_rendering_helper::COLORS))
 			{
-				if (!item->face_segment_id.empty())
+				BOOST_FOREACH(vertex_descriptor vd, vertices(*smesh_))
 				{
-					face_descriptor fd1, fd2;
-					fd1 = face(halfedge(ed, *smesh_), *smesh_);
-					fd2 = face(opposite(halfedge(ed, *smesh_), *smesh_), *smesh_);
-
-					if (fd1.is_valid() && fd2.is_valid())
-					{
-						if (item->face_segment_id[fd1] != item->face_segment_id[fd2])
-						{
-							idx_boundary_edge_data_.push_back(source(ed, *smesh_));
-							idx_boundary_edge_data_.push_back(target(ed, *smesh_));
-						}
-					}
-					else if (fd1.is_valid() || fd2.is_valid())
-					{
-						//idx_boundary_edge_data_.push_back(source(ed, *smesh_));
-						//idx_boundary_edge_data_.push_back(target(ed, *smesh_));
-						idx_feature_edge_data_.push_back(source(ed, *smesh_));
-						idx_feature_edge_data_.push_back(target(ed, *smesh_));
-
-						if (!this->is_merged_batch_)
-						{
-							idx_boundary_edge_data_.push_back(source(ed, *smesh_));
-							idx_boundary_edge_data_.push_back(target(ed, *smesh_));
-						}
-						else
-						{
-							if (check_neighbor_faces(source(ed, *smesh_), target(ed, *smesh_)))
-							{
-								idx_boundary_edge_data_.push_back(source(ed, *smesh_));
-								idx_boundary_edge_data_.push_back(target(ed, *smesh_));
-							}
-						}
-					}
+					CGAL::Color c = vcolors[vd];
+					v_colors.push_back((float)c.red() / 255);
+					v_colors.push_back((float)c.green() / 255);
+					v_colors.push_back((float)c.blue() / 255);
 				}
-				//if (has_feature_edges && get(e_is_feature_map, ed))
-				//{
-				//	idx_feature_edge_data_.push_back(source(ed, *smesh_));
-				//	idx_feature_edge_data_.push_back(target(ed, *smesh_));
-				//}
-				idx_edge_data_.push_back(source(ed, *smesh_));
-				idx_edge_data_.push_back(target(ed, *smesh_));
 			}
-			idx_edge_data_.shrink_to_fit();
-			idx_boundary_edge_data_.shrink_to_fit();
-			idx_feature_edge_data_.shrink_to_fit();
-		}
 
-		if (name.testFlag(Scene_item_rendering_helper::COLORS) &&
-			has_fpatch_id) {
-			initialize_colors();
-		}
-
-		//compute the Flat data
-		flat_vertices.clear();
-		flat_normals.clear();
-		f_colors.clear();
-
-		selected_flat_vertices.clear();
-		selected_flat_normals.clear();
-		selected_f_colors.clear();
-
-
-		BOOST_FOREACH(face_descriptor fd, faces(*smesh_))
-		{
-			if (is_triangle(halfedge(fd, *smesh_), *smesh_) && fd.is_valid())
+			if (floated &&
+				(name.testFlag(Scene_item_rendering_helper::GEOMETRY) || name.testFlag(Scene_item_rendering_helper::NORMALS)))
 			{
-				f_begin_map[fd] = f_colors.size();
-				BOOST_FOREACH(halfedge_descriptor hd, halfedges_around_face(halfedge(fd, *smesh_), *smesh_))
+				BOOST_FOREACH(vertex_descriptor vd, vertices(*smesh_))
 				{
 					if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
 					{
-						Point p = positions[source(hd, *smesh_)] + offset;
-						if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
-							add_point_in_buffer(p, selected_flat_vertices);
-						}
-						add_point_in_buffer(p, flat_vertices);
+						Point p = positions[vd] + offset;
+						add_point_in_buffer(p, smooth_vertices);
 					}
 					if (name.testFlag(Scene_item_rendering_helper::NORMALS))
 					{
-						Kernel::Vector_3 n = fnormals[fd];
-						if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
-							add_normal_in_buffer(n, selected_flat_normals);
-						}
-						add_normal_in_buffer(n, flat_normals);
-					}
-					if (name.testFlag(Scene_item_rendering_helper::COLORS))
-					{
-						if (has_fpatch_id)
-						{
-							//The sharp features detection produces patch ids >=1, this
-							//is meant to insure the wanted id is in the range [min,max]
-							QColor c = item->color_vector()[fpatch_id_map[fd] - min_patch_id];
-							CGAL::Color color(c.red(), c.green(), c.blue());
-
-							if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end()) {
-								add_color_in_buffer(color, selected_f_colors);
-							}
-							add_color_in_buffer(color, f_colors);
-
-						}
-						else if (has_fcolors)
-						{
-							CGAL::Color c = fcolors[fd];
-							if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
-							{
-								add_color_in_buffer(c, selected_f_colors);
-							}
-							add_color_in_buffer(c, f_colors);
-						}
+						Kernel::Vector_3 n = vnormals[vd];
+						add_normal_in_buffer(n, smooth_normals);
 					}
 				}
 			}
-			else
+
+
+			if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
 			{
-				std::vector<Point> facet_points;
-				BOOST_FOREACH(halfedge_descriptor hd, halfedges_around_face(halfedge(fd, *smesh_), *smesh_))
+
+				idx_data_size = idx_data_.size();
+				flat_vertices_size = flat_vertices.size();
+				selected_flat_vertices_size = selected_flat_vertices.size();
+				idx_edge_data_size = idx_edge_data_.size();
+				idx_feature_edge_data_size = idx_feature_edge_data_.size();
+				idx_boundary_edge_data_size = idx_boundary_edge_data_.size();
+
+				item->getPointContainer(0)->allocate(Pt::Vertices, smooth_vertices.data(),
+					static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
+
+				item->getEdgeContainer(0)->allocate(Ed::Indices, idx_edge_data_.data(),
+					static_cast<int>(idx_edge_data_.size() * sizeof(unsigned int)));
+				item->getEdgeContainer(0)->allocate(Ed::Vertices, smooth_vertices.data(),
+					static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
+
+				item->getEdgeContainer(1)->allocate(Ed::Indices, idx_feature_edge_data_.data(),
+					static_cast<int>(idx_feature_edge_data_.size() * sizeof(unsigned int)));
+				item->getEdgeContainer(1)->allocate(Ed::Vertices, smooth_vertices.data(),
+					static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
+
+				item->getEdgeContainer(2)->allocate(Ed::Indices, idx_boundary_edge_data_.data(),
+					static_cast<int>(idx_boundary_edge_data_.size() * sizeof(unsigned int)));
+				item->getEdgeContainer(2)->allocate(Ed::Vertices, smooth_vertices.data(),
+					static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
+
+				item->getTriangleContainer(0)->allocate(Tri::Vertex_indices, idx_data_.data(),
+					static_cast<int>(idx_data_.size() * sizeof(unsigned int)));
+				item->getTriangleContainer(0)->allocate(Tri::Smooth_vertices, smooth_vertices.data(),
+					static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
+
+				item->getTriangleContainer(1)->allocate(Tri::Flat_vertices, flat_vertices.data(),
+					static_cast<int>(flat_vertices.size() * sizeof(cgal_gl_data)));
+
+				item->getTriangleContainer(2)->allocate(Tri::Flat_vertices, selected_flat_vertices.data(),
+					static_cast<int>(selected_flat_vertices.size() * sizeof(cgal_gl_data)));
+
+			}
+
+			if (name.testFlag(Scene_item_rendering_helper::NORMALS))
+			{
+
+				item->getTriangleContainer(1)->allocate(Tri::Flat_normals, flat_normals.data(),
+					static_cast<int>(flat_normals.size() * sizeof(cgal_gl_data)));
+				item->getTriangleContainer(2)->allocate(Tri::Flat_normals, selected_flat_normals.data(),
+					static_cast<int>(selected_flat_normals.size() * sizeof(cgal_gl_data)));
+				item->getTriangleContainer(0)->allocate(Tri::Smooth_normals, smooth_normals.data(),
+					static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
+			}
+
+			if (name.testFlag(Scene_item_rendering_helper::COLORS))
+			{
+				if (!f_colors.empty())
 				{
-					facet_points.push_back(positions[target(hd, *smesh_)]);
+					item->getTriangleContainer(1)->allocate(Tri::FColors, f_colors.data(),
+						static_cast<int>(f_colors.size() * sizeof(cgal_gl_data)));
+					item->getTriangleContainer(2)->allocate(Tri::FColors, selected_f_colors.data(),
+						static_cast<int>(selected_f_colors.size() * sizeof(cgal_gl_data)));
 				}
-				bool is_convex = is_facet_convex(facet_points, fnormals[fd]);
-				if (is_convex && is_quad(halfedge(fd, *smesh_), *smesh_))
-				{
-					//1st half
-					halfedge_descriptor hd = halfedge(fd, *smesh_);
-					Point p = positions[source(hd, *smesh_)];
-					Kernel::Vector_3 n = fnormals[fd];
-					CGAL::Color* c;
-					if (has_fpatch_id)
-					{
-						QColor color = item->color_vector()[fpatch_id_map[fd] - min_patch_id];
-						c = new CGAL::Color(color.red(), color.green(), color.blue());
-					}
-					else if (has_fcolors)
-						c = &fcolors[fd];
-					else
-						c = 0;
-
-					addFlatData(p, n, c, name);
-					if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
-						addSelectedFlatData(p, n, c, name);
-
-
-					hd = next(halfedge(fd, *smesh_), *smesh_);
-					if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
-						addSelectedFlatData(positions[source(hd, *smesh_)], fnormals[fd], c, name);
-					addFlatData(positions[source(hd, *smesh_)], fnormals[fd], c, name);
-
-
-					hd = next(next(halfedge(fd, *smesh_), *smesh_), *smesh_);
-					if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
-						addSelectedFlatData(positions[source(hd, *smesh_)]
-							, fnormals[fd]
-							, c
-							, name);
-					addFlatData(positions[source(hd, *smesh_)]
-						, fnormals[fd]
-						, c
-						, name);
-
-
-					//2nd half
-					hd = halfedge(fd, *smesh_);
-					if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
-						addSelectedFlatData(positions[source(hd, *smesh_)]
-							, fnormals[fd]
-							, c
-							, name);
-					addFlatData(positions[source(hd, *smesh_)]
-						, fnormals[fd]
-						, c
-						, name);
-
-
-					hd = next(next(halfedge(fd, *smesh_), *smesh_), *smesh_);
-					if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
-						addSelectedFlatData(positions[source(hd, *smesh_)]
-							, fnormals[fd]
-							, c
-							, name);
-					addFlatData(positions[source(hd, *smesh_)]
-						, fnormals[fd]
-						, c
-						, name);
-
-
-					hd = prev(halfedge(fd, *smesh_), *smesh_);
-					if (!chosen_segments.empty() && chosen_segments.find(item->face_segment_id[fd]) != chosen_segments.end())
-						addSelectedFlatData(positions[source(hd, *smesh_)]
-							, fnormals[fd]
-							, c
-							, name);
-					addFlatData(positions[source(hd, *smesh_)]
-						, fnormals[fd]
-						, c
-						, name);
-
-
-					if (has_fpatch_id)
-						delete c;
+				else {
+					item->getTriangleContainer(1)->allocate(Tri::FColors, 0, 0);
+					item->getTriangleContainer(2)->allocate(Tri::FColors, 0, 0);
 				}
-				else if (is_convex)
+
+				if (!v_colors.empty())
 				{
-					triangulate_convex_facet(fd, &fnormals, &fcolors, 0, name, false);
+					item->getTriangleContainer(0)->allocate(Tri::VColors, v_colors.data(),
+						static_cast<int>(v_colors.size() * sizeof(cgal_gl_data)));
 				}
 				else
-				{
-					triangulate_facet(fd, &fnormals, &fcolors, 0, name, false);
-				}
+					item->getTriangleContainer(0)->allocate(Tri::VColors, 0, 0);
 			}
-		}
 
-		if (has_vcolors && name.testFlag(Scene_item_rendering_helper::COLORS))
-		{
-			BOOST_FOREACH(vertex_descriptor vd, vertices(*smesh_))
+			//data backup
+			if (!smooth_vertices.empty())
 			{
-				CGAL::Color c = vcolors[vd];
-				v_colors.push_back((float)c.red() / 255);
-				v_colors.push_back((float)c.green() / 255);
-				v_colors.push_back((float)c.blue() / 255);
+				smooth_vertices_log.clear();
+				smooth_vertices_log.assign(smooth_vertices.begin(), smooth_vertices.end());
 			}
-		}
-
-		if (floated &&
-			(name.testFlag(Scene_item_rendering_helper::GEOMETRY) || name.testFlag(Scene_item_rendering_helper::NORMALS)))
-		{
-			BOOST_FOREACH(vertex_descriptor vd, vertices(*smesh_))
+			if (!smooth_normals.empty())
 			{
-				if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
-				{
-					Point p = positions[vd] + offset;
-					add_point_in_buffer(p, smooth_vertices);
-				}
-				if (name.testFlag(Scene_item_rendering_helper::NORMALS))
-				{
-					Kernel::Vector_3 n = vnormals[vd];
-					add_normal_in_buffer(n, smooth_normals);
-				}
+				smooth_normals_log.clear();
+				smooth_normals_log.assign(smooth_normals.begin(), smooth_normals.end());
 			}
-		}
 
-
-		if (name.testFlag(Scene_item_rendering_helper::GEOMETRY))
-		{
-
-			idx_data_size = idx_data_.size();
-			flat_vertices_size = flat_vertices.size();
-			selected_flat_vertices_size = selected_flat_vertices.size();
-			idx_edge_data_size = idx_edge_data_.size();
-			idx_feature_edge_data_size = idx_feature_edge_data_.size();
-			idx_boundary_edge_data_size = idx_boundary_edge_data_.size();
-
-			item->getPointContainer(0)->allocate(Pt::Vertices, smooth_vertices.data(),
-				static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
-
-			item->getEdgeContainer(0)->allocate(Ed::Indices, idx_edge_data_.data(),
-				static_cast<int>(idx_edge_data_.size() * sizeof(unsigned int)));
-			item->getEdgeContainer(0)->allocate(Ed::Vertices, smooth_vertices.data(),
-				static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
-
-			item->getEdgeContainer(1)->allocate(Ed::Indices, idx_feature_edge_data_.data(),
-				static_cast<int>(idx_feature_edge_data_.size() * sizeof(unsigned int)));
-			item->getEdgeContainer(1)->allocate(Ed::Vertices, smooth_vertices.data(),
-				static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
-
-			item->getEdgeContainer(2)->allocate(Ed::Indices, idx_boundary_edge_data_.data(),
-				static_cast<int>(idx_boundary_edge_data_.size() * sizeof(unsigned int)));
-			item->getEdgeContainer(2)->allocate(Ed::Vertices, smooth_vertices.data(),
-				static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
-
-			item->getTriangleContainer(0)->allocate(Tri::Vertex_indices, idx_data_.data(),
-				static_cast<int>(idx_data_.size() * sizeof(unsigned int)));
-			item->getTriangleContainer(0)->allocate(Tri::Smooth_vertices, smooth_vertices.data(),
-				static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
-
-			item->getTriangleContainer(1)->allocate(Tri::Flat_vertices, flat_vertices.data(),
-				static_cast<int>(flat_vertices.size() * sizeof(cgal_gl_data)));
-
-			item->getTriangleContainer(2)->allocate(Tri::Flat_vertices, selected_flat_vertices.data(),
-				static_cast<int>(selected_flat_vertices.size() * sizeof(cgal_gl_data)));
-
-		}
-
-		if (name.testFlag(Scene_item_rendering_helper::NORMALS))
-		{
-
-			item->getTriangleContainer(1)->allocate(Tri::Flat_normals, flat_normals.data(),
-				static_cast<int>(flat_normals.size() * sizeof(cgal_gl_data)));
-			item->getTriangleContainer(2)->allocate(Tri::Flat_normals, selected_flat_normals.data(),
-				static_cast<int>(selected_flat_normals.size() * sizeof(cgal_gl_data)));
-			item->getTriangleContainer(0)->allocate(Tri::Smooth_normals, smooth_normals.data(),
-				static_cast<int>(num_vertices(*smesh_) * 3 * sizeof(cgal_gl_data)));
-		}
-
-		if (name.testFlag(Scene_item_rendering_helper::COLORS))
-		{
-			if (!f_colors.empty())
+			if (!idx_data_.empty())
 			{
-				item->getTriangleContainer(1)->allocate(Tri::FColors, f_colors.data(),
-					static_cast<int>(f_colors.size() * sizeof(cgal_gl_data)));
-				item->getTriangleContainer(2)->allocate(Tri::FColors, selected_f_colors.data(),
-					static_cast<int>(selected_f_colors.size() * sizeof(cgal_gl_data)));
+				idx_data_log.clear();
+				idx_data_log.assign(idx_data_.begin(), idx_data_.end());
 			}
-			else {
-				item->getTriangleContainer(1)->allocate(Tri::FColors, 0, 0);
-				item->getTriangleContainer(2)->allocate(Tri::FColors, 0, 0);
+			if (!idx_edge_data_.empty())
+			{
+				idx_edge_data_log.clear();
+				idx_edge_data_log.assign(idx_edge_data_.begin(), idx_edge_data_.end());
+			}
+			if (!idx_feature_edge_data_.empty())
+			{
+				idx_feature_edge_data_log.clear();
+				idx_feature_edge_data_log.assign(idx_feature_edge_data_.begin(), idx_feature_edge_data_.end());
+			}
+
+			if (!flat_vertices.empty())
+			{
+				flat_vertices_log.clear();
+				flat_vertices_log.assign(flat_vertices.begin(), flat_vertices.end());
+			}
+			if (!flat_normals.empty())
+			{
+				flat_normals_log.clear();
+				flat_normals_log.assign(flat_normals.begin(), flat_normals.end());
+			}
+
+			if (!selected_f_colors.empty())
+			{
+				selected_f_colors_log.clear();
+				selected_f_colors_log.assign(selected_f_colors.begin(), selected_f_colors.end());
+			}
+			if (!selected_flat_vertices.empty())
+			{
+				selected_flat_vertices_log.clear();
+				selected_flat_vertices_log.assign(selected_flat_vertices.begin(), selected_flat_vertices.end());
+			}
+			if (!selected_flat_normals.empty())
+			{
+				selected_flat_normals_log.clear();
+				selected_flat_normals_log.assign(selected_flat_normals.begin(), selected_flat_normals.end());
 			}
 
 			if (!v_colors.empty())
 			{
-				item->getTriangleContainer(0)->allocate(Tri::VColors, v_colors.data(),
-					static_cast<int>(v_colors.size() * sizeof(cgal_gl_data)));
+				v_colors_log.clear();
+				v_colors_log.assign(v_colors.begin(), v_colors.end());
 			}
-			else
-				item->getTriangleContainer(0)->allocate(Tri::VColors, 0, 0);
+			if (!f_colors.empty())
+			{
+				f_colors_log.clear();
+				f_colors_log.assign(f_colors.begin(), f_colors.end());
+			}
+			QApplication::restoreOverrideCursor();
 		}
-
-		//data backup
-		if (!smooth_vertices.empty())
-		{
-			smooth_vertices_log.clear();
-			smooth_vertices_log.assign(smooth_vertices.begin(), smooth_vertices.end());
-		}
-		if (!smooth_normals.empty())
-		{
-			 smooth_normals_log.clear();
-			 smooth_normals_log.assign(smooth_normals.begin(), smooth_normals.end());
-		}
-
-		if (!idx_data_.empty())
-		{
-			 idx_data_log.clear();
-			 idx_data_log.assign(idx_data_.begin(), idx_data_.end());
-		}
-		if (!idx_edge_data_.empty())
-		{
-			 idx_edge_data_log.clear();
-			 idx_edge_data_log.assign(idx_edge_data_.begin(), idx_edge_data_.end());
-		}
-		if (!idx_feature_edge_data_.empty())
-		{
-			 idx_feature_edge_data_log.clear();
-			 idx_feature_edge_data_log.assign(idx_feature_edge_data_.begin(), idx_feature_edge_data_.end());
-		}
-
-		if (!flat_vertices.empty())
-		{
-			 flat_vertices_log.clear();
-			 flat_vertices_log.assign(flat_vertices.begin(), flat_vertices.end());
-		}
-		if (!flat_normals.empty())
-		{
-			 flat_normals_log.clear();
-			 flat_normals_log.assign(flat_normals.begin(), flat_normals.end());
-		}
-
-		if (!selected_f_colors.empty())
-		{
-			 selected_f_colors_log.clear();
-			 selected_f_colors_log.assign(selected_f_colors.begin(), selected_f_colors.end());
-		}
-		if (!selected_flat_vertices.empty())
-		{
-			selected_flat_vertices_log.clear();
-			selected_flat_vertices_log.assign(selected_flat_vertices.begin(), selected_flat_vertices.end());
-		}
-		if (!selected_flat_normals.empty())
-		{
-			selected_flat_normals_log.clear();
-			selected_flat_normals_log.assign(selected_flat_normals.begin(), selected_flat_normals.end());
-		}
-
-		if (!v_colors.empty())
-		{
-			v_colors_log.clear();
-			v_colors_log.assign(v_colors.begin(), v_colors.end());
-		}
-		if (!f_colors.empty())
-		{
-			f_colors_log.clear();
-			f_colors_log.assign(f_colors.begin(), f_colors.end());
-		}
-		QApplication::restoreOverrideCursor();
 	}
 }
 
@@ -1902,6 +1901,14 @@ void Scene_surface_mesh_item::grouping_facets_for_multi_texture_rendering
 	}
 }
 
+void Scene_surface_mesh_item::reset_into_one_segment(SMesh* smesh)
+{
+	BOOST_FOREACH(face_descriptor fd, faces(*smesh))
+	{
+		face_segment_id[fd] = 0;
+	}
+}
+
 void Scene_surface_mesh_item::region_growing_on_mesh
 (
 	SMesh* selected_segment_mesh,
@@ -1956,7 +1963,10 @@ void Scene_surface_mesh_item::region_growing_on_mesh
 			for (auto fi : rg)
 			{
 				rg_tmp.push_back(fi);
-				rg_area += CGAL::Polygon_mesh_processing::face_area(segment_fid_face_map[fi], *selected_segment_mesh);
+				if (selected_main_faces.size() == 1)//means mesh clustering
+					face_segment_id[id_face[fi]] = rg_ind;
+				else //means segment clustering
+					rg_area += CGAL::Polygon_mesh_processing::face_area(segment_fid_face_map[fi], *selected_segment_mesh);
 			}
 			if (rid_maxarea.second < rg_area)
 			{
@@ -1967,7 +1977,10 @@ void Scene_surface_mesh_item::region_growing_on_mesh
 			++rg_ind;
 		}
 	}
-	if (!regions.empty())
+
+	if (selected_main_faces.size() == 1)
+		CGAL::Three::Three::information("New regions generated: " + QString::number(planar_regions.size()) + " segments.");
+	if (!regions.empty() && selected_main_faces.size() != 1)
 		selected_main_faces.insert(selected_main_faces.end(), planar_regions[rid_maxarea.first].begin(), planar_regions[rid_maxarea.first].end());
 }
 
@@ -2018,7 +2031,10 @@ void Scene_surface_mesh_item::region_growing_on_pcl
 			for (auto pi : rg)
 			{
 				rg_tmp.push_back(pi);
-				rg_area += CGAL::Polygon_mesh_processing::face_area(segment_fid_face_map[pi], *selected_segment_mesh);
+				if (selected_main_faces.size() == 1)//means mesh clustering
+					face_segment_id[id_face[pi]] = rg_ind;
+				else //means segment clustering
+					rg_area += CGAL::Polygon_mesh_processing::face_area(segment_fid_face_map[pi], *selected_segment_mesh);
 			}
 			if (rid_maxarea.second < rg_area)
 			{
@@ -2029,7 +2045,7 @@ void Scene_surface_mesh_item::region_growing_on_pcl
 			++rg_ind;
 		}
 	}
-	if (!regions.empty())
+	if (!regions.empty() && selected_main_faces.size() != 1)
 		selected_main_faces.insert(selected_main_faces.end(), planar_regions[rid_maxarea.first].begin(), planar_regions[rid_maxarea.first].end());
 }
 
@@ -2792,7 +2808,6 @@ void  Scene_surface_mesh_item::map_garbage_properties
 		computeSegmentBoundary();
 	}
 }
-//**********************************************************//
 
 void Scene_surface_mesh_item::invalidateOpenGLBuffers() {
 	invalidate(ALL);
@@ -3458,25 +3473,6 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 {
 	QMenu* menu = Scene_item::contextMenu();
 
-	//QAction* actionResetColor =
-	//	menu->findChild<QAction*>(tr("actionResetColor"));
-
-	//if (isItemMulticolor() || d->has_fpatch_id)
-	//{
-	//	if (!actionResetColor)
-	//	{
-	//		actionResetColor = menu->addAction(tr("Reset Colors"));
-	//		actionResetColor->setObjectName("actionResetColor");
-	//	}
-	//	connect(actionResetColor, SIGNAL(triggered()),
-	//		this, SLOT(resetColors()));
-	//}
-	//else if (actionResetColor)
-	//{
-	//	menu->removeAction(actionResetColor);
-	//	actionResetColor->deleteLater();
-	//}
-
 	const char* prop_name = "Menu modified by Scene_surface_mesh_item.";
 	bool menuChanged = menu->property(prop_name).toBool();
 
@@ -3489,16 +3485,6 @@ QMenu* Scene_surface_mesh_item::contextMenu()
 			[this]() {redraw(); });
 		container->addAction(sliderAction);
 		menu->addMenu(container);
-
-		//QMenu* point_size_containter = new QMenu(tr("Point size"));
-		//point_size_containter->menuAction()->setProperty("is_groupable", true);
-		//QWidgetAction* sliderAction2 = new QWidgetAction(0);
-		//sliderAction2->setDefaultWidget(d->pointSizeSlider);
-		//connect(d->pointSizeSlider, &QSlider::valueChanged,
-		//	this, [this]() {redraw(); });
-
-		//point_size_containter->addAction(sliderAction2);
-		//menu->addMenu(point_size_containter);
 
 
 		menu->addSeparator();

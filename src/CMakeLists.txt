@@ -265,7 +265,7 @@ if(CGAL_Qt5_FOUND AND Qt5_FOUND AND OPENGL_FOUND )
   FOREACH(SUB_DIR ${DEMO_PLUGINS})
       add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Plugins/${SUB_DIR}")
   ENDFOREACH()
-  add_dependencies(UrbanMeshAnnotator classification_plugin selection_plugin ply_plugin)
+  add_dependencies(UrbanMeshAnnotator classification_plugin selection_plugin ply_plugin point_set_selection_plugin)
 #
 # EXECUTABLES
 #

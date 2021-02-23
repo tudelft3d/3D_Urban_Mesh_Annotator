@@ -607,7 +607,7 @@ void Scene::renderScene(const QList<Scene_interface::Item_id>& items,
 					{
 						//add object to list of picked objects;
 						picked_item_IDs[depth] = index;
-
+						
 						bool found_tmp = false;
 						CGAL::qglviewer::Vec point = viewer->camera()->pointUnderPixel(picked_pixel, found_tmp, viewer->devicePixelRatio()) - viewer->offset();
 						first_layer_picked_point.clear();
@@ -1027,7 +1027,7 @@ Scene::headerData(int section, ::Qt::Orientation orientation, int role) const
 		}
 		else if (role == ::Qt::ToolTipRole) {
 			if (section == RenderingModeColumn) {
-				return tr("Rendering mode (points/wireframe/flat/flat+edges/Gouraud/TextureMode/TextureMode+flat+edges/Emphasizing/ScalarField)");
+				return tr("Rendering mode (points/wireframe/flat/flat+edges/Gouraud/TextureMode/TextureMode+flat+edges/Emphasizing)");
 			}
 			else if (section == ABColumn) {
 				return tr("Selection A/Selection B");

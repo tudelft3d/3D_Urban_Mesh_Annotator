@@ -22,7 +22,6 @@ typedef boost::graph_traits<SMesh>::face_descriptor face_descriptor;
 typedef boost::graph_traits<SMesh>::vertex_descriptor vertex_descriptor;
 typedef boost::graph_traits<SMesh>::halfedge_descriptor halfedge_descriptor;
 
-//***********************Weixiao Update*******************************//
 typedef boost::graph_traits<SMesh>::vertex_iterator vertex_iterator;
 typedef boost::graph_traits<SMesh>::halfedge_iterator halfedge_iterator;
 typedef boost::graph_traits<SMesh>::edge_iterator edge_iterator;
@@ -47,7 +46,6 @@ typedef Point_range_cgal::Vector_map Normal_3_cgal_map;
 typedef CGAL::Shape_detection::Point_set::K_neighbor_query<Kernel, Point_range_cgal, Point_3_cgal_map> Neighbor_query_pcl_cgal;
 typedef CGAL::Shape_detection::Point_set::Least_squares_plane_fit_region<Kernel, Point_range_cgal, Point_3_cgal_map, Normal_3_cgal_map> region_type_pcl_cgal;
 typedef CGAL::Shape_detection::Region_growing<Point_range_cgal, Neighbor_query_pcl_cgal, region_type_pcl_cgal> Region_growing_pcl_cgal;
-//*******************************************************************//
 
 namespace boost {
 

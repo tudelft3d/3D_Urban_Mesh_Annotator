@@ -27,7 +27,6 @@ public:
 
   Scene_textured_surface_mesh_item* clone() const;
 
-  //***********************Weixiao Update add uvmap*******************************//
   //Get texture information
   SMesh *mesh_in = new SMesh;
   SMesh::Property_map<halfedge_descriptor, std::pair<float, float> > uv_map;
@@ -35,7 +34,6 @@ public:
   std::map<face_descriptor, std::vector<int>> face_vertex_inds_tex;
   std::map<face_descriptor, std::vector<float>> face_texcoord;
   QImage texture_image_in;
-  ////*******************************************************************//
 
   // IO
   bool load(std::istream& in);

@@ -177,11 +177,6 @@
                    <string>Emphasizing</string>
                   </property>
                  </item>
-                 <item>
-                  <property name="text">
-                   <string>ScalarField</string>
-                  </property>
-                 </item>
                 </widget>
                </item>
               </layout>
