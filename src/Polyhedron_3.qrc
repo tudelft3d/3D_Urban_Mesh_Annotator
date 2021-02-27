@@ -32,7 +32,6 @@
         <file>resources/pss_diff.png</file>
         <file>resources/help_button.png</file>
 		    <file>resources/toplayer.png</file>
-		    <file>resources/rainbow.png</file>
     </qresource>
     <qresource prefix="/cgal/Polyhedron_3">
 	<file alias="about.html">resources/about.html</file>
