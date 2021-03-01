@@ -1916,7 +1916,8 @@ void Scene_surface_mesh_item::region_growing_on_mesh
 	double& max_accepted_angle_,
 	int& min_region_size_,
 	std::map<int, face_descriptor> &segment_fid_face_map,
-	std::vector<int> &selected_main_faces
+	std::vector<int> &selected_main_faces,
+	const bool is_on_segment
 )
 {
 	const Face_range_cgal face_range = faces(*selected_segment_mesh);
@@ -1963,7 +1964,7 @@ void Scene_surface_mesh_item::region_growing_on_mesh
 			for (auto fi : rg)
 			{
 				rg_tmp.push_back(fi);
-				if (selected_main_faces.size() == 1)//means mesh clustering
+				if (!is_on_segment)//means mesh clustering
 					face_segment_id[id_face[fi]] = rg_ind;
 				else //means segment clustering
 					rg_area += CGAL::Polygon_mesh_processing::face_area(segment_fid_face_map[fi], *selected_segment_mesh);
@@ -1978,9 +1979,9 @@ void Scene_surface_mesh_item::region_growing_on_mesh
 		}
 	}
 
-	if (selected_main_faces.size() == 1)
+	if (!is_on_segment)
 		CGAL::Three::Three::information("New regions generated: " + QString::number(planar_regions.size()) + " segments.");
-	if (!regions.empty() && selected_main_faces.size() != 1)
+	if (!regions.empty() && is_on_segment)
 		selected_main_faces.insert(selected_main_faces.end(), planar_regions[rid_maxarea.first].begin(), planar_regions[rid_maxarea.first].end());
 }
 
@@ -1993,7 +1994,8 @@ void Scene_surface_mesh_item::region_growing_on_pcl
 	int& min_region_size_,
 	int& k_neighbors,
 	std::map<int, face_descriptor> &segment_fid_face_map,
-	std::vector<int> &selected_main_faces
+	std::vector<int> &selected_main_faces,
+	const bool is_on_segment
 )
 {
 	// Default parameter values for the data file polygon_mesh.off.
@@ -2031,7 +2033,7 @@ void Scene_surface_mesh_item::region_growing_on_pcl
 			for (auto pi : rg)
 			{
 				rg_tmp.push_back(pi);
-				if (selected_main_faces.size() == 1)//means mesh clustering
+				if (!is_on_segment)//means mesh clustering
 					face_segment_id[id_face[pi]] = rg_ind;
 				else //means segment clustering
 					rg_area += CGAL::Polygon_mesh_processing::face_area(segment_fid_face_map[pi], *selected_segment_mesh);
@@ -2045,7 +2047,10 @@ void Scene_surface_mesh_item::region_growing_on_pcl
 			++rg_ind;
 		}
 	}
-	if (!regions.empty() && selected_main_faces.size() != 1)
+
+	if (!is_on_segment)
+		CGAL::Three::Three::information("New regions generated: " + QString::number(planar_regions.size()) + " segments.");
+	if (!regions.empty() && is_on_segment)
 		selected_main_faces.insert(selected_main_faces.end(), planar_regions[rid_maxarea.first].begin(), planar_regions[rid_maxarea.first].end());
 }
 

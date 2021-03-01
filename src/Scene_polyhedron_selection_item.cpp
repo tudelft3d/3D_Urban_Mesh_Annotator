@@ -1922,12 +1922,12 @@ void Scene_polyhedron_selection_item::split_segment
 	if (poly_item->is_merged_batch)
 	{
 		//if merged mesh
-		poly_item->region_growing_on_pcl(face_center_point_set, selected_segment_mesh, max_distance_to_plane, max_accepted_angle, min_region_size, k_neighbors, segment_fid_face_map, selected_main_faces);
+		poly_item->region_growing_on_pcl(face_center_point_set, selected_segment_mesh, max_distance_to_plane, max_accepted_angle, min_region_size, k_neighbors, segment_fid_face_map, selected_main_faces, true);
 	}
 	else
 	{
 		//if normal mesh
-		poly_item->region_growing_on_mesh(selected_segment_mesh, max_distance_to_plane, max_accepted_angle, min_region_size, segment_fid_face_map, selected_main_faces);
+		poly_item->region_growing_on_mesh(selected_segment_mesh, max_distance_to_plane, max_accepted_angle, min_region_size, segment_fid_face_map, selected_main_faces, true);
 	}
 
 	selected_facets.clear();
@@ -1950,17 +1950,18 @@ void Scene_polyhedron_selection_item::mesh_clustering
 	int& k_neighbors
 )
 {
-	std::map<int, face_descriptor> segment_fid_face_map;
+	std::map<int, face_descriptor> segment_fid_face_map;//not used here
+	std::vector<int> selected_main_faces;
 	//perform region growing selection
 	if (poly_item->is_merged_batch)
 	{
 		//if merged mesh
-		poly_item->region_growing_on_pcl(poly_item->face_center_point_set, poly_item->polyhedron(), max_distance_to_plane, max_accepted_angle, min_region_size, k_neighbors, segment_fid_face_map);
+		poly_item->region_growing_on_pcl(poly_item->face_center_point_set, poly_item->polyhedron(), max_distance_to_plane, max_accepted_angle, min_region_size, k_neighbors, segment_fid_face_map, selected_main_faces, false);
 	}
 	else
 	{
 		//poly_item->polyhedron();
-		poly_item->region_growing_on_mesh(poly_item->polyhedron(), max_distance_to_plane, max_accepted_angle, min_region_size, segment_fid_face_map);
+		poly_item->region_growing_on_mesh(poly_item->polyhedron(), max_distance_to_plane, max_accepted_angle, min_region_size, segment_fid_face_map, selected_main_faces, false);
 	}
 	
 	poly_item->segments.clear();

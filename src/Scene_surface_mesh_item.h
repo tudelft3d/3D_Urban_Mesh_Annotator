@@ -209,7 +209,7 @@ public:
 	QComboBox* label_selection_combox_tmp = NULL;
 
 	Point_range_cgal face_center_point_set;
-	
+
 	//statistics
 	enum STATS
 	{
@@ -308,7 +308,8 @@ public:
 		SMesh*, 
 		double&, double&, int&,
 		std::map<int, face_descriptor> &,
-		std::vector<int> & selected_main_faces = std::vector<int>(1, 0)
+		std::vector<int> &,
+		const bool
 	);
 
 	void region_growing_on_pcl
@@ -317,7 +318,8 @@ public:
 		SMesh*, 
 		double&, double&, int&, int&,
 		std::map<int, face_descriptor> &,
-		std::vector<int> & = std::vector<int>(1, 0)
+		std::vector<int> &,
+		const bool
 	);
 
 	void reset_into_one_segment(SMesh*);
