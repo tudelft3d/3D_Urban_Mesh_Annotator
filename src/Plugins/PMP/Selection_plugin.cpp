@@ -1099,6 +1099,9 @@ public Q_SLOTS:
 					ui_widget.select_segment_radioButton->setChecked(true);
 				}
 
+				//set selection mode
+				group_selection_type_radio();
+
 				//rendering
 				CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
 				it->second->poly_item->setRenderingMode(TextureModePlusFlatEdges);
