@@ -949,9 +949,9 @@ public:
 
 	void split_segment(SMesh*, std::map<int, face_descriptor> &, std::map<int, face_descriptor> &, Point_range_cgal&, double&, double&, int&, int&);
     
-	void Scene_polyhedron_selection_item::mesh_clustering(double&, double&, int&, int&);
+	void mesh_clustering(double&, double&, int&, int&);
 
-	void Scene_polyhedron_selection_item::clear_clustering();
+	void clear_clustering();
 Q_SIGNALS:
 
     void updateInstructions(QString);
