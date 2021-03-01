@@ -250,6 +250,35 @@ void Surface_mesh_item_classification::change_color(int index, float* vmin, floa
 	}
 }
 
+void Surface_mesh_item_classification::update_all_label_color(int &label_ind)
+{
+	BOOST_FOREACH(face_descriptor fd, faces(*(m_mesh->polyhedron())))
+	{
+		if (label_ind != m_classif[fd] && label_ind != m_training[fd])
+			continue;
+		QColor color(0, 0, 0);
+		std::size_t c = m_training[fd];
+		if (c != std::size_t(-1) && c < std::size_t(100))//
+		{
+			color = m_label_colors[c];
+			m_mesh->face_color[fd] = color;
+
+			m_color[fd] = CGAL::Color(color.red(), color.green(), color.blue());
+		}
+		else
+		{
+			QColor color_unlabelled(128, 0, 0, 120);
+			m_mesh->face_label[fd] = -1;
+			m_mesh->face_color[fd] = color_unlabelled;
+
+			m_color[fd] = CGAL::Color(color_unlabelled.red(),
+				color_unlabelled.green(),
+				color_unlabelled.blue(),
+				color_unlabelled.alpha());
+		}
+	}
+}
+
 void Surface_mesh_item_classification::threshold_based_change_color(int index, int threshold = 100, bool below = true, float* vmin, float* vmax)
 {
 	m_index_color = index;

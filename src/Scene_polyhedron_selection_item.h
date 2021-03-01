@@ -261,12 +261,40 @@ protected:
         k_ring_selector.set_lasso_mode(b);
     }
 
-    /******************************/
+    void set_recommendation(int b) 
+	{
+        k_ring_selector.set_recommendation(b);
+    }
+
+	void set_pnp_stroke_mode(bool b)
+	{
+		k_ring_selector.set_pnp_stroke_mode(b);
+	}
+
+	void set_pnp_dis_to_plane_threshold(float thres)
+	{
+		k_ring_selector.set_pnp_dis_to_plane_threshold(thres);
+	}
+
+	void call_separate_non_planar_from_planar()
+	{
+		k_ring_selector.call_separate_non_planar_from_planar();
+	}
+
+	void call_all_clear_pnp_data()
+	{
+		k_ring_selector.call_clear_pnp_data();
+	}
+
+	void call_switch_pnp()
+	{
+		k_ring_selector.call_switch_non_planar_and_planar();
+	}
+
 	void check_expand_reduce_enabled(bool b)
 	{
 		k_ring_selector.check_expand_reduce_enabled(b);
 	}
-    /******************************/
 
     int get_k_ring() { return k_ring_selector.k_ring; }
 
@@ -466,14 +494,14 @@ public:
     // select all of `active_handle_type`(vertex, facet or edge)
     void select_all() {
         switch (get_active_handle_type()) {
+            case Active_handle::SEGMENT_TO_EDIT:
+                break;
             case Active_handle::VERTEX:
                 select_all < fg_vertex_descriptor > ();
                 break;
             case Active_handle::FACET:
             case Active_handle::CONNECTED_COMPONENT:
-                /********************ziqian*****************/
             case Active_handle::SEGMENT:
-                /*******************************************/
 
                 select_all < fg_face_descriptor > ();
                 break;
@@ -485,27 +513,10 @@ public:
                 v->update();
             }
                 break;
+            case Active_handle::PNP_SEGMENT_TO_EDIT:
+                break;
         }
     }
-    /*********************************Ziqian************************************/
-    //void select_all_shown() {
-    //	switch (get_active_handle_type()) {
-    //	case Active_handle::VERTEX:
-    //		select_all<fg_vertex_descriptor>(); break;// haven't been implemented! just select_all
-    //	case Active_handle::FACET:
-    //	case Active_handle::CONNECTED_COMPONENT:
-    //		select_all_shown<fg_face_descriptor>(); break;
-    //	case Active_handle::EDGE:
-    //	case Active_handle::PATH:// haven't been implemented! just select_all
-    //		selected_edges.insert(edges(*polyhedron()).first, edges(*polyhedron()).second);
-    //		invalidateOpenGLBuffers();
-    //		CGAL::QGLViewer* v = *CGAL::QGLViewer::QGLViewerPool().begin();
-    //		v->update();
-    //		break;
-    //	}
-    //}
-
-    /****************************************************************************/
 
     void select_boundary();
 
@@ -533,27 +544,13 @@ public:
         invalidateOpenGLBuffers();
         Q_EMIT itemChanged();
     }
-    /***************************************Ziqian****************************************/
-    //template<class HandleType>
-    //void select_all_shown() {
-    //	typedef Selection_traits<HandleType, Scene_polyhedron_selection_item> Tr;
-    //	Tr tr(this);
-
-    //	for (typename Tr::Iterator it = tr.iterator_begin(); it != tr.iterator_end(); ++it) {
-    //		if (tr.item->poly_item->face_shown[*it]) {
-    //			tr.container().insert(*it);
-    //		}
-    //	}
-    //	invalidateOpenGLBuffers();
-    //	Q_EMIT itemChanged();
-    //}
-
-    /*************************************************************************************/
-
+   
     // clear all of `active_handle_type`(vertex, facet or edge)
     void clear() {
         switch (get_active_handle_type()) {
             case Active_handle::SEGMENT:
+            case Active_handle::SEGMENT_TO_EDIT:
+                break;
             case Active_handle::VERTEX:
                 clear < fg_vertex_descriptor > ();
                 break;
@@ -564,6 +561,8 @@ public:
             case Active_handle::EDGE:
             case Active_handle::PATH:
                 clear < fg_edge_descriptor > ();
+                break;
+            case Active_handle::PNP_SEGMENT_TO_EDIT:
                 break;
         }
     }
@@ -634,11 +633,14 @@ public:
     void expand_or_reduce(int steps) {
         if (steps > 0) {
             switch (get_active_handle_type()) {
+                case Active_handle::SEGMENT_TO_EDIT:
+                    break;
                 case Active_handle::VERTEX:
                     expand_selection<fg_vertex_descriptor, boost::vertex_index_t>(steps);
                     break;
                 case Active_handle::FACET:
                 case Active_handle::CONNECTED_COMPONENT:
+				case Active_handle::PNP_SEGMENT_TO_EDIT:
                     expand_selection<fg_face_descriptor, boost::face_index_t>(steps);
                     break;
                 case Active_handle::EDGE:
@@ -646,20 +648,21 @@ public:
                     break;
                 case Active_handle::PATH:
                     break;
-                    /*****************Ziqian*******************/
                 case Active_handle::SEGMENT:
                     expand_selection<fg_face_descriptor, boost::face_index_t>(1);
                     break;
-                    /******************************************/
 
             }
         } else {
             switch (get_active_handle_type()) {
+                case Active_handle::SEGMENT_TO_EDIT:
+                    break;
                 case Active_handle::VERTEX:
                     reduce_selection<fg_vertex_descriptor, boost::vertex_index_t>(-steps);
                     break;
                 case Active_handle::FACET:
                 case Active_handle::CONNECTED_COMPONENT:
+				case Active_handle::PNP_SEGMENT_TO_EDIT:
                     reduce_selection<fg_face_descriptor, boost::face_index_t>(-steps);
                     break;
                 case Active_handle::EDGE:
@@ -667,13 +670,10 @@ public:
                     break;
                 case Active_handle::PATH:
                     break;
-                    /*******************Ziqian*****************/
                 case Active_handle::SEGMENT:
 					reduce_selection<fg_face_descriptor, boost::face_index_t>(-1);
                     //expand_selection<fg_face_descriptor, boost::face_index_t>(-1);
                     break;
-                    /******************************************/
-
             }
         }
     }
@@ -770,15 +770,13 @@ public:
         bool any_change = false;
         for (typename Tr::Iterator it = tr.iterator_begin(); it != tr.iterator_end(); ++it) {
             if (mark[tr.id(*it)]) {
-                /******************Ziqian && Weixiao****************/
-                if (((get_active_handle_type() == Active_handle::FACET) &&
+                if (((get_active_handle_type() == Active_handle::FACET || get_active_handle_type() == Active_handle::PNP_SEGMENT_TO_EDIT) &&
                     poly_item->face_segment_id[fg_face_descriptor(*it)] != edited_segment) && 
 					this->selection_mode_index != 0)
 				{
                     //Q_EMIT printMessage("can't select faces outside of the chosen segmemt.");
                     continue;
                 }
-                /****************************************/
                 any_change |= tr.container().insert(*it).second;
             }
         }
@@ -910,7 +908,6 @@ public:
         invalidateOpenGLBuffers();
     }
 
-    //********************Weixiao Update************************//
     void changed_with_poly_item() {
         // no need to update indices
         poly_item->invalidateOpenGLBuffers();
@@ -948,6 +945,13 @@ public:
 
     std::size_t get_editing_segment() { return edited_segment; }
 
+	SMesh* construct_segment_mesh(std::map<int, face_descriptor> &, std::map<int, face_descriptor> &, Point_range_cgal&);
+
+	void split_segment(SMesh*, std::map<int, face_descriptor> &, std::map<int, face_descriptor> &, Point_range_cgal&, double&, double&, int&, int&);
+    
+	void mesh_clustering(double&, double&, int&, int&);
+
+	void clear_clustering();
 Q_SIGNALS:
 
     void updateInstructions(QString);
@@ -1024,6 +1028,7 @@ public Q_SLOTS:
     void moveVertex();
 
     void set_editing_segment(const std::size_t i) { edited_segment = i; }
+	void get_non_planar_as_editing_segment() { edited_segment = k_ring_selector.get_non_planar_segment(); }
 	void set_selection_mode_index(int i) 
 	{ 
 		selection_mode_index = i;
@@ -1040,7 +1045,6 @@ protected:
         }
 
         if (!visible() || !k_ring_selector.state.shift_pressing) { return false; }
-        //********************Weixiao Update************************//
         if (gen_event->type() == QEvent::Wheel
             && k_ring_selector.state.shift_pressing
 			&& k_ring_selector.expand_or_reduce_enabled)
@@ -1060,7 +1064,6 @@ protected:
 
             return true;
         }
-        //**********************************************************//
         //if (gen_event->type() == QEvent::Wheel)
         //{
         //	QWheelEvent* event = static_cast<QWheelEvent*>(gen_event);
@@ -1183,12 +1186,9 @@ protected:
     // action state
     bool is_insert;
 
-    /****************Ziqian*******************/
     int edited_segment = -1;
-    /*****************************************/
-    //********************Weixiao Update************************//
+
     int wheel_count = 0;
-    //**********************************************************//
 
 public:
     // selection
@@ -1203,9 +1203,7 @@ public:
     Selection_set_vertex HL_selected_vertices;
     Selection_set_facet HL_selected_facets;
     Selection_set_edge HL_selected_edges; // stores one halfedge for each pair (halfedge with minimum address)
-	//********************Weixiao Update************************//
 	int selection_mode_index = -1;
-	//**********************************************************//
 protected:
     friend struct Scene_polyhedron_selection_item_priv;
     Scene_polyhedron_selection_item_priv *d;

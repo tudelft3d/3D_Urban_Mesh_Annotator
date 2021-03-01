@@ -189,7 +189,7 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 
 			Scene_surface_mesh_item* sm_item = new Scene_surface_mesh_item(surface_mesh);
 			sm_item->setName(fileinfo.completeBaseName());
-
+		
 			int v_ind = 0, duplicate_count = 0;
 			bool is_duplicate_points = false;
 			std::map<Kernel::Point_3, int> duplicate_map;
@@ -270,6 +270,7 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 			}
 
 			//read facet properties
+			sm_item->face_center_point_set.add_normal_map();//add normal 
 			int f_ind = 0, segment_size = -1;
 			std::map<face_descriptor, bool> face_visited_check;
 			std::map<int, std::set<int>> textureID_vertices_grouping;
@@ -318,9 +319,19 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 
 				//get face normal
 				sm_item->face_normals[fd] = surface_mesh->property_map<face_descriptor, Kernel::Vector_3 >("f:normal").first[fd];
+				
 				face_visited_check[fd] = false;
 				sm_item->face_shown[fd] = true;
 
+				sm_item->id_face[f_ind] = fd;
+
+				//add face center
+				double fvx = (points[polygons[f_ind][0]].x() +points[polygons[f_ind][1]].x() +points[polygons[f_ind][2]].x()) / 3.0f;
+				double fvy = (points[polygons[f_ind][0]].y() +points[polygons[f_ind][1]].y() +points[polygons[f_ind][2]].y()) / 3.0f;
+				double fvz = (points[polygons[f_ind][0]].z() +points[polygons[f_ind][1]].z() +points[polygons[f_ind][2]].z()) / 3.0f;
+				Point_3 p_tmp(fvx, fvy, fvz);
+				Vector_3 n_tmp(sm_item->face_normals[fd]);
+				sm_item->face_center_point_set.insert(p_tmp, n_tmp);
 				++f_ind;
 			}
 			//update total labeled faces
@@ -419,7 +430,7 @@ bool Polyhedron_demo_ply_plugin::save(const CGAL::Three::Scene_item* item, QFile
 	if (sm_item)
 	{
 		return sm_item->write_ply_mesh(out, (choice == tr("Binary")));
-			  //return CGAL::write_PLY (out, *(sm_item->polyhedron()));
+		//return CGAL::write_PLY (out, *(sm_item->polyhedron()));
 	}
 
 	return false;

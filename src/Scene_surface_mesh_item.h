@@ -10,12 +10,10 @@
 #include <CGAL/Three/Scene_print_item_interface.h>
 #include <CGAL/Three/Scene_item_with_properties.h>
 
-//***********************Weixiao Update*******************************//
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
 #include <CGAL/IO/PLY_reader.h>
 #include <CGAL/Three/Three.h>
 #include "Scene_textured_surface_mesh_item.h"
-//*******************************************************************//	
 
 #ifndef Q_MOC_RUN
 #include "SMesh_type.h"
@@ -32,15 +30,15 @@
 #endif
 
 #include <QColor>
-//***********************Weixiao Update*******************************//
+
 #include <QComboBox>
-//*******************************************************************//	
+
 #include "properties.h"
 
 
 class QSlider;
 struct Scene_surface_mesh_item_priv;
-/******************Ziqian && Weixiao*********************/
+
 typedef std::size_t seg_id;
 //class seg_boundary_edge_info;
 class Segment 
@@ -88,8 +86,6 @@ inline bool smaller_coord
 	else
 		return true;
 }
-
-/*********************************************/
 
 class SCENE_SURFACE_MESH_ITEM_EXPORT Scene_surface_mesh_item
 	: public CGAL::Three::Scene_item_rendering_helper,
@@ -161,7 +157,6 @@ public:
 	void standard_constructor(SMesh *sm);
 	bool save(std::ostream& out) const;
 
-	//***********************Weixiao Update wirte ply attribute*******************************//
 	bool write_ply_mesh(std::ostream& stream, bool binary) const;
 	// Gets PLY comments (empty if point set not originated from PLY input)
 	std::string& comments();
@@ -175,14 +170,13 @@ public:
 	std::map<face_descriptor, int> face_textureid;
 	std::vector<std::string> texture_name;
 	std::vector<QImage> texture_images;
-
 	std::map<face_descriptor, float> label_probabilities;
+	std::map<int, face_descriptor> id_face;
 	std::map<face_descriptor, int> face_segment_id;
 	std::map<int, Kernel::Point_3> vertices_coords;
 	std::map<face_descriptor, std::vector<int>> face_vinds;
 	std::map<face_descriptor, Kernel::Vector_3> face_normals;
 	std::map<face_descriptor, std::vector<face_descriptor>> face_neighbors;
-
 	std::string input_comments;
 	std::string file_path;
 	std::map<int, std::vector<face_descriptor>> semantic_facet_map;
@@ -192,8 +186,7 @@ public:
 	bool is_facet_deleted = false;
 	bool is_merged_batch = false;
 	int total_labeled_faces = 0, total_error_facets = 0;
-	//*******************************************************************//	
-	//***********************Ziqian && Weixiao*******************************//
+	
 	std::map<face_descriptor, bool> face_shown;
 	std::map<face_descriptor, QColor> face_color_backup;
 	std::map<face_descriptor, std::vector<int>> face_non_duplicated_vertices_map;
@@ -210,10 +203,13 @@ public:
 	bool edgesShow = false;
 	bool pointShow = false;
 	bool meshBoundaryShow = false;
+	bool is_first_construct = true;
 	RenderingMode m_RMode;
 	const RenderingMode default_renderingmode = CGAL::Three::Three::defaultSurfaceMeshRenderingMode();
 	QComboBox* label_selection_combox_tmp = NULL;
-	//************************************************************//
+
+	Point_range_cgal face_center_point_set;
+
 	//statistics
 	enum STATS
 	{
@@ -265,7 +261,6 @@ public:
 	void setAlpha(int alpha) Q_DECL_OVERRIDE;
 	QSlider* alphaSlider();
 	void computeElements() const Q_DECL_OVERRIDE;
-	/************************Ziqian && Weixiao ************************/
 	//int PointSize() const;
 
 	void set_comments(std::string);
@@ -308,10 +303,27 @@ public:
 
 	void eraseChosenSegment(seg_id id);
 
-	void region_growing_on_mesh(SMesh*, double&, double&, int&, std::map<int, face_descriptor> &, std::vector<int> &);
+	void region_growing_on_mesh
+	(
+		SMesh*, 
+		double&, double&, int&,
+		std::map<int, face_descriptor> &,
+		std::vector<int> &,
+		const bool
+	);
 
-	void region_growing_on_pcl(Point_range_cgal&, SMesh*, double&, double&, int&, int&, std::map<int, face_descriptor> &, std::vector<int> &);
-	/******************************************************/
+	void region_growing_on_pcl
+	(
+		Point_range_cgal&, 
+		SMesh*, 
+		double&, double&, int&, int&,
+		std::map<int, face_descriptor> &,
+		std::vector<int> &,
+		const bool
+	);
+
+	void reset_into_one_segment(SMesh*);
+	
 
 Q_SIGNALS:
 	void item_is_about_to_be_changed();
@@ -320,10 +332,8 @@ Q_SIGNALS:
 	void selected_facet(void*);
 	void selected_edge(void*);
 	void selected_halfedge(void*);
-	/*******************Ziqian**********************/
 	void selected_segment(void*);
 	void changeColor();
-	/***********************************************/
 
 public Q_SLOTS:
 	void itemAboutToBeDestroyed(Scene_item *) Q_DECL_OVERRIDE;
@@ -344,12 +354,12 @@ public Q_SLOTS:
 		double dir_z,
 		const face_descriptor &f);
 	void resetColors();
-	//********************Weixiao Update************************//
+
 	void showMeshBoundary(bool);
 	void showSegmentBorders(bool);
 	void showFacetEdges(bool);
 	void showFacetVertices(bool);
-	//**********************************************************//
+
 	void showVertices(bool);
 	void showEdges(bool);
 	void showFaces(bool);

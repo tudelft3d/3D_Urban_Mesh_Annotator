@@ -45,7 +45,6 @@ public:
   CGAL::Three::Scene_item* item() { return m_mesh; }
   void erase_item() { m_mesh = NULL; }
 
-  /****************************Ziqian*************************/
   bool segment_form() {
 	  if (m_selection == NULL)
 		  return true;
@@ -58,7 +57,7 @@ public:
 	  }
 	  return true;
   }
-  /***********************************************************/
+
   void add_selection_to_training_set (std::size_t label)
   {
     if (m_selection == NULL)
@@ -87,10 +86,8 @@ public:
     //  change_color (m_index_color);
 
 	m_mesh->total_labeled_faces += updated_labeled_faces;
-	//***********************Weixiao Update update color in all views*******************************//
 	change_color(m_index_color);
 	m_selection->clear_all();
-	//*******************************************************************//
   }
   
   void reset_training_set (std::size_t label)
@@ -152,21 +149,17 @@ public:
   
   void change_color (int index, float* vmin = NULL, float* vmax = NULL);
   
-  //***********************Ziqian*******************************//
-  
   void threshold_based_change_color(int index, int threshold, bool below, float* vmin = NULL, float* vmax = NULL);
 
   bool can_show_probability();
-  
-  //************************************************************//
 
-  //***********************Weixiao*******************************//
+  void update_all_label_color(int &index);
   int get_total_number_facets();
   int get_unlabelled_number_facets();
   int get_total_labeled_facets();
   int get_total_error_facets();
   int unlabelled_num_faces_global = 0;
-  //************************************************************//
+ 
   CGAL::Three::Scene_item* generate_one_item (const char* /* name */,
                                               int /* label */) const
   {
@@ -195,15 +188,12 @@ protected:
   Mesh::Property_map<face_descriptor, std::size_t> m_classif;
   Mesh::Property_map<face_descriptor, CGAL::Color> m_color;
   Mesh::Property_map<face_descriptor, CGAL::Color> m_real_color;
-  //***********************Weixiao Update comment*******************************//
   Mesh::Property_map<face_descriptor, float> m_label_prob;
   std::map<face_descriptor, bool> m_face_checked;
   std::map<face_descriptor, int> m_label_updated;
-  //*****************************************************************************//
   std::vector<std::vector<float> > m_label_probabilities;
 
   int m_index_color;
-//***********************Weixiao Update comment*******************************//
 public:
 	QColor add_new_label(const char* name)
 	{
@@ -262,8 +252,6 @@ public:
 			comments += oss.str();
 		}
 	}
-//*******************************************************************//
-
 };
 
 

@@ -882,11 +882,22 @@ void Scene_polyhedron_selection_item::inverse_selection()
 	v->update();
 }
 
+void Scene_polyhedron_selection_item::inverse_selection_in_segment()
+{
+	Selection_set_facet temp_select = selected_facets;
+	select_all_facets_in_segment();
+	Q_FOREACH(fg_face_descriptor fh, temp_select)
+		selected_facets.erase(fh);
+	invalidateOpenGLBuffers();
+	CGAL::QGLViewer* v = *CGAL::QGLViewer::QGLViewerPool().begin();
+	v->update();
+}
+
 void Scene_polyhedron_selection_item::set_operation_mode(int mode)
 {
 	k_ring_selector.setEditMode(true);
 	Q_EMIT updateInstructions(QString("SHIFT + left click to apply operation."));
-
+	
 	if (mode == 0 || mode == 1) {
 		mode += 12;
 	}
@@ -978,6 +989,12 @@ void Scene_polyhedron_selection_item::set_operation_mode(int mode)
 		//set the selection type to Edge
 		set_active_handle_type(Active_handle::Type::VERTEX);
 		break;
+	case 12:
+		set_active_handle_type(Active_handle::Type::SEGMENT_TO_EDIT);
+		break;
+	case 13:
+		set_active_handle_type(Active_handle::Type::PNP_SEGMENT_TO_EDIT);
+		break;
 	default:
 		break;
 	}
@@ -992,10 +1009,9 @@ bool Scene_polyhedron_selection_item::treat_classic_selection(const HandleRange&
 	Selection_traits<HandleType, Scene_polyhedron_selection_item> tr(this);
 	bool any_change = false;
 	if (is_insert) {
-
 		BOOST_FOREACH(HandleType h, selection) 
 		{
-			if ((get_active_handle_type() == 1) && this->selection_mode_index != 0)
+			if ((get_active_handle_type() == 1 || get_active_handle_type() == 7) && this->selection_mode_index != 0)
 			{
 				if (poly_item->face_segment_id[fg_face_descriptor(h)] != edited_segment) {
 					//Q_EMIT printMessage("can't select faces outside of the chosen segment.");
@@ -1586,6 +1602,35 @@ bool Scene_polyhedron_selection_item::treat_selection(const std::set<fg_face_des
 
 			}
 			break;
+		case 12:
+			set_editing_segment(poly_item->face_segment_id[fh]);
+			poly_item->emphasize_present_segment(seg_id(edited_segment));
+			poly_item->showFacetEdges(true);
+			clear_all();
+			set_operation_mode(-1);
+
+			invalidateOpenGLBuffers();
+			Q_EMIT itemChanged();
+
+			set_active_handle_type(static_cast<Scene_polyhedron_selection_item::Active_handle::Type>(1));
+			Q_EMIT save_handleType();
+			return true;
+			break;
+		case 13:
+			get_non_planar_as_editing_segment();
+
+			//poly_item->showFacetEdges(true);
+			////clear_all();
+			////set_operation_mode(-1);
+
+			//invalidateOpenGLBuffers();
+			//Q_EMIT itemChanged();
+
+			//set_active_handle_type(static_cast<Scene_polyhedron_selection_item::Active_handle::Type>(1));
+			//Q_EMIT save_handleType();
+			//return true;
+			return treat_classic_selection(selection);
+			break;
 		}
 	}
 	d->is_treated = true;
@@ -1759,7 +1804,7 @@ void Scene_polyhedron_selection_item::segmentifySelection() {
 
 void Scene_polyhedron_selection_item::segment_expand_or_reduce(int &steps)
 {
-	if (get_active_handle_type() == 1)// face
+	if (get_active_handle_type() == 1 || get_active_handle_type() == 7)// face
 		expand_or_reduce(steps);
 	else {
 		bool reduce = false;
@@ -1802,6 +1847,138 @@ void Scene_polyhedron_selection_item::segment_expand_or_reduce(int &steps)
 		invalidateOpenGLBuffers();
 		itemChanged();
 	}
+}
+
+//construct segment_mesh
+SMesh* Scene_polyhedron_selection_item::construct_segment_mesh
+(
+	std::map<int, face_descriptor> &original_fid_face_map,
+	std::map<int, face_descriptor> &segment_fid_face_map,
+	Point_range_cgal& face_center_point_set
+)
+{
+	std::set<int> vert_inds;
+	BOOST_FOREACH(fg_face_descriptor fd, poly_item->segments[edited_segment].faces_included)
+	{
+		if (fd.is_valid())
+		{
+			vert_inds.insert(poly_item->face_vinds[fd][0]);
+			vert_inds.insert(poly_item->face_vinds[fd][1]);
+			vert_inds.insert(poly_item->face_vinds[fd][2]);
+		}
+	}
+
+	SMesh* selected_segment_mesh = new SMesh;
+	std::map<int, vertex_descriptor> old_new_vert_map;
+	//add new vertices
+	auto it_vert = vert_inds.begin();
+	auto it_vert_end = vert_inds.end();
+	for (; it_vert != it_vert_end; ++it_vert)
+	{
+		selected_segment_mesh->add_vertex(poly_item->vertices_coords[(*it_vert)]);
+		old_new_vert_map[(*it_vert)] = *(--selected_segment_mesh->vertices_end());
+	}
+
+	//add new faces and texture coordinates
+	int f_ind = 0;
+	BOOST_FOREACH(fg_face_descriptor fd, poly_item->segments[edited_segment].faces_included)
+	{
+		if (fd.is_valid())
+		{
+			auto new_vert_0 = old_new_vert_map[poly_item->face_vinds[fd][0]];//1
+			auto new_vert_1 = old_new_vert_map[poly_item->face_vinds[fd][1]];//2
+			auto new_vert_2 = old_new_vert_map[poly_item->face_vinds[fd][2]];//0
+			selected_segment_mesh->add_face(new_vert_0, new_vert_1, new_vert_2);
+			original_fid_face_map[f_ind] = fd;
+			segment_fid_face_map[f_ind] = *(--selected_segment_mesh->faces_end());
+			//add face center
+			double fvx = (poly_item->vertices_coords[poly_item->face_vinds[fd][0]].x() + poly_item->vertices_coords[poly_item->face_vinds[fd][1]].x() + poly_item->vertices_coords[poly_item->face_vinds[fd][2]].x()) / 3.0f;
+			double fvy = (poly_item->vertices_coords[poly_item->face_vinds[fd][0]].y() + poly_item->vertices_coords[poly_item->face_vinds[fd][1]].y() + poly_item->vertices_coords[poly_item->face_vinds[fd][2]].y()) / 3.0f;
+			double fvz = (poly_item->vertices_coords[poly_item->face_vinds[fd][0]].z() + poly_item->vertices_coords[poly_item->face_vinds[fd][1]].z() + poly_item->vertices_coords[poly_item->face_vinds[fd][2]].z()) / 3.0f;
+			Point_3 p_tmp(fvx, fvy, fvz);
+			Vector_3 n_tmp(poly_item->face_normals[fd]);
+			face_center_point_set.insert(p_tmp, n_tmp);
+			++f_ind;
+		}
+	}
+
+	return selected_segment_mesh;
+}
+
+void Scene_polyhedron_selection_item::split_segment
+(
+	SMesh* selected_segment_mesh,
+	std::map<int, face_descriptor> &original_fid_face_map,
+	std::map<int, face_descriptor> &segment_fid_face_map,
+	Point_range_cgal& face_center_point_set,
+	double& max_distance_to_plane,
+	double& max_accepted_angle,
+	int& min_region_size,
+	int& k_neighbors
+)
+{
+	//perform region growing selection
+	std::vector<int> selected_main_faces;
+	if (poly_item->is_merged_batch)
+	{
+		//if merged mesh
+		poly_item->region_growing_on_pcl(face_center_point_set, selected_segment_mesh, max_distance_to_plane, max_accepted_angle, min_region_size, k_neighbors, segment_fid_face_map, selected_main_faces, true);
+	}
+	else
+	{
+		//if normal mesh
+		poly_item->region_growing_on_mesh(selected_segment_mesh, max_distance_to_plane, max_accepted_angle, min_region_size, segment_fid_face_map, selected_main_faces, true);
+	}
+
+	selected_facets.clear();
+	if (!selected_main_faces.empty())
+	{
+		for (auto fi : selected_main_faces)
+			selected_facets.insert(original_fid_face_map[fi]);
+	}
+
+	invalidateOpenGLBuffers();
+	CGAL::QGLViewer* v = *CGAL::QGLViewer::QGLViewerPool().begin();
+	v->update();
+}
+
+void Scene_polyhedron_selection_item::mesh_clustering
+(
+	double& max_distance_to_plane,
+	double& max_accepted_angle,
+	int& min_region_size,
+	int& k_neighbors
+)
+{
+	std::map<int, face_descriptor> segment_fid_face_map;//not used here
+	std::vector<int> selected_main_faces;
+	//perform region growing selection
+	if (poly_item->is_merged_batch)
+	{
+		//if merged mesh
+		poly_item->region_growing_on_pcl(poly_item->face_center_point_set, poly_item->polyhedron(), max_distance_to_plane, max_accepted_angle, min_region_size, k_neighbors, segment_fid_face_map, selected_main_faces, false);
+	}
+	else
+	{
+		//poly_item->polyhedron();
+		poly_item->region_growing_on_mesh(poly_item->polyhedron(), max_distance_to_plane, max_accepted_angle, min_region_size, segment_fid_face_map, selected_main_faces, false);
+	}
+	
+	poly_item->segments.clear();
+	poly_item->computeSegmentBoundary();
+	poly_item->invalidateOpenGLBuffers();
+	CGAL::QGLViewer* v = *CGAL::QGLViewer::QGLViewerPool().begin();
+	v->update();
+}
+
+void Scene_polyhedron_selection_item::clear_clustering()
+{
+	poly_item->reset_into_one_segment(poly_item->polyhedron());
+	poly_item->segments.clear();
+	poly_item->computeSegmentBoundary();
+	poly_item->invalidateOpenGLBuffers();
+	CGAL::QGLViewer* v = *CGAL::QGLViewer::QGLViewerPool().begin();
+	v->update();
 }
 
 void Scene_polyhedron_selection_item_priv::tempInstructions(QString s1, QString s2)
@@ -2167,10 +2344,9 @@ Scene_polyhedron_selection_item::Scene_polyhedron_selection_item(Scene_face_grap
 	}
 	d->poly = NULL;
 	init(poly_item, mw);
-
+	
 	//this->setColor(QColor(87,87,87));
 	this->setColor(QColor(255, 0, 0));
-
 	invalidateOpenGLBuffers();
 	compute_normal_maps();
 	d->first_selected = false;
@@ -2468,8 +2644,6 @@ public:
 	}
 };
 
-
-/******************************/
 
 void Scene_polyhedron_selection_item::selected_HL(const std::set<fg_edge_descriptor>& m)
 {

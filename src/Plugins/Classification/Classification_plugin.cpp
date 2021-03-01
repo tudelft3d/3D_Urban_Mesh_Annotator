@@ -67,7 +67,7 @@ class Polyhedron_demo_classification_plugin :
 		{
 			color_button = new QPushButton(tr("%1 (%2)").arg(name).arg((char)(std::toupper(shortcut))), parent);
 
-			//menu = new QMenu("Label Menu", color_button);
+			menu = new QMenu("Label Menu", color_button);
 
 			QColor text_color(255, 255, 255);
 			if (color.red() * 0.299 + color.green() * 0.587 + color.blue() * 0.114 > 128)
@@ -84,13 +84,13 @@ class Polyhedron_demo_classification_plugin :
 				+ "; }");
 
 			color_button->setStyleSheet(s);
-			//color_button->setMenu(menu);
+			color_button->setMenu(menu);
 
 			label2 = new QLabel(name, parent);
 		}
 		~LabelButton()
-		{
-		}
+		{}
+
 		void change_color(const QColor& color)
 		{
 			this->color = color;
@@ -110,7 +110,6 @@ class Polyhedron_demo_classification_plugin :
 			color_button->setStyleSheet(s);
 			color_button->update();
 		}
-
 	};
 
 public:
@@ -127,16 +126,12 @@ public:
 		mw = mainWindow;
 		scene = scene_interface;
 		messages = m;
-		//actionClassification = new QAction(tr("Classification"), mw);
 		actionClassification = new QAction(tr("Annotation"), mw);
 		connect(actionClassification, SIGNAL(triggered()), this, SLOT(classification_action()));
-		//dock_widget = new QDockWidget("Classification", mw);
 		dock_widget = new QDockWidget("Annotation", mw);
 		dock_widget->setVisible(false);
 
 		label_button = new QPushButton(QIcon(QString(":/cgal/icons/plus")), "", dock_widget);
-		label_button->setDisabled(true);
-		label_button->setVisible(false);
 		QMenu* label_menu = new QMenu("Label Menu", label_button);
 		label_button->setMenu(label_menu);
 		QAction* add_new_label = label_menu->addAction("Add new label(s)");
@@ -144,8 +139,6 @@ public:
 			SLOT(on_add_new_label_clicked()));
 
 		QAction* clear_labels = label_menu->addAction("Clear labels");
-		clear_labels->setDisabled(true);
-		clear_labels->setVisible(false);
 		connect(clear_labels, SIGNAL(triggered()), this,
 			SLOT(on_clear_labels_clicked()));
 
@@ -153,7 +146,7 @@ public:
 		addDockWidget(dock_widget);
 
 		color_att = QColor(75, 75, 77);
-		
+
 		connect(ui_widget.help, SIGNAL(clicked()), this,
 			SLOT(on_help_clicked()));
 
@@ -173,24 +166,17 @@ public:
 
 		connect(ui_widget.ProbSwitcher, SIGNAL(currentIndexChanged(int)), this, SLOT(on_probability_switcher_changed(int)));
 
-		//ui_widget.display->setVisible(false);
+		ui_widget.display->setVisible(false);
 		ui_widget.label->setVisible(false);
 		ui_widget.ProbSwitcher->setVisible(false);
 		ui_widget.ProbSlider->setVisible(false);
 		ui_widget.ProbSpin->setVisible(false);
-
-		//connect(ui_widget.lineEdit, SIGNAL(triggered()), this, SLOT(show_total_lables(int))); //Total
-		//connect(ui_widget.lineEdit_2, SIGNAL(on_add_selection_to_training_set_clicked()), this, SLOT(get_unlabelled_number_facets())); //Finished
-		//connect(ui_widget.progressBar, SIGNAL(currentIndexChanged(int)), this, SLOT(show_progress_bar(int)));
 
 		QObject* scene_obj = dynamic_cast<QObject*>(scene_interface);
 		if (scene_obj)
 		{
 			connect(scene_obj, SIGNAL(itemAboutToBeDestroyed(CGAL::Three::Scene_item*)), this,
 				SLOT(item_about_to_be_destroyed(CGAL::Three::Scene_item*)));
-
-			//connect(scene_obj, SIGNAL(itemIndexSelected(int)), this,
-			//	SLOT(update_plugin(int)));
 		}
 	}
 	virtual void closure()
@@ -198,7 +184,6 @@ public:
 		dock_widget->hide();
 		close_classification();
 	}
-
 
 public Q_SLOTS:
 
@@ -228,7 +213,6 @@ public Q_SLOTS:
 
 			CGAL::Three::Three::SetdefaultSurfaceMeshRenderingMode(TextureModePlusFlatEdges);
 			mesh_item->setRenderingMode(TextureModePlusFlatEdges);
-			//CGAL::Three::Three::information(QString("Reset the default rendering mode to TextureModePlusFlatEdges"));
 		}
 
 		//on_help_clicked();
@@ -301,7 +285,7 @@ public Q_SLOTS:
 			{
 				ui_widget.labelGrid->removeWidget(label_buttons[i].color_button);
 				label_buttons[i].color_button->deleteLater();
-				//label_buttons[i].menu->deleteLater();
+				label_buttons[i].menu->deleteLater();
 				delete label_buttons[i].label2;
 			}
 			label_buttons.clear();
@@ -387,6 +371,7 @@ public Q_SLOTS:
 		item_map.insert(std::make_pair(mesh_item, classif));
 		QApplication::restoreOverrideCursor();
 		update_plugin_from_item(classif);
+
 		return classif;
 	}
 
@@ -550,45 +535,27 @@ public Q_SLOTS:
 
 		ui_widget.labelGrid->addWidget(label_buttons.back().color_button, x, y);
 
-		//QAction* add_selection = label_buttons.back().menu->addAction("Add selection to the label category");
-		//add_selection->setShortcut(Qt::SHIFT | (Qt::Key_A + (label_button.shortcut - 'a')));
+		QAction* add_selection = label_buttons.back().menu->addAction("Add selection to the label category");
+		add_selection->setShortcut(Qt::SHIFT | (Qt::Key_A + (label_button.shortcut - 'a')));
 
-		////add_selection->setShortcut(Qt::Key_0 + label_buttons.size() - 1);
-		//connect(add_selection, SIGNAL(triggered()), this,
-		//	SLOT(on_add_selection_to_training_set_clicked()));
+		connect(add_selection, SIGNAL(triggered()), this,
+			SLOT(on_add_selection_to_training_set_clicked()));
 
-		label_buttons.back().color_button->setShortcut(Qt::SHIFT | (Qt::Key_A + (label_button.shortcut - 'a')));
-		connect(label_buttons.back().color_button, SIGNAL(clicked()),
-			this, SLOT(on_add_selection_to_training_set_clicked()));
+		label_buttons.back().menu->addSeparator();
 
+		QAction* change_color = label_buttons.back().menu->addAction("Change color");
+		connect(change_color, SIGNAL(triggered()), this,
+			SLOT(on_color_changed_clicked()));
 
-		//label_buttons.back().menu->addSeparator();
+		QAction* change_name = label_buttons.back().menu->addAction("Change name");
+		connect(change_name, SIGNAL(triggered()), this,
+			SLOT(on_name_changed_clicked()));
 
-		//QAction* change_color = label_buttons.back().menu->addAction("Change color");
+		label_buttons.back().menu->addSeparator();
 
-		//change_color->setDisabled(true);
-		//change_color->setVisible(false);
-
-		//connect(change_color, SIGNAL(triggered()), this,
-		//	SLOT(on_color_changed_clicked()));
-
-		//QAction* change_name = label_buttons.back().menu->addAction("Change name");
-
-		//change_name->setDisabled(true);
-		//change_name->setVisible(false);
-
-		//connect(change_name, SIGNAL(triggered()), this,
-		//	SLOT(on_name_changed_clicked()));
-		//
-		//label_buttons.back().menu->addSeparator();
-
-		//QAction* remove_label = label_buttons.back().menu->addAction("Remove label");
-
-		//remove_label->setDisabled(true);
-		//remove_label->setVisible(false);
-
-		//connect(remove_label, SIGNAL(triggered()), this,
-		//	SLOT(on_remove_label_clicked()));
+		QAction* remove_label = label_buttons.back().menu->addAction("Remove label");
+		connect(remove_label, SIGNAL(triggered()), this,
+			SLOT(on_remove_label_clicked()));
 	}
 
 	void add_label_button()
@@ -657,6 +624,7 @@ public Q_SLOTS:
 			return;
 		}
 
+		int label_ind = -1;
 		QPushButton* label_clicked = qobject_cast<QPushButton*>(QObject::sender()->parent()->parent());
 		if (label_clicked == NULL)
 			std::cerr << "Error" << std::endl;
@@ -677,9 +645,15 @@ public Q_SLOTS:
 			label_buttons[position].change_color(color);
 			classif->change_label_color(position,
 				color);
+
+			label_ind = position;
 		}
-		classif->update_color();
-		item_changed(classif->item());
+
+		if (label_ind != -1)
+		{
+			classif->update_all_label_color(label_ind);
+			item_changed(classif->item());
+		}
 	}
 
 	void on_name_changed_clicked()
@@ -733,9 +707,9 @@ public Q_SLOTS:
 			return;
 		}
 
-		//QPushButton* label_clicked = qobject_cast<QPushButton*>(QObject::sender()->parent()->parent());
+		QPushButton* label_clicked = qobject_cast<QPushButton*>(QObject::sender()->parent()->parent());
 
-		QPushButton* label_clicked = qobject_cast<QPushButton*>(QObject::sender());
+		//QPushButton* label_clicked = qobject_cast<QPushButton*>(QObject::sender());
 
 		if (label_clicked == NULL)
 			std::cerr << "Error" << std::endl;
@@ -746,12 +720,14 @@ public Q_SLOTS:
 			ui_widget.labelGrid->getItemPosition(index, &row_index, &column_index, &row_span, &column_span);
 
 			int position = row_index * 3 + column_index;
+
 			if (!classif->segment_form()) {
 				//print_message("Error: can't put faces from different segment into one segment.");
 				//return;
 			}
 
 			classif->add_selection_to_training_set(position);
+
 			int total_facet_num = classif->get_total_number_facets();
 			ui_widget.lineEdit->setText(QString::number(total_facet_num));
 			int unlabelled_num = classif->get_unlabelled_number_facets();
@@ -784,21 +760,6 @@ public Q_SLOTS:
 		float vmax = std::numeric_limits<float>::infinity();
 
 		classif->threshold_based_change_color(index, threshold, below, &vmin, &vmax);
-
-		//if (vmin == std::numeric_limits<float>::infinity() || vmax == std::numeric_limits<float>::infinity())
-		//{
-		//	ui_widget.minDisplay->setEnabled(false);
-		//	ui_widget.minDisplay->setText("Min");
-		//	ui_widget.maxDisplay->setEnabled(false);
-		//	ui_widget.maxDisplay->setText("Max");
-		//}
-		//else
-		//{
-		//	ui_widget.minDisplay->setEnabled(true);
-		//	ui_widget.minDisplay->setText(tr("Min (%1)").arg(vmin));
-		//	ui_widget.maxDisplay->setEnabled(true);
-		//	ui_widget.maxDisplay->setText(tr("Max (%1)").arg(vmax));
-		//}
 
 		if (first_activate_times > 1)
 			item_changed(classif->item());
@@ -853,12 +814,12 @@ public Q_SLOTS:
 		ui_widget.estimated_prg->setEnabled(true);
 		ui_widget.progressBar_2->setEnabled(true);
 
-		ui_widget.ProbSlider->setVisible(/*true*/false);
-		ui_widget.ProbSpin->setVisible(/*true*/false);
-		ui_widget.ProbSwitcher->setVisible(/*true*/false);
-		ui_widget.label_2->setVisible(/*true*/false);
-		ui_widget.label->setVisible(/*true*/false);
-		ui_widget.view->setVisible(/*true*/false);
+		ui_widget.ProbSlider->setVisible(true);
+		ui_widget.ProbSpin->setVisible(true);
+		ui_widget.ProbSwitcher->setVisible(true);
+		ui_widget.label_2->setVisible(true);
+		ui_widget.label->setVisible(true);
+		ui_widget.view->setVisible(true);
 		ui_widget.estimated_prg->setVisible(true);
 		ui_widget.progressBar_2->setVisible(true);
 

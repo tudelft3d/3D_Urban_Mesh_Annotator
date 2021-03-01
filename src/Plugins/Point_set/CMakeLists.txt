@@ -1,0 +1,4 @@
+include( polyhedron_demo_macros )
+  qt5_wrap_ui( point_set_selectionUI_FILES Point_set_selection_widget.ui)
+  polyhedron_demo_plugin(point_set_selection_plugin Point_set_selection_plugin ${point_set_selectionUI_FILES} KEYWORDS PointSetProcessing Classification)
+  target_link_libraries(point_set_selection_plugin PUBLIC scene_points_with_normal_item scene_polylines_item scene_edit_box_item)
