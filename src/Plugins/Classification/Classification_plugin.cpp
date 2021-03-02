@@ -711,6 +711,9 @@ public Q_SLOTS:
 
 		//QPushButton* label_clicked = qobject_cast<QPushButton*>(QObject::sender());
 
+		Scene_polyhedron_selection_item* selection_item
+			= qobject_cast<Scene_polyhedron_selection_item*>(scene->item(scene->mainSelectionIndex()));
+
 		if (label_clicked == NULL)
 			std::cerr << "Error" << std::endl;
 		else
@@ -743,14 +746,13 @@ public Q_SLOTS:
 			labeling_progress_err = labeled_faces_tmp == 0.0f ? 0.0f : labeling_progress_err * 100.0f;
 			ui_widget.progressBar_2->setValue(labeling_progress_err);
 
-			Scene_polyhedron_selection_item* selection_item
-				= qobject_cast<Scene_polyhedron_selection_item*>(scene->item(scene->mainSelectionIndex()));
 			if (selection_item)
 			{
 				selection_item->polyhedron_item()->update_labels_for_selection();
 			}
 		}
 		item_changed(classif->item());
+		selection_item->polyhedron_item()->is_in_annotation = false;
 		++classif->item()->add_label_count;
 	}
 
