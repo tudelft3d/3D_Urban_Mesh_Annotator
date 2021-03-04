@@ -84,7 +84,7 @@ and ***triangle faces***.
 * **Expand/Reduce:** Click 'Expand / Reduce' or 'Mouse wheel forward / backward' with certain number of rings to exapnd or reduce from the
 current selected area.
 * **Lasso:** Holding on Shift and Mouse Left Buton / Mouse Right Button to select / deselect the area with your drawing (show in green).
-* **Select Segment Class:** It's only valid in 'Select segments'. Select one semantic label from the combo box. The area with the selected label will be highlighted. Then click
+* **Select Semantic Class:** It's only valid in 'Select segments'. Select one semantic label from the combo box. The area with the selected label will be highlighted. Then click
 'Select Semantic Class' to confirm the selection.
 * **Select All:** Select all segments in 'Select Segments' mode or select all triangle facet within a segment in 'Split planar segment with region growing' or 'Split non-planar segment with a stroke' mode.
 * **Inver Selection:** Invert select all segments in 'Select Segments' mode or invert select all triangle facet within a segment in
@@ -136,6 +136,7 @@ Consider the mesh that can be fitted with mutiple large planes given a small dis
 
 * **Label panel:** The input mesh decides the label and associate color, the user cannot change it. By pressing the label button or use short cuts
 Shift + Label capital letter to assign label to the selected area.
+* **Probability slider:** It is used for the user to check the areas that are most likely misclassified. The semantic colour is shown when the region's probability above or below the threshold, and other areas are shown in white colour.
 * **Progress bar:** It shows the rough labeling progress according to the pre-computed probability.
 
 ## 5. Context Menu
