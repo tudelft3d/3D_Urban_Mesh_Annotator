@@ -376,7 +376,7 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 		}
 		else
 		{
-			CGAL::Three::Three::error(QString("Input mesh contains non-manifold vertices or edges."));
+			CGAL::Three::Three::error(QString("We are currently not supporting binary *.ply and non-manifold meshes."));
 			Scene_polygon_soup_item* soup_item = new Scene_polygon_soup_item;
 			soup_item->setName(fileinfo.completeBaseName());
 			soup_item->load(points, polygons, fcolors, vcolors);
