@@ -2,7 +2,7 @@
 # Urban Mesh Annotation Tool
 
 	Mesh annotation tool for labelling urban scenes. 
-	Before you import your model, please make sure that your input mesh is in *.ply format.
+	Before you import your model, please make sure that your input mesh is in ascii *.ply format.
 	Note that non-manifold meshes are not supported in this tool. If you still want to use it, please use MeshLab (https://www.meshlab.net/) to repair it first.
   
 ## Build from source
