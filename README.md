@@ -1,10 +1,26 @@
 
 # Urban Mesh Annotation Tool
 
-	Mesh annotation tool for labelling urban scenes. 
-	Before you import your model, please make sure that your input mesh is in ascii *.ply format.
-	Note that non-manifold meshes are not supported in this tool. If you still want to use it, please use MeshLab (https://www.meshlab.net/) to repair it first.
-  
+Mesh annotation tool for labelling urban scenes. 
+Before you import your model, please check your input mesh is in ascii *.ply format.
+Note that non-manifold meshes are not supported in this tool. 
+If you still want to use it, please use [MeshLab](https://www.meshlab.net/) to repair it first.
+For more information, please visit our [project website](https://3d.bk.tudelft.nl/projects/meshannotation/).
+
+## Citation
+
+If you use it in a scientific work, we kindly ask you to cite it:
+
+<div class="filteredelement"><strong> SUM: A Benchmark Dataset of Semantic Urban Meshes </strong>. Weixiao Gao, Liangliang Nan, Bas Boom and Hugo Ledoux<em> arXiv preprint arXiv:2103.00355</em>. 2021 <br/><a href="https://arxiv.org/abs/2103.00355"><i class="fas fa-external-link-alt"></i> PDF</a> <a href="#myref" data-toggle="collapse"><i class="fas fa-caret-square-down"></i> BibTeX</a> <div id="myref" class="collapse" tabindex="-1"><pre class="bibtex">@misc{sum2021,
+author = {Weixiao Gao and Liangliang Nan and Bas Boom and Hugo Ledoux},
+title = {SUM: A Benchmark Dataset of Semantic Urban Meshes},
+year={2021},
+eprint={2103.00355},
+archivePrefix={arXiv},
+}
+</pre></div></div>
+
+ 
 ## Build from source
 ### Windows with CMake 
 
