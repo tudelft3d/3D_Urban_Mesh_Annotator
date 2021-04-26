@@ -96,7 +96,7 @@ public:
 	void updatePrimitiveIds(Viewer_interface *, Scene_item *item) Q_DECL_OVERRIDE;
 	bool testDisplayId(double x, double y, double z, CGAL::Three::Viewer_interface* viewer) Q_DECL_OVERRIDE;
 	//********************Weixiao Update************************//
-	void SwitchRenderingMode(CGAL::Three::Viewer_interface *, const int) Q_DECL_OVERRIDE;
+	void SwitchRenderingMode(CGAL::Three::Viewer_interface *, const int);
 	int getSelected_item()
 	{
 		return selected_item;
