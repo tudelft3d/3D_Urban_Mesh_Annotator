@@ -58,7 +58,6 @@ See the instruction in Tutorial.md
 	ply_plugin  
   
 # Required libraries:  
-	CGAL-4.13 ~ 4.14  
 	Qt5.9  
 	Eigen  
 	Boost  
