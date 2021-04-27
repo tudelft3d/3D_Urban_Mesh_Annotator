@@ -58,7 +58,7 @@ option( POLYHEDRON_QTSCRIPT_DEBUGGER
   "Activate the use of Qt Script Debugger in UrbanMeshAnnotator" OFF)
 
 # Find Qt5 itself
-find_package(CGAL COMPONENTS Qt5 ImageIO)
+find_package(CGAL COMPONENTS Qt5 ImageIO PATHS ../CGAL)
 include(${CGAL_USE_FILE})
 
 set(CMAKE_BUILD_TYPE Release)
