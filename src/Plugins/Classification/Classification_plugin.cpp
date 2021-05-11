@@ -166,7 +166,7 @@ public:
 
 		connect(ui_widget.ProbSwitcher, SIGNAL(currentIndexChanged(int)), this, SLOT(on_probability_switcher_changed(int)));
 
-		ui_widget.display->setVisible(false);
+		//ui_widget.display->setVisible(false);
 		ui_widget.label->setVisible(false);
 		ui_widget.ProbSwitcher->setVisible(false);
 		ui_widget.ProbSlider->setVisible(false);

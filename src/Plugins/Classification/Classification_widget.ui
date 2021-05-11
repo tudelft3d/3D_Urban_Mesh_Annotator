@@ -87,6 +87,12 @@
            </property>
            <item>
             <widget class="QComboBox" name="display">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="currentText">
               <string>Editing</string>
              </property>
