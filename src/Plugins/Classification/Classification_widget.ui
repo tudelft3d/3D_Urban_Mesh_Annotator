@@ -43,41 +43,6 @@
          </property>
          <item>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="2">
-            <widget class="QComboBox" name="ProbSwitcher">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="editable">
-              <bool>true</bool>
-             </property>
-             <property name="currentText">
-              <string>below</string>
-             </property>
-             <property name="currentIndex">
-              <number>0</number>
-             </property>
-             <property name="maxVisibleItems">
-              <number>2</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>below</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>above</string>
-              </property>
-             </item>
-            </widget>
-           </item>
            <item row="0" column="1">
             <widget class="QLabel" name="label">
              <property name="enabled">
@@ -126,17 +91,58 @@
              </item>
             </widget>
            </item>
-           <item row="0" column="3">
-            <widget class="QLabel" name="label_2">
+           <item row="0" column="2">
+            <widget class="QComboBox" name="ProbSwitcher">
              <property name="enabled">
               <bool>false</bool>
              </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="editable">
+              <bool>true</bool>
+             </property>
+             <property name="currentText">
+              <string>below</string>
+             </property>
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <property name="maxVisibleItems">
+              <number>2</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>below</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>above</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="segment_area_label">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
-              <string>：</string>
+              <string>Segment Area</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="5">
+           <item row="0" column="4">
             <widget class="QSpinBox" name="ProbSpin">
              <property name="enabled">
               <bool>false</bool>
@@ -158,7 +164,7 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="4">
+           <item row="0" column="3">
             <widget class="QSlider" name="ProbSlider">
              <property name="enabled">
               <bool>false</bool>
@@ -189,19 +195,25 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="segment_area_label">
+           <item row="1" column="4">
+            <widget class="QDoubleSpinBox" name="SegAreadoubleSpinBox">
              <property name="enabled">
               <bool>false</bool>
              </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+             <property name="accelerated">
+              <bool>true</bool>
              </property>
-             <property name="text">
-              <string>Segment Area</string>
+             <property name="decimals">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+             <property name="value">
+              <double>100.000000000000000</double>
              </property>
             </widget>
            </item>
@@ -231,7 +243,7 @@
              </item>
             </widget>
            </item>
-           <item row="1" column="4">
+           <item row="1" column="3">
             <widget class="QSlider" name="SegAreaSlider">
              <property name="enabled">
               <bool>false</bool>
@@ -250,28 +262,6 @@
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="5">
-            <widget class="QDoubleSpinBox" name="SegAreadoubleSpinBox">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="accelerated">
-              <bool>true</bool>
-             </property>
-             <property name="decimals">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.100000000000000</double>
-             </property>
-             <property name="value">
-              <double>100.000000000000000</double>
              </property>
             </widget>
            </item>

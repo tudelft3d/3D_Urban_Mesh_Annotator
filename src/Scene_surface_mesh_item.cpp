@@ -1708,7 +1708,7 @@ void Scene_surface_mesh_item::unemphasize()
 	setRenderingMode(default_renderingmode);
 	d->chosen_segments.clear();
 	//d->compute_elements(ALL);
-	d->item->is_in_annotation = true;
+	d->item->is_in_annotation = false;
 
 	Q_EMIT itemChanged();
 	//invalidateOpenGLBuffers();

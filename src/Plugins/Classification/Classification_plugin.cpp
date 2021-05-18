@@ -155,8 +155,6 @@ public:
 		connect(ui_widget.ProbSpin, SIGNAL(valueChanged(int)), this, SLOT(on_probability_threshold_changed(int)));
 		connect(ui_widget.ProbSwitcher, SIGNAL(currentIndexChanged(int)), this, SLOT(on_probability_switcher_changed(int)));
 
-		connect(ui_widget.SegAreaSlider, SIGNAL(valueChanged(int)), ui_widget.SegAreadoubleSpinBox, SLOT(setValue(int)));
-		connect(ui_widget.SegAreadoubleSpinBox, SIGNAL(valueChanged(double)), ui_widget.SegAreaSlider, SLOT(setValue(double)));
 		connect(ui_widget.SegAreadoubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(on_segarea_threshold_changed(double)));
 		connect(ui_widget.SegAreaSwitcher, SIGNAL(currentIndexChanged(int)), this, SLOT(on_segarea_switcher_changed(int)));
 		connect(ui_widget.SegAreadoubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(segarea_double_to_int()));
@@ -785,7 +783,6 @@ public Q_SLOTS:
 		ui_widget.ProbSlider->setEnabled(false);
 		ui_widget.ProbSpin->setEnabled(false);
 		ui_widget.ProbSwitcher->setEnabled(false);
-		ui_widget.label_2->setEnabled(false);
 		ui_widget.label->setEnabled(false);
 		ui_widget.estimated_prg->setEnabled(false);
 		ui_widget.progressBar_2->setEnabled(false);
@@ -797,7 +794,6 @@ public Q_SLOTS:
 		ui_widget.ProbSlider->setVisible(false);
 		ui_widget.ProbSpin->setVisible(false);
 		ui_widget.ProbSwitcher->setVisible(false);
-		ui_widget.label_2->setVisible(false);
 		ui_widget.label->setVisible(false);
 		ui_widget.estimated_prg->setVisible(false);
 		ui_widget.progressBar_2->setVisible(false);
@@ -828,7 +824,6 @@ public Q_SLOTS:
 		ui_widget.ProbSlider->setEnabled(true);
 		ui_widget.ProbSpin->setEnabled(true);
 		ui_widget.ProbSwitcher->setEnabled(true);
-		ui_widget.label_2->setEnabled(true);
 		ui_widget.label->setEnabled(true);
 		ui_widget.estimated_prg->setEnabled(true);
 		ui_widget.progressBar_2->setEnabled(true);
@@ -840,7 +835,6 @@ public Q_SLOTS:
 		ui_widget.ProbSlider->setVisible(true);
 		ui_widget.ProbSpin->setVisible(true);
 		ui_widget.ProbSwitcher->setVisible(true);
-		ui_widget.label_2->setVisible(true);
 		ui_widget.label->setVisible(true);
 		ui_widget.view->setVisible(true);
 		ui_widget.estimated_prg->setVisible(true);
@@ -872,7 +866,6 @@ public Q_SLOTS:
 		ui_widget.ProbSlider->setEnabled(false);
 		ui_widget.ProbSpin->setEnabled(false);
 		ui_widget.ProbSwitcher->setEnabled(false);
-		ui_widget.label_2->setEnabled(false);
 		ui_widget.label->setEnabled(false);
 		ui_widget.segment_area_label->setEnabled(false);
 		ui_widget.SegAreaSlider->setEnabled(false);
