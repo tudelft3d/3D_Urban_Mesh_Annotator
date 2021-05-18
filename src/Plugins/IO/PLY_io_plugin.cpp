@@ -10,6 +10,7 @@
 #include <CGAL/IO/PLY_reader.h>
 #include <CGAL/IO/PLY_writer.h>
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
+#include <CGAL/Polygon_mesh_processing/measure.h>
 #include <QMessageBox>
 
 class Polyhedron_demo_ply_plugin :
@@ -275,6 +276,7 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 			std::map<face_descriptor, bool> face_visited_check;
 			std::map<int, std::set<int>> textureID_vertices_grouping;
 			std::map<int, std::vector<face_vind_texcoord>> textureID_facets_grouping;
+			std::set<std::pair<face_descriptor, float>, FaceAreaComp> sorted_ascending_order;
 			BOOST_FOREACH(face_descriptor fd, faces(*(sm_item->polyhedron())))
 			{
 				if (flabels.empty() == false)
@@ -332,10 +334,25 @@ Polyhedron_demo_ply_plugin::load(QFileInfo fileinfo) {
 				Point_3 p_tmp(fvx, fvy, fvz);
 				Vector_3 n_tmp(sm_item->face_normals[fd]);
 				sm_item->face_center_point_set.insert(p_tmp, n_tmp);
+
+				//add face area
+				sm_item->face_area[fd] = CGAL::Polygon_mesh_processing::face_area(fd, *(sm_item->polyhedron()));
+				sm_item->seg_area_sorted_percentile[fd] = 0.0f;
+				sorted_ascending_order.insert(std::make_pair(fd, sm_item->face_area[fd]));
 				++f_ind;
 			}
 			//update total labeled faces
 			sm_item->total_labeled_faces = total_labeled_faces_i;
+
+			//update face area percetile 
+			if (fi_segment_id.empty())
+			{
+				std::set<std::pair<face_descriptor, float>, FaceAreaComp>::iterator it_fdarea = sorted_ascending_order.begin();
+				for (int f_area_id = 0; it_fdarea != sorted_ascending_order.end(); it_fdarea++, f_area_id++)
+				{
+					sm_item->seg_area_sorted_percentile[it_fdarea->first] = float(f_area_id) / float(faces(*(sm_item->polyhedron())).size());
+				}
+			}
 
 			//update face segment id (check if isolated segments are merged as one)
 			//if (fi_segment_id.empty() == false)

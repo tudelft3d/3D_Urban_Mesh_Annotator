@@ -147,30 +147,32 @@ public:
 
 		color_att = QColor(75, 75, 77);
 
-		connect(ui_widget.help, SIGNAL(clicked()), this,
-			SLOT(on_help_clicked()));
-
-		ui_widget.help->setVisible(false);
-		connect(ui_widget.close, SIGNAL(clicked()), this,
-			SLOT(ask_for_closing()));
-		ui_widget.close->setVisible(false);
-
 		connect(ui_widget.display, SIGNAL(currentIndexChanged(int)), this,
 			SLOT(on_display_button_clicked_with_probability(int)));
 
 		connect(ui_widget.ProbSpin, SIGNAL(valueChanged(int)), ui_widget.ProbSlider, SLOT(setValue(int)));
 		connect(ui_widget.ProbSlider, SIGNAL(valueChanged(int)), ui_widget.ProbSpin, SLOT(setValue(int)));
-
 		connect(ui_widget.ProbSpin, SIGNAL(valueChanged(int)), this, SLOT(on_probability_threshold_changed(int)));
-		//connect(ui_widget.ProbSlider, SIGNAL(valueChanged(int)), this, SLOT(on_probability_threshold_changed(int)));
-
 		connect(ui_widget.ProbSwitcher, SIGNAL(currentIndexChanged(int)), this, SLOT(on_probability_switcher_changed(int)));
+
+		connect(ui_widget.SegAreaSlider, SIGNAL(valueChanged(int)), ui_widget.SegAreadoubleSpinBox, SLOT(setValue(int)));
+		connect(ui_widget.SegAreadoubleSpinBox, SIGNAL(valueChanged(double)), ui_widget.SegAreaSlider, SLOT(setValue(double)));
+		connect(ui_widget.SegAreadoubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(on_segarea_threshold_changed(double)));
+		connect(ui_widget.SegAreaSwitcher, SIGNAL(currentIndexChanged(int)), this, SLOT(on_segarea_switcher_changed(int)));
+		connect(ui_widget.SegAreadoubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(segarea_double_to_int()));
+		connect(ui_widget.SegAreaSlider, SIGNAL(valueChanged(int)), this, SLOT(segarea_int_to_double()));
 
 		//ui_widget.display->setVisible(false);
 		ui_widget.label->setVisible(false);
 		ui_widget.ProbSwitcher->setVisible(false);
 		ui_widget.ProbSlider->setVisible(false);
 		ui_widget.ProbSpin->setVisible(false);
+
+		ui_widget.segment_area_label->setVisible(false);
+		ui_widget.SegAreaSwitcher->setVisible(false);
+		ui_widget.SegAreaSlider->setVisible(false);
+		ui_widget.SegAreadoubleSpinBox->setVisible(false);
+
 
 		QObject* scene_obj = dynamic_cast<QObject*>(scene_interface);
 		if (scene_obj)
@@ -181,6 +183,13 @@ public:
 	}
 	virtual void closure()
 	{
+		ui_widget.ProbSwitcher->setCurrentIndex(0);
+		ui_widget.ProbSlider->setValue(100);
+		ui_widget.ProbSpin->setValue(100);
+
+		ui_widget.SegAreaSwitcher->setCurrentIndex(0);
+		ui_widget.SegAreaSlider->setValue(1000);
+		ui_widget.SegAreadoubleSpinBox->setValue(100.0);
 		dock_widget->hide();
 		close_classification();
 	}
@@ -756,12 +765,12 @@ public Q_SLOTS:
 		++classif->item()->add_label_count;
 	}
 
-	bool threshold_based_change_color(Item_classification_base* classif, int index, int threshold, bool below)
+	bool threshold_based_change_color(Item_classification_base* classif, int index, std::vector<float> &thresholds, std::vector<bool>& belows)
 	{
 		float vmin = std::numeric_limits<float>::infinity();
 		float vmax = std::numeric_limits<float>::infinity();
 
-		classif->threshold_based_change_color(index, threshold, below, &vmin, &vmax);
+		classif->threshold_based_change_color(index, thresholds, belows, &vmin, &vmax);
 
 		if (first_activate_times > 1)
 			item_changed(classif->item());
@@ -780,6 +789,10 @@ public Q_SLOTS:
 		ui_widget.label->setEnabled(false);
 		ui_widget.estimated_prg->setEnabled(false);
 		ui_widget.progressBar_2->setEnabled(false);
+		ui_widget.segment_area_label->setEnabled(false);
+		ui_widget.SegAreaSlider->setEnabled(false);
+		ui_widget.SegAreadoubleSpinBox->setEnabled(false);
+		ui_widget.SegAreaSwitcher->setEnabled(false);
 
 		ui_widget.ProbSlider->setVisible(false);
 		ui_widget.ProbSpin->setVisible(false);
@@ -788,6 +801,10 @@ public Q_SLOTS:
 		ui_widget.label->setVisible(false);
 		ui_widget.estimated_prg->setVisible(false);
 		ui_widget.progressBar_2->setVisible(false);
+		ui_widget.segment_area_label->setVisible(false);
+		ui_widget.SegAreaSlider->setVisible(false);
+		ui_widget.SegAreadoubleSpinBox->setVisible(false);
+		ui_widget.SegAreaSwitcher->setVisible(false);
 
 		//progress bar
 		ui_widget.label_3->setEnabled(true);
@@ -815,6 +832,10 @@ public Q_SLOTS:
 		ui_widget.label->setEnabled(true);
 		ui_widget.estimated_prg->setEnabled(true);
 		ui_widget.progressBar_2->setEnabled(true);
+		ui_widget.segment_area_label->setEnabled(true);
+		ui_widget.SegAreaSlider->setEnabled(true);
+		ui_widget.SegAreadoubleSpinBox->setEnabled(true);
+		ui_widget.SegAreaSwitcher->setEnabled(true);
 
 		ui_widget.ProbSlider->setVisible(true);
 		ui_widget.ProbSpin->setVisible(true);
@@ -824,6 +845,10 @@ public Q_SLOTS:
 		ui_widget.view->setVisible(true);
 		ui_widget.estimated_prg->setVisible(true);
 		ui_widget.progressBar_2->setVisible(true);
+		ui_widget.segment_area_label->setVisible(true);
+		ui_widget.SegAreaSlider->setVisible(true);
+		ui_widget.SegAreadoubleSpinBox->setVisible(true);
+		ui_widget.SegAreaSwitcher->setVisible(true);
 
 		//progress bar
 		ui_widget.label_3->setEnabled(false);
@@ -849,6 +874,11 @@ public Q_SLOTS:
 		ui_widget.ProbSwitcher->setEnabled(false);
 		ui_widget.label_2->setEnabled(false);
 		ui_widget.label->setEnabled(false);
+		ui_widget.segment_area_label->setEnabled(false);
+		ui_widget.SegAreaSlider->setEnabled(false);
+		ui_widget.SegAreadoubleSpinBox->setEnabled(false);
+		ui_widget.SegAreaSwitcher->setEnabled(false);
+
 		//progress bar
 		ui_widget.label_3->setEnabled(false);
 		ui_widget.label_4->setEnabled(false);
@@ -873,45 +903,99 @@ public Q_SLOTS:
 				enable_probability_disable_progressbar();
 		}
 
-		int threshold = ui_widget.ProbSlider->value();
-		bool below;
+		classif->m_thresholds[0] = ui_widget.ProbSlider->value();
 		if (ui_widget.ProbSwitcher->currentIndex() == 0)
-			below = true;
+			classif->m_belows[0] = true;
 		else
-			below = false;
+			classif->m_belows[0] = false;
 
-		threshold_based_change_color(classif, index, threshold, below);
+		//threshold_based_change_color(classif, index, thresholds, below);
+
+		classif->m_thresholds[1] = ui_widget.SegAreadoubleSpinBox->value();
+		if (ui_widget.SegAreaSwitcher->currentIndex() == 0)
+			classif->m_belows[1] = true;
+		else
+			classif->m_belows[1] = false;
+
+		threshold_based_change_color(classif, index, classif->m_thresholds, classif->m_belows);
 	}
-
 
 	void on_probability_threshold_changed(int value) {
 		Item_classification_base* classif = get_classification();
 		if (!classif) return;
-		int threshold = value;
-		bool below;
-		if (ui_widget.ProbSwitcher->currentIndex() == 0) below = true;
-		else below = false;
+		classif->m_thresholds[0] = value;
+
+		if (ui_widget.ProbSwitcher->currentIndex() == 0) 
+			classif->m_belows[0] = true;
+		else 
+			classif->m_belows[0] = false;
 
 		int index = ui_widget.display->currentIndex();
 
-		threshold_based_change_color(classif, index, threshold, below);
+		threshold_based_change_color(classif, index, classif->m_thresholds, classif->m_belows);
 		//print_message("probability_state_changed!");
 	}
 
-	void on_probability_switcher_changed(int value) {
+	void on_probability_switcher_changed(int value)
+	{
 		Item_classification_base* classif = get_classification();
 		if (!classif) return;
-		int threshold = ui_widget.ProbSlider->value();
-		bool below;
-		if (value == 0) below = true;
-		else below = false;
+		classif->m_thresholds[0] = ui_widget.ProbSlider->value();
+
+		if (value == 0) 
+			classif->m_belows[0] = true;
+		else 
+			classif->m_belows[0] = false;
 
 		int index = ui_widget.display->currentIndex();
 
-		threshold_based_change_color(classif, index, threshold, below);
+		threshold_based_change_color(classif, index, classif->m_thresholds, classif->m_belows);
 		//print_message("probability_state_changed!");
 	}
 
+	
+	void on_segarea_threshold_changed(double value) {
+		Item_classification_base* classif = get_classification();
+		if (!classif) return;
+		classif->m_thresholds[1] = value;
+		if (ui_widget.SegAreaSwitcher->currentIndex() == 0) 
+			classif->m_belows[1] = true;
+		else 
+			classif->m_belows[1] = false;
+
+		int index = ui_widget.display->currentIndex();
+
+		threshold_based_change_color(classif, index, classif->m_thresholds, classif->m_belows);
+		//print_message("probability_state_changed!");
+	}
+
+	void on_segarea_switcher_changed(int value)
+	{
+		Item_classification_base* classif = get_classification();
+		if (!classif) return;
+		classif->m_thresholds[1] = ui_widget.SegAreadoubleSpinBox->value();
+		if (value == 0) 
+			classif->m_belows[1] = true;
+		else 
+			classif->m_belows[1] = false;
+
+		int index = ui_widget.display->currentIndex();
+
+		threshold_based_change_color(classif, index, classif->m_thresholds, classif->m_belows);
+		//print_message("probability_state_changed!");
+	}
+
+	void segarea_double_to_int()
+	{
+		int tmp = ui_widget.SegAreadoubleSpinBox->value() * 10.0f;
+		ui_widget.SegAreaSlider->setValue(tmp);
+	}
+
+	void segarea_int_to_double()
+	{
+		double tmp = double(ui_widget.SegAreaSlider->value()) / 10.0f;
+		ui_widget.SegAreadoubleSpinBox->setValue(tmp);
+	}
 private:
 	Messages_interface* messages;
 	QAction* actionClassification;

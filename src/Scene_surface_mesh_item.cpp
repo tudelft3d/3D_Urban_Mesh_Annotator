@@ -1608,10 +1608,11 @@ void Scene_surface_mesh_item::computeSegments()
 		if (p->first.is_valid())
 		{
 			segments[p->second].faces_included.insert(p->first);
-			segments[p->second].segment_area += CGAL::Polygon_mesh_processing::face_area(p->first, *(this->polyhedron()));
+			segments[p->second].segment_area += face_area[p->first];//CGAL::Polygon_mesh_processing::face_area(p->first, *(this->polyhedron()));
 		}
 	}
 
+	sorted_seg_area_ascending_order.clear();
 	std::pair<int, int> minmax_faces_segment = std::make_pair<int, int>(2147483647, 0);
 	for (std::map<seg_id, Segment>::iterator p = segments.begin(); p != segments.end(); p++)
 	{
@@ -1626,6 +1627,16 @@ void Scene_surface_mesh_item::computeSegments()
 		{
 			minmax_faces_segment.second = p->second.faces_included.size();
 			minmax_faces_segment_id.second = p->second.id;
+		}
+		sorted_seg_area_ascending_order.insert(p->second);
+	}
+
+	std::set<Segment, SegAreaComp>::iterator seg_it = sorted_seg_area_ascending_order.begin();
+	for (int seg_i = 0; seg_it != sorted_seg_area_ascending_order.end(); seg_it++, seg_i++)
+	{
+		for (auto fd : seg_it->faces_included)
+		{
+			seg_area_sorted_percentile[fd] = float(seg_i) / float(sorted_seg_area_ascending_order.size());
 		}
 	}
 }

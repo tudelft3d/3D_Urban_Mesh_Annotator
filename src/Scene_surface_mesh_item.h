@@ -61,6 +61,23 @@ class Segment
 		}
 };
 
+
+struct FaceAreaComp
+{
+	bool operator() (const std::pair<face_descriptor, float> &f1, const std::pair<face_descriptor, float> &f2)
+	{
+		return f1.second < f2.second;
+	}
+};
+
+struct SegAreaComp
+{
+	bool operator() (const Segment &s1, const Segment &s2)
+	{
+		return s1.segment_area < s2.segment_area;
+	}
+};
+
 //class seg_boundary_edge_info {
 //public:
 //	
@@ -171,6 +188,8 @@ public:
 	std::vector<std::string> texture_name;
 	std::vector<QImage> texture_images;
 	std::map<face_descriptor, float> label_probabilities;
+	std::map<face_descriptor, float> face_area;
+	std::map<face_descriptor, float> seg_area_sorted_percentile;
 	std::map<int, face_descriptor> id_face;
 	std::map<face_descriptor, int> face_segment_id;
 	std::map<int, Kernel::Point_3> vertices_coords;
@@ -195,6 +214,7 @@ public:
 	typedef boost::graph_traits<SMesh>::edge_descriptor edge_descriptor;
 
 	std::map<seg_id, Segment> segments;
+	std::set<Segment, SegAreaComp> sorted_seg_area_ascending_order;
 	//std::map<edge_descriptor, seg_boundary_edge_info> boundary_info;
 	std::pair<int, int> minmax_faces_segment_id = std::make_pair<int,int>(-1, -1);
 	// record the informations about segments into the map "segments" based on the informations

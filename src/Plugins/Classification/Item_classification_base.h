@@ -16,6 +16,8 @@ public:
   typedef CGAL::Classification::Label_handle   Label_handle;
   typedef CGAL::Classification::Label_set   Label_set;
 
+  std::vector<float> m_thresholds = { 100.0f, 100.0f };
+  std::vector<bool> m_belows = { true , true };
 public:
   
   Item_classification_base() { }
@@ -38,7 +40,7 @@ public:
   virtual void change_color (int index, float* vmin = NULL, float* vmax = NULL) = 0;
 
   virtual void update_all_label_color(int &) = 0;
-  virtual void threshold_based_change_color(int index, int threshold, bool below, float* vmin = NULL, float* vmax = NULL) = 0;
+  virtual void threshold_based_change_color(int index, std::vector<float> &thresholds, std::vector<bool>& belows, float* vmin = NULL, float* vmax = NULL) = 0;
   // presently only implementated the surface_mesh_item_classification class.
   virtual bool can_show_probability() = 0;
 

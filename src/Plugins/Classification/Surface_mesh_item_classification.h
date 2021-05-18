@@ -149,7 +149,7 @@ public:
   
   void change_color (int index, float* vmin = NULL, float* vmax = NULL);
   
-  void threshold_based_change_color(int index, int threshold, bool below, float* vmin = NULL, float* vmax = NULL);
+  void threshold_based_change_color(int index, std::vector<float> &thresholds, std::vector<bool>& belows, float* vmin = NULL, float* vmax = NULL);
 
   bool can_show_probability();
 

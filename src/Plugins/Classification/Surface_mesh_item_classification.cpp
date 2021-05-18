@@ -283,7 +283,14 @@ void Surface_mesh_item_classification::update_all_label_color(int &label_ind)
 	}
 }
 
-void Surface_mesh_item_classification::threshold_based_change_color(int index, int threshold = 100, bool below = true, float* vmin, float* vmax)
+void Surface_mesh_item_classification::threshold_based_change_color
+(
+	int index, 
+	std::vector<float> &thresholds,
+	std::vector<bool>& belows,
+	float* vmin, 
+	float* vmax
+)
 {
 	m_index_color = index;
 	int index_color = index;
@@ -316,16 +323,25 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 
 			float div = 1;
 
-			float prob_of_face;
+			float prob_of_face = 0.0f;
 			if (!m_mesh->label_probabilities.empty())
 			{
 				prob_of_face = m_mesh->label_probabilities[fd];
 				prob_of_face *= 100;
 			}
 
+			float prob_of_face_area = 0.0f;
+			if (!m_mesh->seg_area_sorted_percentile.empty())
+			{
+				prob_of_face_area = m_mesh->seg_area_sorted_percentile[fd];
+				prob_of_face_area *= 100;
+			}
+
 			if (m_mesh->label_probabilities.empty() ||
-				(below && prob_of_face <= threshold) ||
-				(!below && prob_of_face >= threshold))
+				((belows[0] && prob_of_face <= thresholds[0]) ||
+				(!belows[0] && prob_of_face >= thresholds[0])) &&
+				((belows[1] && prob_of_face_area <= thresholds[1]) ||
+				(!belows[1] && prob_of_face_area >= thresholds[1])))
 			{
 				if (c != std::size_t(-1) && c < std::size_t(100))//c != std::size_t(-1) && 
 				{
@@ -395,9 +411,18 @@ void Surface_mesh_item_classification::threshold_based_change_color(int index, i
 					prob_of_face *= 100;
 				}
 
-				if (m_mesh->label_probabilities.empty() ||
-					(below && prob_of_face <= threshold) ||
-					(!below && prob_of_face >= threshold))
+				float prob_of_face_area = 0.0f;
+				if (!m_mesh->seg_area_sorted_percentile.empty())
+				{
+					prob_of_face_area = m_mesh->seg_area_sorted_percentile[fd];
+					prob_of_face_area *= 100;
+				}
+
+				if (m_mesh->label_probabilities.empty() || 
+					((belows[0] && prob_of_face <= thresholds[0]) ||
+					(!belows[0] && prob_of_face >= thresholds[0])) &&
+					((belows[1] && prob_of_face_area <= thresholds[1]) ||
+					(!belows[1] && prob_of_face_area >= thresholds[1])))
 				{
 					//show them!
 					if (c != std::size_t(-1) && c < std::size_t(100))//c != std::size_t(-1) && 
