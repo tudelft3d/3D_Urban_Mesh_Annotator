@@ -11,12 +11,16 @@ For more information, please visit our [project website](https://3d.bk.tudelft.n
 
 If you use it in a scientific work, we kindly ask you to cite it:
 
-<div class="filteredelement"><strong> SUM: A Benchmark Dataset of Semantic Urban Meshes </strong>. Weixiao Gao, Liangliang Nan, Bas Boom and Hugo Ledoux<em> arXiv preprint arXiv:2103.00355</em>. 2021 <br/><a href="https://arxiv.org/abs/2103.00355"><i class="fas fa-external-link-alt"></i> PDF</a> <a href="#myref" data-toggle="collapse"><i class="fas fa-caret-square-down"></i> BibTeX</a> <div id="myref" class="collapse" tabindex="-1"><pre class="bibtex">@misc{sum2021,
+<div class="filteredelement"><strong> SUM: A Benchmark Dataset of Semantic Urban Meshes </strong>. Weixiao Gao, Liangliang Nan, Bas Boom and Hugo Ledoux. <em> ISPRS Journal of Photogrammetry and Remote Sensing</em> 179 (2021) 108-120. <br/><a href="https://www.sciencedirect.com/science/article/pii/S0924271621001854"><i class="fas fa-external-link-alt"></i> PDF</a> <a href="#myref" data-toggle="collapse"><i class="fas fa-caret-square-down"></i> BibTeX</a> <div id="myref" class="collapse" tabindex="-1"><pre class="bibtex">@article{sum2021,
 author = {Weixiao Gao and Liangliang Nan and Bas Boom and Hugo Ledoux},
 title = {SUM: A Benchmark Dataset of Semantic Urban Meshes},
+journal = {ISPRS Journal of Photogrammetry and Remote Sensing},
+volume = {179},
+pages = {108-120},
 year={2021},
-eprint={2103.00355},
-archivePrefix={arXiv},
+issn = {0924-2716},
+doi = {10.1016/j.isprsjprs.2021.07.008},
+url = {https://www.sciencedirect.com/science/article/pii/S0924271621001854},
 }
 </pre></div></div>
 
