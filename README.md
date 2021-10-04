@@ -7,6 +7,10 @@ Note that non-manifold meshes are not supported in this tool.
 If you still want to use it, please use [MeshLab](https://www.meshlab.net/) to repair it first.
 For more information, please visit our [project website](https://3d.bk.tudelft.nl/projects/meshannotation/).
 
+<div align="center">    
+<img src="pics/annotation_fuse.jpg" width="800px" />
+</div>
+
 ## Citation
 
 If you use it in a scientific work, we kindly ask you to cite it:
